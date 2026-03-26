@@ -23,7 +23,7 @@ dofile(path .. "/weapons/" .. OriginalFileName)
 path = tmp     -- restore path
 
 if Inverted then
-   non_inverted_file_name = OriginalFileName:gsub("_inverted", "")
+   local non_inverted_file_name = OriginalFileName:gsub("_inverted", "")
    non_inverted_file_name = non_inverted_file_name:sub(1, -5) -- remove ending
    dofile(path .. "weapons/" .. non_inverted_file_name .. "/" .. non_inverted_file_name .. "_" .. UpgradeLevel .. ".lua")
    -- invert direction
