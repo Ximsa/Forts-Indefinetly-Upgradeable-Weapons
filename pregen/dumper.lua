@@ -157,7 +157,7 @@ WeaponFiles = {
       RoundsEachBurst = 50,
       BeamDuration = 0.050000000745058,
       MaxRotationalSpeed = 0,
-   }
+   },
    mortar = {
       WeaponMass = 60,
       HitPoints = 70,
@@ -203,7 +203,7 @@ WeaponFiles = {
       EnergyFireCost = 400,
       MetalFireCost = 15,
       MaxRotationalSpeed = 0,
-   }
+   },
    buzzsaw = {
       WeaponMass = 70,
       HitPoints = 50,
@@ -635,7 +635,7 @@ WeaponFiles = {
       MetalFireCost = 40,
       RoundsEachBurst = 9,
       MaxRotationalSpeed = 0,
-   }
+   },
    cannon = {
       WeaponMass = 120,
       HitPoints = 300,
@@ -662,7 +662,7 @@ WeaponFiles = {
       EnergyFireCost = 3000,
       MetalFireCost = 75,
       MaxRotationalSpeed = 0,
-   }
+   },
    howitzer = {
       WeaponMass = 180,
       HitPoints = 400,
@@ -689,7 +689,7 @@ WeaponFiles = {
       EnergyFireCost = 4000,
       MetalFireCost = 70,
       MaxRotationalSpeed = 0,
-   }
+   },
    turret = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -718,7 +718,7 @@ WeaponFiles = {
       MetalFireCost = 32,
       RoundsEachBurst = 1,
       MaxRotationalSpeed = 0,
-   }
+   },
    turret2 = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -747,7 +747,7 @@ WeaponFiles = {
       MetalFireCost = 64,
       RoundsEachBurst = 2,
       MaxRotationalSpeed = 0,
-   }
+   },
    turret2_focus = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -776,7 +776,7 @@ WeaponFiles = {
       MetalFireCost = 64,
       RoundsEachBurst = 2,
       MaxRotationalSpeed = 0,
-   }
+   },
    turret3 = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -805,7 +805,7 @@ WeaponFiles = {
       MetalFireCost = 96,
       RoundsEachBurst = 3,
       MaxRotationalSpeed = 0,
-   }
+   },
    turret3_focus = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -834,7 +834,7 @@ WeaponFiles = {
       MetalFireCost = 96,
       RoundsEachBurst = 3,
       MaxRotationalSpeed = 0,
-   }
+   },
    firebeam = {
       WeaponMass = 90,
       HitPoints = 180,
@@ -860,7 +860,7 @@ WeaponFiles = {
       RoundsEachBurst = 1,
       BeamDuration = 2.5,
       MaxRotationalSpeed = 0,
-   }
+   },
    magnabeam = {
       WeaponMass = 100,
       HitPoints = 300,
@@ -890,7 +890,7 @@ WeaponFiles = {
       RoundsEachBurst = 1,
       BeamDuration = 7,
       MaxRotationalSpeed = 0,
-   }
+   },
    laser = {
       WeaponMass = 100,
       HitPoints = 250,
@@ -918,7 +918,7 @@ WeaponFiles = {
       RoundsEachBurst = 1,
       BeamDuration = 1.5,
       MaxRotationalSpeed = 0,
-   }
+   },
    orbital_laser = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -945,7 +945,7 @@ WeaponFiles = {
       EnergyFireCost = 1000,
       MetalFireCost = 0,
       MaxRotationalSpeed = 0,
-   }
+   },
    orbital_laser2 = {
       WeaponMass = 120,
       HitPoints = 600,
@@ -972,7 +972,7 @@ WeaponFiles = {
       EnergyFireCost = 1000,
       MetalFireCost = 0,
       MaxRotationalSpeed = 0,
-   }
+   },
    orbital_laser_source = {
       WeaponMass = 100,
       HitPoints = 10000000,

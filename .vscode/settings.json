@@ -47,7 +47,8 @@
         "Inverted",
         "path",
         "RecessionBox",
-        "Weapon"
+        "Weapon",
+        "SaveName"
     ],
     "Lua.diagnostics.disable": [
         "deprecated"
