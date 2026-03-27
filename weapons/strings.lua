@@ -1,4 +1,5 @@
-dofile(path .. "/pregen/scalings.lua")
+dofile(path .. "/lib/scalings.lua")
+dofile(path .. "/lib/util.lua")
 
 
 for _, weaponUpgrade in pairs(WeaponUpgrades) do

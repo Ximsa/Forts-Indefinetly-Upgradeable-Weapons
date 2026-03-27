@@ -2,7 +2,8 @@
 -- OriginalFileName
 -- UpgradeLevel
 -- ModPath
-dofile(path .. "/pregen/scalings.lua") -- import scaling behavior
+dofile(path .. "/lib/scalings.lua")
+dofile(path .. "/lib/util.lua")
 
 function ReplaceHeadSprite(Node)
    if Node.Name and Node.Name == "Head" then -- found the node
@@ -13,12 +14,6 @@ function ReplaceHeadSprite(Node)
       if type(v) == 'table' then
          ReplaceHeadSprite(v)
       end
-   end
-end
-
-function PrintBeamTable(beam_table)
-   for _, v in pairs(beam_table) do
-      print(string.format("Time: %f, Thickness: %f, Damage: %f", v[1], v[2], v[3]))
    end
 end
 
@@ -121,17 +116,21 @@ else
    }
 
    -- add sprite to Root
-
-
    if string.find(MySprite.Name, "head") then
       ReplaceHeadSprite(Root)
    elseif string.find(MySprite.Name, "base") then
       Root.Sprite = MySprite.Name
    end
 
+   -- set RoundsEachBurst fo scaling to gain multishot projectiles with increasing levels
+   if not RoundsEachBurst then
+      RoundsEachBurst = 1
+      RoundPeriod = 1
+   end
+
    -- apply scaling factors
    local blacklist = {}
-   blacklist["BeamDamageMultiplier"] = true
+   -- blacklist["BeamDamageMultiplier"] = true
    for field, fn in pairs(Scaling.WeaponFile) do
       if _G[field] and not blacklist[field] then
          _G[field] = fn(_G[field], UpgradeLevel)
@@ -140,8 +139,14 @@ else
    -- extend BeamTable
    if GenerateBeamTable then
       GenerateBeamTable(BeamDuration, 0.05, 1)
+      -- disable rounds each burst scaling, factor in beam duration for firecost, since beam firecost is measured in energy/second rather than per shot
+      RoundsEachBurst = 1
+      EnergyFireCost = EnergyFireCost / BeamDuration
    elseif BeamTable then
-      BeamTable = ExtrapolateBeamTable(BeamTable)
+      BeamTable = ExtrapolateBeamTable(BeamTable, BeamDuration)
+      -- disable rounds each burst scaling, factor in beam duration for firecost, since beam firecost is measured in energy/second rather than per shot
+      RoundsEachBurst = 1
+      EnergyFireCost = EnergyFireCost / BeamDuration
    end
 
    -- set projectile

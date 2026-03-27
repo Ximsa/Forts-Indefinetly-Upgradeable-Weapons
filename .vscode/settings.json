@@ -49,7 +49,10 @@
         "RecessionBox",
         "Weapon",
         "SaveName",
-        "BeamDuration"
+        "BeamDuration",
+        "ProjectileIncendiary",
+        "ProjectileSplashDamageMaxRadius",
+        "moonshot"
     ],
     "Lua.diagnostics.disable": [
         "deprecated"

@@ -14,12 +14,18 @@ This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weap
 - [X] Swarm Missiles
 - [X] Warhead
 - [X] Cannon   
-- [ ] Laser
+- [X] Laser
 
 ### Tons of Guns
-- [ ] Flak
-- [ ] Shotgun
-- [ ] Emp Rocket
-- [ ] Rockets
-- [ ] 20mm Cannon
-- [ ] Firebeam
+- [X] Flak
+- [X] Shotgun
+- [X] Emp Rocket
+- [X] Rockets
+- [X] 20mm Cannon
+- [X] Firebeam
+
+### Moonshot
+- [ ] Buzzsaw
+- [ ] Smoke Bomb
+- [ ] Howitzer
+- [ ] Magnabeam
