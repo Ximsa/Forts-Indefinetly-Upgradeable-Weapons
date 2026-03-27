@@ -5,15 +5,15 @@ This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weap
 ## Progress
 
 ### Vanilla
-- [ ] Machinegun
-- [ ] Minigun
-- [ ] Sniper
-- [ ] AP-Sniper
-- [ ] Incendiary Mortar
-- [ ] Heavy Mortar
-- [ ] Swarm Missiles
-- [ ] Warhead
-- [ ] Cannon   
+- [x] Machinegun
+- [X] Minigun
+- [X] Sniper
+- [X] AP-Sniper
+- [X] Incendiary Mortar
+- [X] Heavy Mortar
+- [X] Swarm Missiles
+- [X] Warhead
+- [X] Cannon   
 - [ ] Laser
 
 ### Tons of Guns

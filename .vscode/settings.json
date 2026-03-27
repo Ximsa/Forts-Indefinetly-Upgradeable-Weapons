@@ -48,7 +48,8 @@
         "path",
         "RecessionBox",
         "Weapon",
-        "SaveName"
+        "SaveName",
+        "BeamDuration"
     ],
     "Lua.diagnostics.disable": [
         "deprecated"

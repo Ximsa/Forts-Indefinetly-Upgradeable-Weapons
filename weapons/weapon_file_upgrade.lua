@@ -16,6 +16,64 @@ function ReplaceHeadSprite(Node)
    end
 end
 
+function PrintBeamTable(beam_table)
+   for _, v in pairs(beam_table) do
+      print(string.format("Time: %f, Thickness: %f, Damage: %f", v[1], v[2], v[3]))
+   end
+end
+
+function ExtrapolateBeamTable(base_beamtable, beam_duration)
+   -- extend pattern from last 2 entries
+   if not beam_duration or type(beam_duration) ~= 'number' then
+      return DeepCopy(base_beamtable)
+   end
+   local beam_table = DeepCopy(base_beamtable)
+
+   if #base_beamtable < 2 then -- not enough data to extrapolate
+      return beam_table
+   end
+
+   -- sorted by time: find pre-last and last entries
+   local sorted = {}
+   for _, p in ipairs(base_beamtable) do
+      table.insert(sorted, p)
+   end
+   table.sort(sorted, function(a, b) return a[1] < b[1] end)
+
+   local pre_last_beam = sorted[#sorted - 1]
+   local last_beam = sorted[#sorted]
+   local last_time = last_beam[1]
+
+   if beam_duration <= last_time then -- beamtable already long enough
+      return beam_table
+   end
+
+   local interval = last_time - pre_last_beam[1]
+   if interval <= 0 then -- cannot extrapolate if last two entries have same time
+      return beam_table
+   end
+
+   local next_time = last_time + interval
+   local next_value = pre_last_beam
+   while next_time <= beam_duration do
+      table.insert(beam_table, { next_time, next_value[2], next_value[3] })
+      next_value = (next_value == pre_last_beam) and last_beam or pre_last_beam
+      next_time = next_time + interval
+   end
+
+   -- ensure exact endpoint at beam_duration
+   local final_time = beam_table[#beam_table][1]
+   if final_time < beam_duration then
+      table.insert(beam_table, { beam_duration, next_value[2], next_value[3] })
+   elseif final_time > beam_duration then
+      -- remove overshoot and add exact endpoint
+      table.remove(beam_table)
+      table.insert(beam_table, { beam_duration, next_value[2], next_value[3] })
+   end
+
+   return beam_table
+end
+
 -- import original file
 local tmp = path
 path = ModPath -- dofile with path set to the weapons' path
@@ -73,7 +131,6 @@ else
 
    -- apply scaling factors
    local blacklist = {}
-   blacklist["BeamDuration"] = true
    blacklist["BeamDamageMultiplier"] = true
    for field, fn in pairs(Scaling.WeaponFile) do
       if _G[field] and not blacklist[field] then
@@ -82,10 +139,9 @@ else
    end
    -- extend BeamTable
    if GenerateBeamTable then
-      BeamDuration = Scaling.WeaponFile.BeamDuration(BeamDuration, UpgradeLevel)
       GenerateBeamTable(BeamDuration, 0.05, 1)
-   elseif BeamTable then -- if we cant extend it, simply increase damage
-      BeamDamageMultiplier = Scaling.ProjectileList.ProjectileDamage(BeamDamageMultiplier or 1, UpgradeLevel)
+   elseif BeamTable then
+      BeamTable = ExtrapolateBeamTable(BeamTable)
    end
 
    -- set projectile
