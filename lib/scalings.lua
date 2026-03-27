@@ -3,29 +3,29 @@ dofile(path .. "/lib/util.lua")
 
 UpgradeCount = 48
 GrowScale = 0.15
-AdditionalBuildCostScale = 2
-AdditionalFireCostScale = 1.2
-AdditionalIncendiaryRadiusScale = 2
 
-function DefaultScaleNone(value, level) return value end
+function DefaultScaleNone(value, level, grow_scale) return value end
 
-function DefaultScaleFractionalPower(value, level) return value + value * math.sqrt(level) * GrowScale end
+function DefaultScaleFractionalPower(value, level, grow_scale)
+	return value +
+		value * math.sqrt(level) * (grow_scale and grow_scale or GrowScale)
+end
 
-function DefaultScaleLinear(value, level) return value + value * level * GrowScale end
+function DefaultScaleLinear(value, level, grow_scale)
+	return value +
+		value * level * (grow_scale and grow_scale or GrowScale)
+end
 
-function DefaultScaleSubQuadratic(value, level) return value + value * (level ^ 1.3) * GrowScale end
+function DefaultScaleSubQuadratic(value, level, grow_scale)
+	return value +
+		value * (level ^ 1.3) * (grow_scale and grow_scale or GrowScale)
+end
 
-BuildCostScale = Compose3(
-	DefaultScaleSubQuadratic,
-	function(x) return x * AdditionalBuildCostScale end,
-	Significant3)
-FireCostScale = Compose3(
-	DefaultScaleSubQuadratic,
-	function(x) return x * AdditionalFireCostScale end,
-	Significant3)
-IncendiaryRadiusScale = Compose(DefaultScaleFractionalPower, function(x) return x * AdditionalIncendiaryRadiusScale end)
+function BuildCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, 2 * GrowScale)) end
 
+function FireCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, 1.2 * GrowScale)) end
 
+function IncendiaryRadiusScale(value, level) return DefaultScaleFractionalPower(value, level, 2 * GrowScale) end
 
 Scaling =
 {
@@ -75,6 +75,7 @@ Scaling =
 	},
 	ProjectileList =
 	{
+		AntiAirHitpoints = DefaultScaleFractionalPower,
 		ProjectileMass = DefaultScaleFractionalPower,
 		ProjectileDrag = DefaultScaleNone,
 		ProjectileThickness = DefaultScaleNone,
@@ -99,7 +100,7 @@ Scaling =
 		IncendiaryRadiusHeated = IncendiaryRadiusScale,
 		MinPenetration = DefaultScaleFractionalPower,
 		FieldRadius = DefaultScaleLinear,
-		FieldStrengthMax = DefaultScaleLinear,
+		FieldStrengthMax = DefaultScaleFractionalPower,
 		FieldStrengthFalloffPower = DefaultScaleNone,
 		RayDamage = DefaultScaleLinear,
 		RayLength = DefaultScaleFractionalPower,
@@ -129,10 +130,10 @@ WeaponUpgrades =
 }
 if moonshot then
 	for _, v in pairs({
-		{ mod = "mods/dlc1_weapons", weapon_savename = "buzzsaw",   weapon_filename = "buzzsaw.lua",   projectile = { ["buzzsaw"] = {} },                          build_cost_factor = 1 },
-		{ mod = "mods/dlc1_weapons", weapon_savename = "smokebomb", weapon_filename = "smokebomb.lua", projectile = { ["smokebomb"] = { ["smoke"] = {} } },        build_cost_factor = 1 },
-		{ mod = "mods/dlc1_weapons", weapon_savename = "howitzer",  weapon_filename = "howitzer.lua",  projectile = { ["howitzer"] = { ["magneticfield"] = {} } }, build_cost_factor = 1 },
-		{ mod = "mods/dlc1_weapons", weapon_savename = "magnabeam", weapon_filename = "magnabeam.lua", projectile = { ["magnabeam"] = {} },                        build_cost_factor = 1 },
+		{ mod = "mods/dlc1_weapons", weapon_savename = "buzzsaw",   weapon_filename = "buzzsaw.lua",   projectile = { ["buzzsaw"] = {} },                           build_cost_factor = 3 },
+		{ mod = "mods/dlc1_weapons", weapon_savename = "smokebomb", weapon_filename = "smokebomb.lua", projectile = { ["smokebomb"] = { ["smoke"] = {} } },         build_cost_factor = 1 },
+		{ mod = "mods/dlc1_weapons", weapon_savename = "howitzer",  weapon_filename = "howitzer.lua",  projectile = { ["howitzer"] = {} },                          build_cost_factor = 1 },
+		{ mod = "mods/dlc1_weapons", weapon_savename = "magnabeam", weapon_filename = "magnabeam.lua", projectile = { ["magnabeam"] = { ["magneticfield"] = {} } }, build_cost_factor = 0.5 },
 	}) do
 		table.insert(WeaponUpgrades, v)
 	end
