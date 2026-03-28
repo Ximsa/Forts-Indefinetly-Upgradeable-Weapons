@@ -1,8 +1,8 @@
 # Indefinitely Upgradeable Weapons
 
-This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weapons to scale far beyond their vanilla upgrade limits. Transform your arsenal into a powerhouse of customization and progression!
+This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weapons to scale far beyond their vanilla upgrade limits!
 
-## Progress
+## Weapons
 
 ### Vanilla
 - [x] Machinegun
@@ -29,3 +29,31 @@ This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weap
 - [ ] Smoke Bomb
 - [ ] Howitzer
 - [ ] Magnabeam
+
+### High Seas
+- [ ] Energy Dome
+~~ - [ ] Runway ~~
+- [ ] Runway Mk II
+- [ ] Marine Swarm
+- [ ] Marine Warhead
+- [ ] Harpoon
+~~ - [ ] Deck Gun 1 Barrel (Focused)~~
+~~ - [ ] Deck Gun 2 Barrels (Focused)~~
+- [ ] Deck Gun 3 Barrels (Focused)
+
+## Commanders
+- [ ] Scattershot
+- [ ] Seep
+- [ ] Shockenaugh
+- [ ] Buster
+- [ ] Moonshine
+- [ ] Phantom
+- [ ] Architect
+- [ ] Overdrive
+- [ ] Hurricane
+- [ ] Firebird
+- [ ] Warthog
+- [ ] Eagle Eye
+- [ ] Pinchfist
+- [ ] Spook
+- [ ] Armourdillo

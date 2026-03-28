@@ -65,6 +65,8 @@ for _, weaponUpgrade in ipairs(WeaponUpgrades) do
 					MetalCost = GetUpgradeCostByLevel(Scaling.WeaponList.MetalCost, base_weapon.MetalCost * build_cost_factor, level + 1),
 					EnergyCost = GetUpgradeCostByLevel(Scaling.WeaponList.EnergyCost, base_weapon.EnergyCost * build_cost_factor, level + 1)
 				})
+		else
+			weapon.Upgrades = {}
 		end
 		table.insert(
 			Weapons,
