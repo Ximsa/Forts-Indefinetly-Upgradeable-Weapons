@@ -1,7 +1,7 @@
 if not path then path = ".." end
 dofile(path .. "/lib/util.lua")
 
-UpgradeCount = 48
+UpgradeCount = 4
 GrowScale = 0.15
 
 function DefaultScaleNone(value, level, grow_scale) return value end

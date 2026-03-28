@@ -24,13 +24,17 @@ function GetCompatibleGroupsOf(base_weapon)
 	return compatible_group_types
 end
 
-for _, weaponUpgrade in ipairs(WeaponUpgrades) do
-	local build_cost_factor = weaponUpgrade.build_cost_factor or 1
-	local weapon_savename = weaponUpgrade.weapon_savename
-	local weapon_filename = weaponUpgrade.weapon_filename
+function AddUpgradesForWeapon(weapon_upgrade)
+	local build_cost_factor = weapon_upgrade.build_cost_factor or 1
+	local weapon_savename = weapon_upgrade.weapon_savename
+	local weapon_filename = weapon_upgrade.weapon_filename
 	local weapon_filename_pure = weapon_filename:sub(1, -5)
 	-- add an upgrade entry to the base weapon
 	local base_weapon = FindWeapon(weapon_savename)
+	if not base_weapon then
+		Log("Error: Could not find weapon with savename " .. weapon_savename)
+		return
+	end
 	AddUpgrade(base_weapon,
 		{
 			Enabled = true,
@@ -75,4 +79,8 @@ for _, weaponUpgrade in ipairs(WeaponUpgrades) do
 				nil,
 				weapon))
 	end
+end
+
+for _, weapon_upgrade in pairs(WeaponUpgrades) do
+	AddUpgradesForWeapon(weapon_upgrade)
 end

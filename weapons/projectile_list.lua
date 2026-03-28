@@ -14,13 +14,19 @@ end
 
 function AddProjectileUpgrades(projectile_savename, child_projectile_savenames)
    if not added_projectiles[projectile_savename] then -- prevents adding the same projectile multiple times
-      added_projectiles[projectile_savename] = true
       local base_projectile = DeepCopy(FindProjectile(projectile_savename))
+      if not base_projectile then
+         Log("Error: Could not find projectile with savename " .. projectile_savename)
+         return
+      end
+      added_projectiles[projectile_savename] = true
+
       -- set incendiary radius if incendiary and splash weapon to allow incendiary scaling
       if base_projectile.ProjectileIncendiary and base_projectile.ProjectileSplashDamageMaxRadius and not base_projectile.IncendiaryRadius then
          base_projectile.IncendiaryRadius = base_projectile.ProjectileSplashDamageMaxRadius
          base_projectile.IncendiaryRadiusHeated = base_projectile.IncendiaryRadius
       end
+      
       for level = 1, UpgradeCount do
          -- indef projectile prototype
          local projectile = { SaveName = base_projectile.SaveName .. "_" .. level }
