@@ -52,7 +52,8 @@
         "BeamDuration",
         "ProjectileIncendiary",
         "ProjectileSplashDamageMaxRadius",
-        "moonshot"
+        "moonshot",
+        "dlc2Var_Active"
     ],
     "Lua.diagnostics.disable": [
         "deprecated"

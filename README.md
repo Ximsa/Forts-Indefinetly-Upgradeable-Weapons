@@ -25,10 +25,10 @@ This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weap
 - [X] Firebeam
 
 ### Moonshot
-- [ ] Buzzsaw
-- [ ] Smoke Bomb
-- [ ] Howitzer
-- [ ] Magnabeam
+- [X] Buzzsaw
+- [X] Smoke Bomb
+- [X] Howitzer
+- [X] Magnabeam
 
 ### High Seas
 - [ ] Energy Dome

@@ -1,6 +1,7 @@
 ---@diagnostic disable: need-check-nil
 
 moonshot = true
+dlc2Var_Active = true
 dofile("scalings.lua")
 
 for _, weaponUpgrade in ipairs(WeaponUpgrades) do

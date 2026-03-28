@@ -26,7 +26,7 @@ function AddProjectileUpgrades(projectile_savename, child_projectile_savenames)
          base_projectile.IncendiaryRadius = base_projectile.ProjectileSplashDamageMaxRadius
          base_projectile.IncendiaryRadiusHeated = base_projectile.IncendiaryRadius
       end
-      
+
       for level = 1, UpgradeCount do
          -- indef projectile prototype
          local projectile = { SaveName = base_projectile.SaveName .. "_" .. level }
@@ -53,7 +53,7 @@ function ProcessUpgradeTable(projectile_upgrade_table)
    end
 end
 
-for _, weaponUpgrade in ipairs(WeaponUpgrades) do
-   local projectile = weaponUpgrade.projectile
+for _, weapon_upgrade in ipairs(WeaponUpgrades) do
+   local projectile = weapon_upgrade.projectile
    ProcessUpgradeTable(projectile)
 end

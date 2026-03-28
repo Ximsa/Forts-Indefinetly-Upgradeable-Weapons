@@ -10,7 +10,7 @@ function ReplaceHeadSprite(Node)
       Node.Sprite = MySprite.Name
       return
    end
-   for k, v in pairs(Node) do
+   for _, v in pairs(Node) do
       if type(v) == 'table' then
          ReplaceHeadSprite(v)
       end
@@ -56,26 +56,10 @@ function ExtrapolateBeamTable(base_beamtable, beam_duration)
       next_time = next_time + interval
    end
 
-   -- ensure exact endpoint at beam_duration
-   local final_time = beam_table[#beam_table][1]
-   if final_time < beam_duration then
-      table.insert(beam_table, { beam_duration, next_value[2], next_value[3] })
-   elseif final_time > beam_duration then
-      -- remove overshoot and add exact endpoint
-      table.remove(beam_table)
-      table.insert(beam_table, { beam_duration, next_value[2], next_value[3] })
-   end
-
    return beam_table
 end
 
--- import original file
-local tmp = path
-path = ModPath -- dofile with path set to the weapons' path
-dofile(path .. "/weapons/" .. OriginalFileName)
-path = tmp     -- restore path
-
-if Inverted then
+function HandleInvertedType()
    local non_inverted_file_name = OriginalFileName:gsub("_inverted", "")
    non_inverted_file_name = non_inverted_file_name:sub(1, -5) -- remove ending
    dofile(path .. "weapons/" .. non_inverted_file_name .. "/" .. non_inverted_file_name .. "_" .. UpgradeLevel .. ".lua")
@@ -91,8 +75,9 @@ if Inverted then
 
    -- already set up in original file
    Sprites = {}
-else
-   -- update sprite
+end
+
+function UpdateSprite()
    for _, sprite in pairs(Sprites) do
       if string.find(sprite.Name, "head") then
          MySprite = DeepCopy(sprite)
@@ -121,22 +106,44 @@ else
    elseif string.find(MySprite.Name, "base") then
       Root.Sprite = MySprite.Name
    end
+end
 
-   -- set RoundsEachBurst fo scaling to gain multishot projectiles with increasing levels
+function AdjustRoundsEachBurst()
    if not RoundsEachBurst then
       RoundsEachBurst = 1
       RoundPeriod = 1
    end
+end
 
-   -- apply scaling factors
-   local blacklist = {}
-   -- blacklist["BeamDamageMultiplier"] = true
+function ApplyScaling()
    for field, fn in pairs(Scaling.WeaponFile) do
-      if _G[field] and not blacklist[field] then
+      if _G[field] then
          _G[field] = fn(_G[field], UpgradeLevel)
       end
    end
-   -- extend BeamTable
+end
+
+function UpgradeAmmunition()
+   -- find entry of current weapon upgrade
+   local current_upgrade = nil
+   for _, weapon_upgrade in pairs(WeaponUpgrades) do
+      if weapon_upgrade.weapon_filename == OriginalFileName then
+         current_upgrade = weapon_upgrade
+         break
+      end
+   end
+   if not current_upgrade then return end
+   -- upgrade ammunition if applicable
+   if dlc2Var_Active and dlc2_Ammunition and type(dlc2_Ammunition) == "table" then
+      for k, v in pairs(dlc2_Ammunition) do
+         if v.Projectile and v.Projectile[current_upgrade.ammunition] then
+            dlc2_Ammunition[k].Projectile = v.Projectile .. "_" .. UpgradeLevel
+         end
+      end
+   end
+end
+
+function ExtendBeamTable()
    if GenerateBeamTable then
       GenerateBeamTable(BeamDuration, 0.05, 1)
       -- disable rounds each burst scaling, factor in beam duration for firecost, since beam firecost is measured in energy/second rather than per shot
@@ -148,7 +155,23 @@ else
       RoundsEachBurst = 1
       EnergyFireCost = EnergyFireCost / BeamDuration
    end
+end
 
-   -- set projectile
-   Projectile = Projectile .. "_" .. UpgradeLevel
+-- import original file
+local tmp = path
+path = ModPath -- dofile with path set to the weapons' path
+dofile(path .. "/weapons/" .. OriginalFileName)
+path = tmp     -- restore path
+
+if Inverted then
+   HandleInvertedType()
+else
+   UpdateSprite()
+   AdjustRoundsEachBurst()
+   ApplyScaling()
+   UpgradeAmmunition()
+   ExtendBeamTable()
+   if Projectile then
+      Projectile = Projectile .. "_" .. UpgradeLevel
+   end
 end
