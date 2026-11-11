@@ -32,6 +32,12 @@ people too and live at the repo root.
 - New tunable numbers go in `lib/scalings.lua`, not into the hook files.
 - Keep the `<name>_<level>` suffix convention for SaveNames, projectiles, sprites and stub files.
 
+## Commits
+
+The owner commits; don't commit yourself. When a request that changed repo files is finished, end your reply with a
+suggested commit message for the uncommitted changes (`git status`) in a code block: a short subject line in the
+imperative, then a blank line and a few bullets if the change touches more than one thing.
+
 ## Common tasks
 
 ### Add support for a weapon

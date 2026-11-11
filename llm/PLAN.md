@@ -4,7 +4,7 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status: step 1 in code (2026-11-11); waiting for the owner's in-game test of items 3, 4 and 5. Step 2 is next.**
+**Status: step 1 done (2026-11-11). Step 2 is next; begin when the owner says so.**
 
 ## Working rules
 
@@ -143,6 +143,6 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
   weapon-list strings; its errors "%s upgrades to %s which does not exist" and "%s has inverted type %s ...").
   Some base `Upgrades` entries are keyed by SaveName (`["mortar2"] = {...}`), so iterate them with `pairs`.
 - The offline check needs the engine global `FrameRate` (25, as the in-game dumps show).
-- `upgrade_time` for weapons v1 didn't have is the reload time from `data\mods\iuw2\dump\weapons.lua`. For the runway
-  that is 1.05 s (the dump's `thunderbolt` section), so its level upgrades are almost instant; the owner should judge.
+- `upgrade_time` for weapons v1 didn't have is the reload time from `data\mods\iuw2\dump\weapons.lua`, except the
+  runway: its reload time is 1.05 s, so the owner set 15 s (2026-11-11). The machinegun's 1.5 s is accepted.
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.
