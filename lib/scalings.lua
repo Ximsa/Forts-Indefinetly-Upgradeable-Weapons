@@ -126,6 +126,8 @@ Scaling =
 --   projectile: the projectile tree to scale (children nested under the projectile that spawns them)
 --   ammunition: High Seas ammunition projectiles that the level weapon fires at its own level
 --   overlays: other mods' overlay files to replay on top of the original file (see llm/AGENTS.md, known issues)
+--   original_file: optional; the original file's path if it isn't <mod>/weapons/<weapon_filename> (the file still runs
+--     with `path` set to mod)
 --   upgrade_time: seconds a level upgrade takes (the level weapons' BuildTimeComplete); v1's value, else the reload time
 --   build_cost_factor: multiplies the base build cost before scaling
 WeaponUpgrades =
@@ -164,6 +166,7 @@ if dlc2Var_Active then
    for _, v in pairs({
 	 { mod = "mods/dlc_harpoon", weapon_savename = "harpoon", weapon_filename = "harpoon.lua", projectile = { ["harpoon_default"] = {}, ["decoy"] = {}, ["control"] = {} }, ammunition = { ["harpoon_default"] = {}, ["decoy"] = {}, ["control"] = {} }, overlays = { { mod = "mods/dlc2", file = "mods/dlc_harpoon/weapons/harpoon.lua" }, { mod = "mods/dlc_harpoon_skirmish", file = "mods/dlc_harpoon/weapons/harpoon.lua" } }, upgrade_time = 30, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "runway", weapon_filename = "runway.lua", projectile = { ["nighthawk"] = { ["paveway"] = { ["flamingpaveway"] = {} } }, ["thunderbolt"] = { ["bomb"] = { ["flamingbomb"] = {} } } }, ammunition = { ["nighthawk"] = {}, ["thunderbolt"] = {} }, upgrade_time = 15, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "runway2", weapon_filename = "runway2.lua", original_file = "mods/dlc2_skirmish/mods/dlc2/weapons/runway2.lua", projectile = { ["nighthawk"] = { ["paveway"] = { ["flamingpaveway"] = {} } }, ["thunderbolt"] = { ["bomb"] = { ["flamingbomb"] = {} } } }, ammunition = { ["nighthawk"] = {}, ["thunderbolt"] = {} }, upgrade_time = 15, build_cost_factor = 1 },
    }) do
       table.insert(WeaponUpgrades, v)
    end

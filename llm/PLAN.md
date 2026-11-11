@@ -4,8 +4,8 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status: step 2 in progress (2026-11-11). Items 1 and 2 done (all 13 shared weapons, DLC costs recorded); item 3
-waits for the owner to accept the outlier list.**
+**Status: step 2 done (2026-11-11; the owner accepted the balance and the outlier list with no `build_cost_factor`
+changes). Step 3 is next; begin when the owner says so.**
 
 ## Working rules
 
@@ -158,4 +158,11 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
 - The DLC weapons' build costs (buzzsaw, smokebomb, howitzer, magnabeam, harpoon, runway) are only in the packed
   lists; the weapon-file values come from `data\mods\iuw2\dump\weapons.lua`, whose sections aren't valid Lua as a
   whole (`offline_env.lua` reads their simple `Name = value` lines).
+- High Seas original files (logged 2026-11-11 from the weapons' `FileName`): `mods/dlc2/weapons/<name>.lua` for runway,
+  turret, turret2, turret2_focus, turret3, turret3_focus, dome, orbital_laser and orbital_laser2. Runway Mk II is
+  `mods/dlc2_skirmish/mods/dlc2/weapons/runway2.lua` (skirmish only); its textures and effects are under `mods/dlc2`,
+  so it runs with `path = "mods/dlc2"` (registry field `original_file`).
+- Runway Mk II (2026-11-11): owning mod `dlc2_skirmish` (file above). Its original sets `Projectile = "thunderbolt"`,
+  `Sprites` (`runway2-base`, `runway2-headbg`) and `dlc2_Ammunition` (thunderbolt and nighthawk, 1 round each), the
+  same projectile tree as the runway; no overlays needed. Loaded clean in skirmish and local multiplayer.
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.

@@ -34,7 +34,7 @@ Roadmap of which weapons upgrades are already implemented
 
 ### High Seas
 - [ ] Energy Dome
-- [ ] Runway Mk II
+- [x] Runway Mk II
 - [ ] Marine Swarm
 - [ ] Marine Warhead
 - [ ] Harpoon

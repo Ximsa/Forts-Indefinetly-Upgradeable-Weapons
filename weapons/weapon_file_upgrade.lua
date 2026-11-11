@@ -185,14 +185,16 @@ function ExtendBeamTable(base_beam_duration)
    end
 end
 
--- import original file
+-- import original file; it is <mod>/weapons/<file> unless the registry names another place (original_file)
+local current_upgrade = FindCurrentUpgrade()
+local original_file = current_upgrade and current_upgrade.original_file or (ModPath .. "/weapons/" .. OriginalFileName)
 local tmp = path
 path = ModPath -- dofile with path set to the weapons' path
-dofile(path .. "/weapons/" .. OriginalFileName)
+dofile(original_file)
 path = tmp     -- restore path
 ApplyOverlays()
 if not Sprites then
-   Log("IUW: original weapon file " .. ModPath .. "/weapons/" .. OriginalFileName .. " did not load (check its mod path in lib/scalings.lua)")
+   Log("IUW: original weapon file " .. original_file .. " did not load (check mod and original_file in lib/scalings.lua)")
 end
 
 if Inverted then

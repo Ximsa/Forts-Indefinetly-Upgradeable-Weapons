@@ -63,6 +63,8 @@ A `WeaponUpgrades` entry:
   ammunition        = {},                 -- High Seas ammunition projectiles (renamed to <projectile>_<level>)
   overlays          = nil,                -- optional: { { mod = "mods/x", file = "mods/y/weapons/z.lua" } } other mods' overlay files to replay
   upgrade_time      = 6.75,               -- seconds a level upgrade takes (BuildTimeComplete of the level weapons)
+  original_file     = nil,                -- optional: the original file if it isn't <mod>/weapons/<weapon_filename>
+                                          -- (e.g. runway2 is in mods/dlc2_skirmish/mods/dlc2/weapons/); it still runs with path = mod
   build_cost_factor = 0.5,                -- multiplier on base build/repair cost
 }
 ```
