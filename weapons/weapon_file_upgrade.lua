@@ -162,6 +162,9 @@ local tmp = path
 path = ModPath -- dofile with path set to the weapons' path
 dofile(path .. "/weapons/" .. OriginalFileName)
 path = tmp     -- restore path
+if not Sprites then
+   Log("IUW: original weapon file " .. ModPath .. "/weapons/" .. OriginalFileName .. " did not load (check its mod path in lib/scalings.lua)")
+end
 
 if Inverted then
    HandleInvertedType()

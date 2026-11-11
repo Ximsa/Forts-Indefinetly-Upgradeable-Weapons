@@ -4,6 +4,8 @@ This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weap
 
 ## Weapons
 
+Roadmap of which weapons upgrades are already implemented
+
 ### Vanilla
 - [x] Machinegun
 - [X] Minigun
@@ -54,3 +56,7 @@ This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weap
 - [ ] Pinchfist
 - [ ] Spook
 - [ ] Armourdillo
+
+## Agentic Coding
+
+Since 2026-11-11 this repository used llm agents

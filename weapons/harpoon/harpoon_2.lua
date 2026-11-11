@@ -1,4 +1,4 @@
-ModPath = "mods/dlc2"
+ModPath = "mods/dlc_harpoon"
 OriginalFileName = "harpoon.lua"
 UpgradeLevel = 2
 dofile(path .. "/weapons/weapon_file_upgrade.lua")
