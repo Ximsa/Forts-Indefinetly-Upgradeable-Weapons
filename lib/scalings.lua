@@ -144,10 +144,17 @@ DomeScaling =
 
 -- Orbital laser (High Seas): its marker shell orders a beam (dlc2_orbital = { Ammo = <tag>, Duration = ..., ... }) from
 -- a hidden weapon, the beam source. Level markers order level beams; the beam's Duration grows like beam duration.
+-- The orbital beams' damage comes from their BeamDamage function (ProjectileDamage alone changed nothing in-game,
+-- 2026-11-11), so that function's result grows at the damage rate.
 OrbitalLaserScaling =
    {
       ProjectileList =
          {
+            BeamDamage = function(fn, level)
+               if type(fn) ~= "function" then return fn end
+               local factor = DamageScale(1, level)
+               return function(...) return fn(...) * factor end
+            end,
             dlc2_orbital = function(value, level)
                local result = DeepCopy(value)
                if type(result.Duration) == "number" then
@@ -164,6 +171,8 @@ OrbitalLaserSource =
       weapon_savename = "orbital_laser_source",
       mod = "mods/dlc_harpoon",
       file = "mods/dlc_harpoon/weapons/orbital_laser_source.lua",
+      -- the original has no ammunition; High Seas' overlay adds it (found in-game 2026-11-11)
+      overlays = { { mod = "mods/dlc2", file = "mods/dlc_harpoon/weapons/orbital_laser_source.lua" } },
       beams = { ["ol_beam_sweep"] = true, ["ol_beam_focus"] = true },
    }
 

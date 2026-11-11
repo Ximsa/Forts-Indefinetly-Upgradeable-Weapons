@@ -107,6 +107,10 @@ For each `WeaponUpgrades` entry, `AddUpgradesForWeapon`:
      priced as the build-cost difference of the two level weapons, never below the game's price
    - `InvertedType` = the same level of the base's inverted type, if that has levels
 
+The orbital laser's beam is fired by a hidden weapon, `orbital_laser_source`. `weapon_list.lua` points its `FileName` to
+`weapons/orbital_laser_source.lua`, which runs the original and High Seas' overlay for it (`OrbitalLaserSource` in
+`lib/scalings.lua`), then adds one ammunition entry per level beam, tagged `<beam>_<level>`, which a level marker orders.
+
 ### 3. In game: `weapons/projectile_list.lua`
 
 Walks each entry's `projectile` tree recursively. For each projectile SaveName (once only, see `added_projectiles`)

@@ -4,8 +4,8 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status: step 2 done (2026-11-11; the owner accepted the balance and the outlier list with no `build_cost_factor`
-changes). Step 3 is next; begin when the owner says so.**
+**Status: step 3 in progress (2026-11-11). Every row of its table is in and tested by the owner; left: the final
+round with all High Seas weapons built and upgraded and a clean log ("Done when"). Step 4 is next.**
 
 ## Working rules
 
@@ -180,4 +180,14 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
   sublauncher (Marine Warhead, 800/6000); turret → turret2 (700/4000); turret2 → turret3, turret2_focus (900/6000);
   turret2_focus → turret3_focus, turret2; turret3 → turret3_focus (1150/7500); turret3_focus → turret3. No
   `InvertedType`. Marine Swarm fires `missile` (14 rounds, reload 20 s), Marine Warhead `missile2` (reload 25 s).
+  Owner test: works.
+- Orbital Laser (2026-11-11): `orbital_laser` → `orbital_laser2`, files `mods/dlc2/weapons/<name>.lua`. Both fire
+  `ol_marker_sweep` and carry `ol_marker_sweep` and `ol_marker_focus` as ammunition. A marker carries
+  `dlc2_orbital = { Ammo = <tag>, Duration = 5, Delay = 3, ... }`; the hidden weapon `orbital_laser_source`
+  (`mods/dlc_harpoon/weapons/orbital_laser_source.lua`, its ammunition added by the overlay
+  `mods/dlc2/mods/dlc_harpoon/weapons/orbital_laser_source.lua`) fires the ammunition entry with that `Tag`
+  (`ol_beam_sweep`, `ol_beam_focus`). The beams' damage comes from their `BeamDamage` function, not `ProjectileDamage`.
+  This mod points the source's `FileName` to `weapons/orbital_laser_source.lua`, which adds level entries. Owner test
+  with a strengthened test build: level beams fire and hit harder.
+- Forts gives mods no `loadfile` (a temporary log that used it broke `weapon_list.lua` for a round).
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.

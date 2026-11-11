@@ -8,6 +8,12 @@ local mod_path = path
 path = OrbitalLaserSource.mod
 dofile(OrbitalLaserSource.file)
 path = mod_path
+-- Forts runs other mods' overlays only when it loads the original itself; replay them (they add the ammunition)
+for _, overlay in ipairs(OrbitalLaserSource.overlays or {}) do
+   path = overlay.mod
+   dofile(overlay.mod .. "/" .. overlay.file)
+   path = mod_path
+end
 
 if type(dlc2_Ammunition) == "table" then
    local base_entries = DeepCopy(dlc2_Ammunition)

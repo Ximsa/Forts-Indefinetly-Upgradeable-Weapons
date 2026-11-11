@@ -75,6 +75,8 @@ The reasoning:
   the whole burst, so its rounds per burst grows at twice the general rate (50 → 150 at level 25, 250 at 49) while its round period, size
   (fire speed) and shape (spread, `FireStdDev`/`FireStdDevAuto`) stay; the barrier's own lifetime (`MaxAge`) didn't make the dome last visibly longer. Reload and hitpoints
   follow the normal rules; its `build_cost_factor` is 0.5 (owner: it was underwhelming for its cost). Per-weapon rules like this live in the registry's `scaling` field (`DomeScaling`).
+- **Orbital Laser** (2026-11-11): a level laser's marker orders the same level of beam, whose damage (its `BeamDamage`
+  function) grows at the damage rate and whose duration grows like beam duration.
 - **Fire angle** widens by `L/3` degrees on each side.
 - **Numbers shown to the player** (costs, hitpoints, mass) are rounded to 3 significant digits (`Significant3`).
 - **High Seas ammunition** carries its own stats, which override the weapon's. They are scaled with the same
