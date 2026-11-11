@@ -41,56 +41,61 @@ that a few levels stop being affordable or a single weapon breaks the match.
 
 ## Scaling curves
 
-`GrowScale = 0.15` is the base growth rate. With `L` = step:
+`GrowScale = 0.15` is the base growth rate of the secondary stats. The stats that set power and cost have their own
+rates, tuned against v1 (see below). With `L` = step:
 
 | Curve | Formula | Used for |
 |---|---|---|
-| None | `v` | build time, fire speed minimum, heat/cool periods, drag, ... |
-| Fractional power | `v · (1 + g·√L)` | damage per hit, splash, radius, hitpoints, mass, range, impact |
-| Linear | `v · (1 + g·L)` | projectile damage, EMP duration, beam duration, production/storage, rounds per burst |
-| Sub-quadratic | `v · (1 + g·L^1.3)` | costs |
-| Geometric decay | `v · 0.98^L` / `v · 0.99^L` | reload time, round period / spread |
+| None | `v` | build time, fire speed minimum, heat/cool periods, drag, beam damage multiplier, ... |
+| Fractional power | `v · (1 + g·√L)` | splash damage and radius, hitpoints, mass, range, impact, damage bonuses |
+| Linear | `v · (1 + g·L)` | direct damage (`DamageGrowScale`), rounds per burst and beam duration (`RoundsEachBurstGrowScale`), EMP duration, production/storage |
+| Sub-quadratic | `v · (1 + g·L^1.3)` | build costs (`BuildCostGrowScale`), fire costs (`FireCostGrowScale`) |
+| Geometric decay | `v · d^L` | reload time (`ReloadDecay`), round period and spread (0.98 / 0.99) |
+
+The values (2026-11-11): `DamageGrowScale = 0.075`, `RoundsEachBurstGrowScale = 1/24`, `BuildCostGrowScale = 0.52`,
+`FireCostGrowScale = 0.075`, `ReloadDecay = 1.0`.
 
 The reasoning:
 
 - **Damage grows linearly, other stats grow with √L.** Damage per shot is the main thing a player pays for.
   Splash radius, range and similar stats work together with each other (and with area), so they grow
   more slowly to avoid snowballing.
-- **Costs grow faster than power** (`L^1.3`, with `2·g` for build costs and `1.2·g` for fire costs), so
-  each level becomes less efficient and players can't gain an advantage just by stacking levels.
-- **Rate-of-fire stats shrink geometrically** to approach zero smoothly without ever reaching it.
-- **Rounds per burst** grows linearly with a fixed `grow_scale` (`RoundsEachBurstGrowScale = 1/48`: double by
-  step 48; tuned in PLAN step 2). Beam weapons skip this and get a longer
-  `BeamDuration` instead.
+- **Costs grow faster than power** (`L^1.3`), so each level becomes less efficient and players can't gain an
+  advantage just by stacking levels.
+- **Rate of fire comes from rounds per burst, not reload.** With rounds per burst at `1/24`, tuning against v1 left
+  no room for a shorter reload, so `ReloadDecay` is 1.0 and reload times stay the base weapon's.
+- **Rounds per burst** grows linearly at `1/24` (double by step 24), chosen by the owner so that 1-round weapons get
+  a second round (level 25) and a third (level 49) within a real battle. It moves in whole rounds, which makes power
+  jump at those levels; that is why balance is fitted over the first 32 levels.
+- **Beam weapons** don't get more rounds; their `BeamDuration` grows at the same rate instead, and their
+  `BeamDamageMultiplier` stays the base value, so a beam's damage grows through projectile damage and duration like
+  any other weapon's. Their energy fire cost per shot is scaled like any other fire cost.
 - **Fire angle** widens by `L/3` degrees on each side.
 - **Numbers shown to the player** (costs, hitpoints, mass) are rounded to 3 significant digits (`Significant3`).
 - **High Seas ammunition** carries its own stats, which override the weapon's. They are scaled with the same
   rules as the weapon, and their projectiles like any other projectile.
 
-## Balance against v1 (planned)
+## Balance against v1
 
-v1 is the reference for how much power a given spend buys. Its numbers are in [V1.md](V1.md).
+v1 is the reference for how much power a given spend buys. Its numbers are in [V1.md](V1.md). The comparison is
+`lib/balance_report.lua` (`lua55 balance_report.lua [tune]` from `lib/`; output in `dump/balance_<date>.txt`).
 
-- **Balance is per step: v2 level N should roughly match v1 level N**, up to level 49. The owner may change the
-  step sizing later.
-- **What is compared.** Power is direct damage × rounds per burst ÷ reload time, as a multiple of the base weapon.
-  Spend is the total metal to reach a level, with energy reported next to it. Fire cost per point of damage is a
-  second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
-- **The curve shapes don't change.** Sub-quadratic stays sub-quadratic, linear stays linear, fractional power
-  stays fractional power. Tuning only adjusts:
-  - one `grow_scale` multiplier each for damage, rounds per burst, build cost and fire cost
-    (like the existing `2 * GrowScale` for build cost)
-  - the decay rate of reload time
+- **Balance is per step: v2 level N should roughly match v1 level N.** The owner may change the step sizing later.
+- **What is compared.** Power is direct damage × rounds per burst (× beam duration for beams) ÷ reload time, as a
+  multiple of the base weapon. Spend is the total metal to reach a level, with energy reported next to it. Fire cost
+  per point of damage is a second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
+- **The curve shapes don't change.** Tuning only adjusts `DamageGrowScale`, `BuildCostGrowScale`,
+  `FireCostGrowScale` and `ReloadDecay` (the owner set `RoundsEachBurstGrowScale`).
 - **The global `GrowScale` stays 0.15**, so the secondary stats don't move.
-- **Rounds per burst keeps growing**, more slowly than today; damage growth is reduced so that power still
-  matches v1 level for level.
-- **"Roughly match" is measured on average over levels 2..49**, not only at level 49, because the shapes differ
-  (v1's spend grows with the square of the level).
+- **"Roughly match" is measured on average over levels 2..33** (the first 32 levels, as the owner asked on
+  2026-11-11), not only at one level, because the shapes differ (v1's spend grows with the square of the level,
+  and rounds per burst jumps in whole rounds).
 - **Per-weapon corrections go only through `build_cost_factor`.** Weapons that stay far from v1, and weapons v1
   never had, are listed in the balance report for the owner to judge.
 
-Starting point (cannon, level 49): v1 gives about 11.3× base DPS for about 101,700 metal. v2 with the curves of
-2026-11-11 gives about 65× for about 42,300 metal.
+Result of the 2026-11-11 tuning (averages over levels 2..33, shared non-DLC weapons): power 23 %, metal spend 19 %,
+fire cost per damage 22 %. Cannon at level 49: v1 about 11.3× base DPS for about 101,700 metal, v2 about 13.8× for
+about 72,700 metal (before tuning: about 43× for about 42,300).
 
 ## Costs
 

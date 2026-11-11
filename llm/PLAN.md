@@ -4,7 +4,8 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status: step 1 done (2026-11-11). Step 2 is next; begin when the owner says so.**
+**Status: step 2 in progress (2026-11-11). Report and tuning done for the readable weapons; waiting for one in-game
+round that logs the DLC weapons' build costs (temporary `Log` in `weapons/weapon_list.lua`), then item 3 for the owner.**
 
 ## Working rules
 
@@ -145,4 +146,12 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
 - The offline check needs the engine global `FrameRate` (25, as the in-game dumps show).
 - `upgrade_time` for weapons v1 didn't have is the reload time from `data\mods\iuw2\dump\weapons.lua`, except the
   runway: its reload time is 1.05 s, so the owner set 15 s (2026-11-11). The machinegun's 1.5 s is accepted.
+- Owner decisions for step 2 (2026-11-11): `RoundsEachBurstGrowScale = 1/24` (1-round weapons get a second round
+  in real battles); balance is fitted over levels 2..33; beams grow `BeamDuration` at the rounds-per-burst rate and
+  stop scaling `BeamDamageMultiplier`.
+- Beam weapons' energy fire cost was divided by `BeamDuration` twice (per-shot cost fell below the base); fixed in
+  `weapon_file_upgrade.lua` on 2026-11-11.
+- The DLC weapons' build costs (buzzsaw, smokebomb, howitzer, magnabeam, harpoon, runway) are only in the packed
+  lists; the weapon-file values come from `data\mods\iuw2\dump\weapons.lua`, whose sections aren't valid Lua as a
+  whole (`offline_env.lua` reads their simple `Name = value` lines).
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.

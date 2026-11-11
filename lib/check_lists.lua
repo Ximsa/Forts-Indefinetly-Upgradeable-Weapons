@@ -4,74 +4,33 @@
 -- projectile_list.lua and strings.lua with engine stubs, and reports problems. Exits with 1 if it finds any.
 -- It can't run the per-weapon files or the DLC lists (they are packed), so DLC registry entries are left out.
 
-local game_data = arg and arg[1] or "C:/Program Files (x86)/Steam/steamapps/common/Forts/data"
-local weapon_pack = game_data .. "/mods/weapon_pack"
-
--- Lua 5.1 shims for newer interpreters
-math.log10 = math.log10 or function(x) return math.log(x, 10) end
-unpack = unpack or table.unpack
-table.getn = table.getn or function(t) return #t end
+local env = dofile("offline_env.lua")
 
 local problems = {}
 local function Problem(message) table.insert(problems, message) end
+local FileExists = env.FileExists
 
-local function FileExists(file_name)
-   local file = io.open(file_name, "r")
-   if file then file:close() return true end
-   return false
-end
-
--- engine stubs
-local log_lines = {}
-function Log(message)
-   message = tostring(message)
-   table.insert(log_lines, message)
+env.on_log = function(message)
    if message:find("Error") or message:find("Could not find") or message:find("did not load") then
       Problem("Log: " .. message)
    end
 end
+env.Init(arg and arg[1])
 
-function L(s) return s end
-
-FrameRate = 25 -- the engine's simulation rate, as the in-game dumps show it
-
-Weapon = {}
-
--- the game resolves dofile paths relative to its data folder
-local raw_dofile = dofile
-function dofile(file_name)
-   if not FileExists(file_name) and FileExists(game_data .. "/" .. file_name) then
-      file_name = game_data .. "/" .. file_name
-   end
-   return raw_dofile(file_name)
-end
-
-local function Run(file_name, mod_path)
-   path = mod_path
-   local ok, err = pcall(dofile, file_name)
-   if not ok then Problem("Lua error in " .. file_name .. ": " .. tostring(err)) end
-end
-
--- base lists; DLC flags stay off because the DLC lists can't be loaded
-moonshot, dlc2Var_Active = nil, nil
-Run(game_data .. "/weapons/weapon_list.lua", game_data)
-Run(weapon_pack .. "/weapons/weapon_list.lua", weapon_pack)
-Run(game_data .. "/weapons/projectile_list.lua", game_data)
-Run(weapon_pack .. "/weapons/projectile_list.lua", weapon_pack)
-
-if not Weapons or not Projectiles then
-   Problem("the game's base lists did not load from " .. game_data)
+if not env.LoadBaseLists(Problem) then
+   Problem("the game's base lists did not load from " .. env.game_data)
 else
    -- this mod's lists, as the game runs them after the base lists
-   Run("../weapons/weapon_list.lua", "..")
-   Run("../weapons/projectile_list.lua", "..")
-   Run("../weapons/strings.lua", "..")
+   for _, file_name in ipairs({ "../weapons/weapon_list.lua", "../weapons/projectile_list.lua", "../weapons/strings.lua" }) do
+      local ok, err = env.Run(file_name, "..")
+      if not ok then Problem("Lua error in " .. file_name .. ": " .. tostring(err)) end
+   end
 end
 
 -- the registry as the lists saw it (without DLC entries)
 path = ".."
 moonshot, dlc2Var_Active = nil, nil
-raw_dofile("../lib/scalings.lua")
+env.raw_dofile("../lib/scalings.lua")
 
 local weapons_by_name = {}
 for _, weapon in ipairs(Weapons or {}) do weapons_by_name[weapon.SaveName] = weapon end

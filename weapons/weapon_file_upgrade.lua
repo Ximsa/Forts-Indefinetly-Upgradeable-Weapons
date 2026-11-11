@@ -169,17 +169,19 @@ function UpgradeAmmunition()
    end
 end
 
-function ExtendBeamTable()
+-- Beam weapons don't get more rounds per burst; they get a longer BeamDuration instead.
+-- The original file sets EnergyFireCost per second (cost per shot / BeamDuration). ApplyScaling has scaled that
+-- per-second value; convert it back so that the cost per shot is the scaled base cost per shot.
+function ExtendBeamTable(base_beam_duration)
+   if not GenerateBeamTable and not BeamTable then return end
    if GenerateBeamTable then
       GenerateBeamTable(BeamDuration, 0.05, 1)
-      -- disable rounds each burst scaling, factor in beam duration for firecost, since beam firecost is measured in energy/second rather than per shot
-      RoundsEachBurst = 1
-      EnergyFireCost = EnergyFireCost / BeamDuration
-   elseif BeamTable then
+   else
       BeamTable = ExtrapolateBeamTable(BeamTable, BeamDuration)
-      -- disable rounds each burst scaling, factor in beam duration for firecost, since beam firecost is measured in energy/second rather than per shot
-      RoundsEachBurst = 1
-      EnergyFireCost = EnergyFireCost / BeamDuration
+   end
+   RoundsEachBurst = 1
+   if base_beam_duration and BeamDuration and BeamDuration > 0 then
+      EnergyFireCost = EnergyFireCost * base_beam_duration / BeamDuration
    end
 end
 
@@ -198,9 +200,10 @@ if Inverted then
 else
    UpdateSprite()
    AdjustRoundsEachBurst()
+   local base_beam_duration = BeamDuration
    ApplyScaling()
    UpgradeAmmunition()
-   ExtendBeamTable()
+   ExtendBeamTable(base_beam_duration)
    if Projectile then
       Projectile = Projectile .. "_" .. UpgradeLevel
    end

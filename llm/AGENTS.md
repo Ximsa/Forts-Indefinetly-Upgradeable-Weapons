@@ -35,8 +35,7 @@ people too and live at the repo root.
 ## Commits
 
 The owner commits; don't commit yourself. When a request that changed repo files is finished, end your reply with a
-suggested commit message for the uncommitted changes (`git status`) in a code block: a short subject line in the
-imperative, then a blank line and a few bullets if the change touches more than one thing.
+suggested commit message for the uncommitted changes (`git status`) in a code block: one short line, no body.
 
 ## Common tasks
 
@@ -46,6 +45,7 @@ imperative, then a blank line and a few bullets if the change touches more than 
    The `projectile` tree must include every child projectile that needs scaling.
 2. Regenerate stubs: `cd lib && lua55 pregen_files.lua` (`lua55` is the owner's local Lua 5.5 install; any stand-alone Lua with `io`/`os` works).
 3. Run the offline check: `cd lib && lua55 check_lists.lua` (base-game and Tons of Guns weapons only; DLC lists are packed).
+   For balance, `lua55 balance_report.lua` compares v2 with v1 (DESIGN.md, "Balance against v1").
 4. Tick the weapon off in `README.md`.
 5. Have the owner test it in-game.
 

@@ -7,9 +7,14 @@ UpgradeCount = 48 -- number of upgrades per weapon (release value; deploy.ps1 -U
 FirstLevel = 2
 LastLevel = UpgradeCount + 1
 function UpgradeStep(level) return level - 1 end
-GrowScale = 0.15
--- rounds per burst doubles by step 48; fixed so a level's stats don't depend on UpgradeCount (tuned in PLAN step 2)
-RoundsEachBurstGrowScale = 1 / 48
+GrowScale = 0.15 -- base growth rate; secondary stats (range, splash, hitpoints, ...) use it unchanged
+-- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..33 on 2026-11-11
+-- (llm/DESIGN.md, "Balance against v1"). Only these (and build_cost_factor per weapon) are tuned; the curve shapes stay.
+DamageGrowScale = 0.075                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage)
+RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam duration for beams (set by the owner: doubles by step 24)
+BuildCostGrowScale = 0.52                -- sub-quadratic: build cost
+FireCostGrowScale = 0.075                -- sub-quadratic: fire cost
+ReloadDecay = 1.0                        -- geometric: reload time (1.0: reload doesn't shorten; rounds per burst carries rate of fire)
 
 function DefaultScaleNone(value, level, grow_scale) return value end
 
@@ -28,9 +33,11 @@ function DefaultScaleSubQuadratic(value, level, grow_scale)
       value * (level ^ 1.3) * (grow_scale and grow_scale or GrowScale)
 end
 
-function BuildCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, 2 * GrowScale)) end
+function BuildCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, BuildCostGrowScale)) end
 
-function FireCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, 1.2 * GrowScale)) end
+function FireCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, FireCostGrowScale)) end
+
+function DamageScale(value, level) return DefaultScaleLinear(value, level, DamageGrowScale) end
 
 function IncendiaryRadiusScale(value, level) return DefaultScaleFractionalPower(value, level, 2 * GrowScale) end
 
@@ -57,7 +64,7 @@ Scaling =
 	    DeviceSplashDamageMaxRadius = DefaultScaleFractionalPower,
 	    StructureSplashDamage = DefaultScaleFractionalPower,
 	    StructureSplashDamageMaxRadius = DefaultScaleFractionalPower,
-	    ReloadTime = function(value, level) return Significant3(value * 0.98 ^ level) end,
+	    ReloadTime = function(value, level) return Significant3(value * ReloadDecay ^ level) end,
 	    RoundPeriod = function(value, level) return Significant3(value * 0.98 ^ level) end,
 	    MinFireSpeed = DefaultScaleNone,
 	    MaxFireSpeed = DefaultScaleFractionalPower,
@@ -73,8 +80,8 @@ Scaling =
 	    EnergyFireCost = FireCostScale,
 	    MetalFireCost = FireCostScale,
 	    RoundsEachBurst = function(value, level) return math.floor(DefaultScaleLinear(value, level, RoundsEachBurstGrowScale)) end,
-	    BeamDuration = DefaultScaleLinear,
-	    BeamDamageMultiplier = DefaultScaleFractionalPower,
+	    BeamDuration = function(value, level) return DefaultScaleLinear(value, level, RoundsEachBurstGrowScale) end, -- beams' rounds per burst
+	    BeamDamageMultiplier = DefaultScaleNone, -- beam damage grows through ProjectileDamage and BeamDuration
 	    HeatPeriod = DefaultScaleNone,
 	    CoolPeriod = DefaultScaleNone,
 	    CoolPeriodOverheated = DefaultScaleNone,
@@ -90,8 +97,8 @@ Scaling =
 	    ProjectileShootDownRadiusBeamWidth = DefaultScaleNone,
 	    Impact = DefaultScaleFractionalPower,
 	    ImpactMomentumLimit = DefaultScaleFractionalPower,
-	    ProjectileDamage = DefaultScaleLinear,
-	    PenetrationDamage = DefaultScaleLinear,
+	    ProjectileDamage = DamageScale,
+	    PenetrationDamage = DamageScale,
 	    ProjectileSplashDamage = DefaultScaleFractionalPower,
 	    ProjectileSplashDamageMaxRadius = DefaultScaleFractionalPower,
 	    ProjectileSplashMaxForce = DefaultScaleFractionalPower,
@@ -102,14 +109,14 @@ Scaling =
 	    EMPSensitivity = DefaultScaleNone,
 	    EMPMissileProbabilityOfCircling = DefaultScaleNone,
 	    ImpactSize = DefaultScaleFractionalPower,
-	    AntiAirDamage = DefaultScaleLinear,
+	    AntiAirDamage = DamageScale,
 	    IncendiaryRadius = IncendiaryRadiusScale,
 	    IncendiaryRadiusHeated = IncendiaryRadiusScale,
 	    MinPenetration = DefaultScaleFractionalPower,
 	    FieldRadius = DefaultScaleLinear,
 	    FieldStrengthMax = DefaultScaleFractionalPower,
 	    FieldStrengthFalloffPower = DefaultScaleNone,
-	    RayDamage = DefaultScaleLinear,
+	    RayDamage = DamageScale,
 	    RayLength = DefaultScaleFractionalPower,
 	 }
    }
