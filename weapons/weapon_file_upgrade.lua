@@ -139,6 +139,17 @@ end
 -- Forts runs other mods' overlay files only when it loads the original file itself, not when we dofile it.
 -- Replay the overlays listed in the registry entry (e.g. harpoon's ammunition comes from one).
 function ApplyOverlays()
+-- TEMPORARY (PLAN step 3): record the facts of newly registered weapons' original files; remove once recorded
+if OriginalFileName:find("^turret") and UpgradeLevel == FirstLevel then
+   local ammo = {}
+   for _, entry in pairs(type(dlc2_Ammunition) == "table" and dlc2_Ammunition or {}) do
+      table.insert(ammo, tostring(entry.Projectile) .. "/" .. tostring(entry.RoundsEachBurst))
+   end
+   local sprites = {}
+   for _, sprite in pairs(Sprites or {}) do table.insert(sprites, tostring(sprite.Name)) end
+   Log("IUW facts " .. OriginalFileName .. ": Projectile=" .. tostring(Projectile) .. " Sprites=" .. table.concat(sprites, ",")
+      .. " dlc2_Ammunition=" .. table.concat(ammo, ","))
+end
    local current_upgrade = FindCurrentUpgrade()
    if not current_upgrade or not current_upgrade.overlays then return end
    for _, overlay in ipairs(current_upgrade.overlays) do

@@ -167,6 +167,11 @@ if dlc2Var_Active then
 	 { mod = "mods/dlc_harpoon", weapon_savename = "harpoon", weapon_filename = "harpoon.lua", projectile = { ["harpoon_default"] = {}, ["decoy"] = {}, ["control"] = {} }, ammunition = { ["harpoon_default"] = {}, ["decoy"] = {}, ["control"] = {} }, overlays = { { mod = "mods/dlc2", file = "mods/dlc_harpoon/weapons/harpoon.lua" }, { mod = "mods/dlc_harpoon_skirmish", file = "mods/dlc_harpoon/weapons/harpoon.lua" } }, upgrade_time = 30, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "runway", weapon_filename = "runway.lua", projectile = { ["nighthawk"] = { ["paveway"] = { ["flamingpaveway"] = {} } }, ["thunderbolt"] = { ["bomb"] = { ["flamingbomb"] = {} } } }, ammunition = { ["nighthawk"] = {}, ["thunderbolt"] = {} }, upgrade_time = 15, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "runway2", weapon_filename = "runway2.lua", original_file = "mods/dlc2_skirmish/mods/dlc2/weapons/runway2.lua", projectile = { ["nighthawk"] = { ["paveway"] = { ["flamingpaveway"] = {} } }, ["thunderbolt"] = { ["bomb"] = { ["flamingbomb"] = {} } } }, ammunition = { ["nighthawk"] = {}, ["thunderbolt"] = {} }, upgrade_time = 15, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "turret", weapon_filename = "turret.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 25, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "turret2", weapon_filename = "turret2.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 30, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "turret2_focus", weapon_filename = "turret2_focus.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 30, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "turret3", weapon_filename = "turret3.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 35, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "turret3_focus", weapon_filename = "turret3_focus.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 35, build_cost_factor = 1 },
    }) do
       table.insert(WeaponUpgrades, v)
    end
