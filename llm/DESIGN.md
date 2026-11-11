@@ -37,7 +37,9 @@ that a few levels stop being affordable or a single weapon breaks the match.
   `Upgrades` and `InvertedType`. Done for tier upgrades and ceiling-mounted forms; **(planned: the deck gun's
   focused form, PLAN step 3)**
 - **Transformed projectiles keep their level**: a level projectile that the game sets on fire, damages or splits
-  becomes the same level of the resulting projectile. **(planned, except child projectiles)**
+  becomes the same level of the resulting projectile. Every projectile in a registry tree gets its existing
+  `flaming…` and `damaged…` versions as children (`TransformedProjectilePrefixes`). Armoured versions (fired only under
+  commanders) come with step 5.
 
 ## Scaling curves
 

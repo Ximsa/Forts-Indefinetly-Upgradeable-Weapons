@@ -118,7 +118,16 @@ and each level, it builds `<projectile>_<level>`: it applies the `Scaling.Projec
 inherits the rest from the base, and renames child projectile references (e.g. `shrapnel` → `shrapnel_<level>`)
 via `RecursiveUpdateFiltered`. Incendiary splash projectiles without an `IncendiaryRadius` are given one so that it can scale.
 
-### 4. In game: `weapons/strings.lua`
+### 4. In game: `ai/ai.lua` (generated)
+
+`lib/pregen_files.lua` writes it with the registered weapon and projectile names embedded (the AI scripts may not
+have `path`). It runs after the game's AI script and does what v1 did: `ShootableProjectile` entries of registered
+projectiles (and their transformed versions) are copied to every level, and weapons with anti-air settings get
+`data.AntiAirErrorStdDev`, `data.AntiAirOpenDoor`, `data.AntiAirFireProbability` and
+`AntiAirFireProbabilityHumanAssist` at every level. Nothing else: copying more AI tables (all of `data`, the target
+priority lists) made the game hang (2026-11-11).
+
+### 5. In game: `weapons/strings.lua`
 
 Adds `Weapon["<savename>_<level>"] = <base name> .. " Level N"` and copies `Tip2`.
 

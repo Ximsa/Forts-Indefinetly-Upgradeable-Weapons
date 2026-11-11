@@ -4,8 +4,15 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status: step 3 in progress (2026-11-11). Every row of its table is in and tested by the owner; left: the final
-round with all High Seas weapons built and upgraded and a clean log ("Done when"). Step 4 is next.**
+**Status (end of session 2026-11-11): steps 1 and 2 done; steps 3 and 4 in code.**
+**Open before they count as done:**
+**- Step 3: one round with every High Seas weapon built and upgraded and a clean log.**
+**- Step 4: AI parity confirmed by the owner (AI anti-air works without hangs); not yet checked: a level cannon through a**
+**  firebeam keeps its level (level flaming projectiles), and `damagedmissile2` levels in-game.**
+**- Ask the owner whether to tick Harpoon in the README (it has had levels since before step 3).**
+**- Optional: check once (temporary Log in `ai/ai.lua`) whether the AI scripts have `path` and `dofile`; if so, replace**
+**  the generated `ai/ai.lua` with hand-written code that reads the registry (offered; the owner hasn't decided).**
+**Then step 5 (commanders).**
 
 ## Working rules
 
@@ -189,5 +196,11 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
   (`ol_beam_sweep`, `ol_beam_focus`). The beams' damage comes from their `BeamDamage` function, not `ProjectileDamage`.
   This mod points the source's `FileName` to `weapons/orbital_laser_source.lua`, which adds level entries. Owner test
   with a strengthened test build: level beams fire and hit harder.
+- Transformed projectiles in the game: `flaming<name>` (MakeFlamingVersion, via a firebeam), `damagedmissile2` (the Skirmish
+  mod, when a warhead is hit) and its `flamingdamagedmissile2`, `armoured<name>` (MakeArmouredVersion; armoured missiles
+  turn into the plain one when hit; fired only under commanders).
+- AI parity is limited to what v1 did (owner, 2026-11-11): `ShootableProjectile` and the four anti-air tables. Copying
+  every name-keyed AI table (all of `data` two deep, about 20 global tables, the target priority lists) made the game
+  hang.
 - Forts gives mods no `loadfile` (a temporary log that used it broke `weapon_list.lua` for a round).
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.

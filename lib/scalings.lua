@@ -176,6 +176,12 @@ OrbitalLaserSource =
       beams = { ["ol_beam_sweep"] = true, ["ol_beam_focus"] = true },
    }
 
+-- Transformed projectiles: the game makes "flaming" .. SaveName (MakeFlamingVersion, used when a projectile passes a
+-- firebeam) and "damaged" .. SaveName (e.g. damagedmissile2) versions of projectiles. Each projectile in a registry
+-- tree gets the ones that exist as children (recursively, so damagedmissile2 -> flamingdamagedmissile2), so a level
+-- projectile turns into the same level of its transformed version.
+TransformedProjectilePrefixes = { "flaming", "damaged" }
+
 -- The registry. One entry per base weapon that gets levels.
 --   mod, weapon_filename: where the original weapon file is (relative to the game's data folder)
 --   projectile: the projectile tree to scale (children nested under the projectile that spawns them)

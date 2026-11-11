@@ -46,6 +46,20 @@ function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, 
 end
 
 -- projectile_upgrade_table comes in the form of { ProjectileSavename = {} or {Child = {...}}} recursively
+-- adds the existing transformed versions of every projectile in the tree as its children (see
+-- TransformedProjectilePrefixes in lib/scalings.lua)
+function AddTransformedProjectiles(projectile_upgrade_table)
+   for projectile_savename, childs in pairs(projectile_upgrade_table) do
+      for _, prefix in ipairs(TransformedProjectilePrefixes) do
+         local transformed = prefix .. projectile_savename
+         if not childs[transformed] and FindProjectile(transformed) then
+            childs[transformed] = {}
+         end
+      end
+      AddTransformedProjectiles(childs)
+   end
+end
+
 -- scaling is the ProjectileList table for the entry that owns the tree (see ScalingFor); a projectile shared by
 -- several entries is built once, with the first entry's rules
 function ProcessUpgradeTable(projectile_upgrade_table, scaling)
@@ -56,5 +70,6 @@ function ProcessUpgradeTable(projectile_upgrade_table, scaling)
 end
 
 for _, weapon_upgrade in ipairs(WeaponUpgrades) do
+   AddTransformedProjectiles(weapon_upgrade.projectile)
    ProcessUpgradeTable(weapon_upgrade.projectile, ScalingFor(weapon_upgrade, "ProjectileList"))
 end
