@@ -69,9 +69,10 @@ refer to the deployed file, which matches the repo file after `deploy.ps1`.
 
 Bump `ItemVersion` in `itemversion.lua`. Don't change `publishedfileid.lua`.
 
-## Known issues (found 2026-11-11, not yet fixed)
+## Known issues
 
-- `UpgradeAmmunition` indexes `v.Projectile` (a string) with a table (`current_upgrade.ammunition`),
-  which always returns `nil`, so it currently never renames anything.
-- `HandleInvertedType` builds its path as `path .. "weapons/"` (no slash), while other files use `path .. "/weapons/"`.
-- `weapons/strings.lua` forces `moonshot = true` but not `dlc2Var_Active`.
+- `overlays` replays other mods' overlay files (harpoon gets its default and decoy ammo from them). They are applied
+  even if the overlay's mod is inactive (e.g. `dlc_harpoon_skirmish` in a campaign); Lua can't see which mods are active.
+- `control` ammo only exists when its ammo mod is active; otherwise `projectile_list.lua` logs `Could not find projectile with savename control` (harmless).
+- Ammunition entries are scaled with `Scaling.WeaponFile` and their projectiles with `Scaling.ProjectileList`; runway aircraft
+  (RoundsEachBurst 1 -> 3 at the top level) may need gentler scaling.

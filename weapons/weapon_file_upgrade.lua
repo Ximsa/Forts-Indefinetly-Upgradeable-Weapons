@@ -62,7 +62,11 @@ end
 function HandleInvertedType()
    local non_inverted_file_name = OriginalFileName:gsub("_inverted", "")
    non_inverted_file_name = non_inverted_file_name:sub(1, -5) -- remove ending
-   dofile(path .. "weapons/" .. non_inverted_file_name .. "/" .. non_inverted_file_name .. "_" .. UpgradeLevel .. ".lua")
+   -- the inverted original set Inverted = true and the non-inverted original doesn't reset it;
+   -- clear it so the nested stub takes the normal branch instead of recursing into HandleInvertedType
+   Inverted = nil
+   dofile(path .. "/weapons/" .. non_inverted_file_name .. "/" .. non_inverted_file_name .. "_" .. UpgradeLevel .. ".lua")
+   Inverted = true
    -- invert direction
    Root.Angle = 180
    Root.Pivot = { 0, -0.12 }
@@ -123,21 +127,43 @@ function ApplyScaling()
    end
 end
 
-function UpgradeAmmunition()
-   -- find entry of current weapon upgrade
-   local current_upgrade = nil
+function FindCurrentUpgrade()
    for _, weapon_upgrade in pairs(WeaponUpgrades) do
       if weapon_upgrade.weapon_filename == OriginalFileName then
-         current_upgrade = weapon_upgrade
-         break
+         return weapon_upgrade
       end
    end
+   return nil
+end
+
+-- Forts runs other mods' overlay files only when it loads the original file itself, not when we dofile it.
+-- Replay the overlays listed in the registry entry (e.g. harpoon's ammunition comes from one).
+function ApplyOverlays()
+   local current_upgrade = FindCurrentUpgrade()
+   if not current_upgrade or not current_upgrade.overlays then return end
+   for _, overlay in ipairs(current_upgrade.overlays) do
+      local tmp_path = path
+      path = overlay.mod
+      dofile(overlay.mod .. "/" .. overlay.file)
+      path = tmp_path
+   end
+end
+
+-- High Seas ammunition entries carry their own stats (ReloadTime, fire speeds, fire costs, RoundsEachBurst, ...)
+-- that override the weapon's, so scale them with the same rules, and fire the level's projectiles
+function UpgradeAmmunition()
+   local current_upgrade = FindCurrentUpgrade()
    if not current_upgrade then return end
-   -- upgrade ammunition if applicable
    if dlc2Var_Active and dlc2_Ammunition and type(dlc2_Ammunition) == "table" then
-      for k, v in pairs(dlc2_Ammunition) do
-         if v.Projectile and v.Projectile[current_upgrade.ammunition] then
-            dlc2_Ammunition[k].Projectile = v.Projectile .. "_" .. UpgradeLevel
+      local step = UpgradeStep(UpgradeLevel)
+      for _, ammo in pairs(dlc2_Ammunition) do
+         for field, fn in pairs(Scaling.WeaponFile) do
+            if type(ammo[field]) == "number" then
+               ammo[field] = fn(ammo[field], step)
+            end
+         end
+         if ammo.Projectile and current_upgrade.ammunition[ammo.Projectile] then
+            ammo.Projectile = ammo.Projectile .. "_" .. UpgradeLevel
          end
       end
    end
@@ -162,6 +188,7 @@ local tmp = path
 path = ModPath -- dofile with path set to the weapons' path
 dofile(path .. "/weapons/" .. OriginalFileName)
 path = tmp     -- restore path
+ApplyOverlays()
 if not Sprites then
    Log("IUW: original weapon file " .. ModPath .. "/weapons/" .. OriginalFileName .. " did not load (check its mod path in lib/scalings.lua)")
 end

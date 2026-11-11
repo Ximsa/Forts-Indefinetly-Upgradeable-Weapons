@@ -146,7 +146,7 @@ end
 
 if dlc2Var_Active then
    for _, v in pairs({
-	 { mod = "mods/dlc_harpoon", weapon_savename = "harpoon", weapon_filename = "harpoon.lua", projectile = {}, ammunition = { ["decoy"] = {}, ["control"] = {} }, build_cost_factor = 1 },
+	 { mod = "mods/dlc_harpoon", weapon_savename = "harpoon", weapon_filename = "harpoon.lua", projectile = { ["harpoon_default"] = {}, ["decoy"] = {}, ["control"] = {} }, ammunition = { ["harpoon_default"] = {}, ["decoy"] = {}, ["control"] = {} }, overlays = { { mod = "mods/dlc2", file = "mods/dlc_harpoon/weapons/harpoon.lua" }, { mod = "mods/dlc_harpoon_skirmish", file = "mods/dlc_harpoon/weapons/harpoon.lua" } }, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "runway", weapon_filename = "runway.lua", projectile = { ["nighthawk"] = { ["paveway"] = { ["flamingpaveway"] = {} } }, ["thunderbolt"] = { ["bomb"] = { ["flamingbomb"] = {} } } }, ammunition = { ["nighthawk"] = {}, ["thunderbolt"] = {} }, build_cost_factor = 1 },
    }) do
       table.insert(WeaponUpgrades, v)

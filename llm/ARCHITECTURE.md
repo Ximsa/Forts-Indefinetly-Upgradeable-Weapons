@@ -47,6 +47,8 @@ Everything is driven by three globals:
 | `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` = `level - 1` (1..`UpgradeCount`) |
 | `WeaponUpgrades` | one entry per upgradeable weapon (see below) |
 
+`UpgradeNumber` on level weapons is set to the upgrade step. No readable game file reads it, so it is probably unused.
+
 A `WeaponUpgrades` entry:
 
 ```lua
@@ -55,7 +57,8 @@ A `WeaponUpgrades` entry:
   weapon_savename   = "flak",             -- SaveName in Weapons
   weapon_filename   = "flak.lua",         -- file under <mod>/weapons/
   projectile        = { flak = { shrapnel = {} } }, -- projectile tree: key = SaveName, value = child projectiles
-  ammunition        = {},                 -- High Seas ammunition projectiles (work in progress)
+  ammunition        = {},                 -- High Seas ammunition projectiles (renamed to <projectile>_<level>)
+  overlays          = nil,                -- optional: { { mod = "mods/x", file = "mods/y/weapons/z.lua" } } other mods' overlay files to replay
   build_cost_factor = 0.5,                -- multiplier on base build/repair cost
 }
 ```
@@ -107,13 +110,14 @@ Adds `Weapon["<savename>_<level>"] = <base name> .. " Level N"` and copies `Tip2
 
 Runs when Forts loads a generated stub:
 
-1. `dofile`s the **original** weapon file, with `path` temporarily set to `ModPath`.
+1. `dofile`s the **original** weapon file, with `path` temporarily set to `ModPath`. Then replays the entry's `overlays`:
+   Forts only runs other mods' overlay files when it loads the original itself, and every weapon file starts with fresh globals.
 2. If it's an `Inverted` variant: loads the non-inverted stub of the same level, then flips it (`HandleInvertedType`).
 3. Otherwise:
    - `UpdateSprite` – copies the head (or base) sprite, renames it `<sprite>_<level>` and tints it based on the level
    - `AdjustRoundsEachBurst` – sets defaults so that burst scaling also works for single-shot weapons
    - `ApplyScaling` – applies `Scaling.WeaponFile` to every matching global
-   - `UpgradeAmmunition` – High Seas ammunition renaming (work in progress)
+   - `UpgradeAmmunition` – High Seas ammunition renaming: scales each `dlc2_Ammunition` entry's own stats with `Scaling.WeaponFile` (they override the weapon's) and renames each `dlc2_Ammunition` entry whose `Projectile` is in the entry's `ammunition` table to `<projectile>_<level>`; those projectiles must also be in `projectile`
    - `ExtendBeamTable` – stretches beams to the scaled `BeamDuration`; changes `EnergyFireCost` to a per-second value
    - `Projectile = Projectile .. "_" .. UpgradeLevel`
 

@@ -6,6 +6,13 @@ function AddUpgrade(weapon, upgrade)
 	table.insert(weapon.Upgrades, upgrade)
 end
 
+function HasUpgrades(weapon_savename)
+	for _, weapon_upgrade in pairs(WeaponUpgrades) do
+		if weapon_upgrade.weapon_savename == weapon_savename then return true end
+	end
+	return false
+end
+
 function GetUpgradeCostByLevel(scaling_fn, base_cost, level)
 	return scaling_fn(base_cost, level) - scaling_fn(base_cost, level - 1)
 end
@@ -62,6 +69,10 @@ function AddUpgradesForWeapon(weapon_upgrade)
 			UpgradeNumber = step,
 			OriginalWeapon = base_weapon.SaveName,
 		}
+		-- the base points to its ceiling variant (e.g. missile -> missileinv); point levels to the same level of that variant
+		if base_weapon.InvertedType and HasUpgrades(base_weapon.InvertedType) then
+			weapon.InvertedType = base_weapon.InvertedType .. "_" .. level
+		end
 		if (level < LastLevel) then
 			AddUpgrade(weapon,
 				{

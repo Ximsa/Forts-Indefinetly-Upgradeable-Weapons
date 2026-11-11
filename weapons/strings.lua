@@ -1,7 +1,8 @@
-local tmp = moonshot
-moonshot = true
+-- register strings for all DLC weapons; strings for weapons that don't exist are harmless
+local tmp_moonshot, tmp_dlc2 = moonshot, dlc2Var_Active
+moonshot, dlc2Var_Active = true, true
 dofile(path .. "/lib/scalings.lua")
-moonshot = tmp
+moonshot, dlc2Var_Active = tmp_moonshot, tmp_dlc2
 dofile(path .. "/lib/util.lua")
 
 for _, weapon_upgrade in pairs(WeaponUpgrades) do
