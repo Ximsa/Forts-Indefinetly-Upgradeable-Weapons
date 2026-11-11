@@ -90,9 +90,9 @@ function UpdateSprite()
    MySprite.Name = MySprite.Name .. "_" .. UpgradeLevel
    MySprite.States.Normal.Frames[1].colour =
    {
-      1 - math.abs(math.sin(1.5 * math.pi * UpgradeLevel / UpgradeCount)),
-      1 - math.abs(math.sin(0.5 * math.pi * UpgradeLevel / UpgradeCount)),
-      1 - math.abs(math.sin(4.5 * math.pi * UpgradeLevel / UpgradeCount)),
+      1 - math.abs(math.sin(1.5 * math.pi * UpgradeStep(UpgradeLevel) / UpgradeCount)),
+      1 - math.abs(math.sin(0.5 * math.pi * UpgradeStep(UpgradeLevel) / UpgradeCount)),
+      1 - math.abs(math.sin(4.5 * math.pi * UpgradeStep(UpgradeLevel) / UpgradeCount)),
       1,
    } -- rgba
    Sprites =
@@ -118,7 +118,7 @@ end
 function ApplyScaling()
    for field, fn in pairs(Scaling.WeaponFile) do
       if _G[field] then
-         _G[field] = fn(_G[field], UpgradeLevel)
+         _G[field] = fn(_G[field], UpgradeStep(UpgradeLevel))
       end
    end
 end

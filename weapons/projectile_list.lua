@@ -27,12 +27,12 @@ function AddProjectileUpgrades(projectile_savename, child_projectile_savenames)
          base_projectile.IncendiaryRadiusHeated = base_projectile.IncendiaryRadius
       end
 
-      for level = 1, UpgradeCount do
+      for level = FirstLevel, LastLevel do
          -- indef projectile prototype
          local projectile = { SaveName = base_projectile.SaveName .. "_" .. level }
          for field, fn in pairs(Scaling.ProjectileList) do
             if base_projectile[field] then
-               projectile[field] = fn(base_projectile[field], level)
+               projectile[field] = fn(base_projectile[field], UpgradeStep(level))
             end
          end
          -- inherit non defined fields from base projectile

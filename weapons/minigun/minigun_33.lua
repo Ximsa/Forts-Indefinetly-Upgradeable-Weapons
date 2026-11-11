@@ -1,4 +1,4 @@
 ModPath = "."
-OriginalFileName = "snipertower.lua"
-UpgradeLevel = 1
+OriginalFileName = "minigun.lua"
+UpgradeLevel = 33
 dofile(path .. "/weapons/weapon_file_upgrade.lua")

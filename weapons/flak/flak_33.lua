@@ -1,4 +1,4 @@
 ModPath = "mods/weapon_pack"
-OriginalFileName = "20mmcannon.lua"
-UpgradeLevel = 1
+OriginalFileName = "flak.lua"
+UpgradeLevel = 33
 dofile(path .. "/weapons/weapon_file_upgrade.lua")

@@ -1,7 +1,12 @@
 if not path then path = ".." end
 dofile(path .. "/lib/util.lua")
 
-UpgradeCount = 32
+UpgradeCount = 32 -- number of upgrades per weapon
+-- Level 1 is the unmodified base weapon, so the upgrades are levels FirstLevel..LastLevel.
+-- Levels name things (SaveNames, files, sprites, "Level N"); scaling functions get the upgrade step (1..UpgradeCount).
+FirstLevel = 2
+LastLevel = UpgradeCount + 1
+function UpgradeStep(level) return level - 1 end
 GrowScale = 0.15
 
 function DefaultScaleNone(value, level, grow_scale) return value end

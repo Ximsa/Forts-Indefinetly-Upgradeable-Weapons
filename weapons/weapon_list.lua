@@ -13,7 +13,7 @@ end
 function GetCompatibleGroupsOf(base_weapon)
 	local compatible_group_types = DeepCopy(base_weapon.CompatibleGroupTypes or {})
 	table.insert(compatible_group_types, base_weapon.SaveName)
-	for level = 1, UpgradeCount do
+	for level = FirstLevel, LastLevel do
 		-- upgrades of itself should be compatible
 		table.insert(compatible_group_types, base_weapon.SaveName .. "_" .. level)
 		-- upgrades of the baseWeapon compatibles should be compatible; disabled for performance reasons
@@ -38,14 +38,15 @@ function AddUpgradesForWeapon(weapon_upgrade)
 	AddUpgrade(base_weapon,
 		{
 			Enabled = true,
-			SaveName = base_weapon.SaveName .. "_1",
-			MetalCost = GetUpgradeCostByLevel(Scaling.WeaponList.MetalCost, base_weapon.MetalCost * build_cost_factor, 1),
-			EnergyCost = GetUpgradeCostByLevel(Scaling.WeaponList.EnergyCost, base_weapon.EnergyCost * build_cost_factor, 1)
+			SaveName = base_weapon.SaveName .. "_" .. FirstLevel,
+			MetalCost = GetUpgradeCostByLevel(Scaling.WeaponList.MetalCost, base_weapon.MetalCost * build_cost_factor, UpgradeStep(FirstLevel)),
+			EnergyCost = GetUpgradeCostByLevel(Scaling.WeaponList.EnergyCost, base_weapon.EnergyCost * build_cost_factor, UpgradeStep(FirstLevel))
 		})
 	-- determine compatible group types
 	local compatible_group_types = GetCompatibleGroupsOf(base_weapon)
-	-- add indef upgrades
-	for level = 1, UpgradeCount do
+	-- add indef upgrades; level names the weapon, step drives the scaling
+	for level = FirstLevel, LastLevel do
+		local step = UpgradeStep(level)
 		local weapon =
 		{
 			Enabled = false,
@@ -53,21 +54,21 @@ function AddUpgradesForWeapon(weapon_upgrade)
 			FileName = path ..
 				"/weapons/" .. weapon_filename_pure .. "/" .. weapon_filename_pure .. "_" .. level .. ".lua",
 			Prerequisite = "upgrade",
-			MetalCost = Scaling.WeaponList.MetalCost(base_weapon.MetalCost * build_cost_factor, level),
-			EnergyCost = Scaling.WeaponList.EnergyCost(base_weapon.EnergyCost * build_cost_factor, level),
-			MetalRepairCost = Scaling.WeaponList.MetalRepairCost(base_weapon.MetalRepairCost * build_cost_factor, level),
-			EnergyRepairCost = Scaling.WeaponList.EnergyRepairCost(base_weapon.EnergyRepairCost * build_cost_factor, level),
+			MetalCost = Scaling.WeaponList.MetalCost(base_weapon.MetalCost * build_cost_factor, step),
+			EnergyCost = Scaling.WeaponList.EnergyCost(base_weapon.EnergyCost * build_cost_factor, step),
+			MetalRepairCost = Scaling.WeaponList.MetalRepairCost(base_weapon.MetalRepairCost * build_cost_factor, step),
+			EnergyRepairCost = Scaling.WeaponList.EnergyRepairCost(base_weapon.EnergyRepairCost * build_cost_factor, step),
 			CompatibleGroupTypes = compatible_group_types,
-			UpgradeNumber = level,
+			UpgradeNumber = step,
 			OriginalWeapon = base_weapon.SaveName,
 		}
-		if (level < UpgradeCount) then
+		if (level < LastLevel) then
 			AddUpgrade(weapon,
 				{
 					Enabled = true,
 					SaveName = base_weapon.SaveName .. "_" .. (level + 1),
-					MetalCost = GetUpgradeCostByLevel(Scaling.WeaponList.MetalCost, base_weapon.MetalCost * build_cost_factor, level + 1),
-					EnergyCost = GetUpgradeCostByLevel(Scaling.WeaponList.EnergyCost, base_weapon.EnergyCost * build_cost_factor, level + 1)
+					MetalCost = GetUpgradeCostByLevel(Scaling.WeaponList.MetalCost, base_weapon.MetalCost * build_cost_factor, step + 1),
+					EnergyCost = GetUpgradeCostByLevel(Scaling.WeaponList.EnergyCost, base_weapon.EnergyCost * build_cost_factor, step + 1)
 				})
 		else
 			weapon.Upgrades = {}

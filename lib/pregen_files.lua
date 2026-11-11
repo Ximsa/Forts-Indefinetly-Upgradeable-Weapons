@@ -10,7 +10,7 @@ for _, weaponUpgrade in ipairs(WeaponUpgrades) do
    local file_path = "../weapons/" .. weapon_filename:sub(1, -5) .. "/"
    print(file_path)
    os.execute("mkdir \"" .. file_path .. "\"")
-   for level = 1, UpgradeCount do
+   for level = FirstLevel, LastLevel do
       local file_name = weapon_filename:sub(1, -5) .. "_" .. level .. ".lua"
       local file_contents =
           "ModPath = \"" .. mod_path .. "\"\n" ..

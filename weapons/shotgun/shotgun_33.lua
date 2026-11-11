@@ -1,4 +1,4 @@
 ModPath = "mods/weapon_pack"
-OriginalFileName = "firebeam.lua"
-UpgradeLevel = 1
+OriginalFileName = "shotgun.lua"
+UpgradeLevel = 33
 dofile(path .. "/weapons/weapon_file_upgrade.lua")

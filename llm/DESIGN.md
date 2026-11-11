@@ -22,7 +22,7 @@ that a few levels stop being affordable or a single weapon breaks the match.
 
 ## Scaling curves
 
-`GrowScale = 0.15` is the base growth rate. With `L` = level:
+`GrowScale = 0.15` is the base growth rate. With `L` = upgrade step (`level - 1`; the base weapon is level 1, step 0):
 
 | Curve | Formula | Used for |
 |---|---|---|

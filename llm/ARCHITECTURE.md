@@ -43,8 +43,8 @@ Everything is driven by three globals:
 
 | Global | Purpose |
 |---|---|
-| `UpgradeCount` | number of extra levels per weapon |
-| `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, level)` used at each stage |
+| `UpgradeCount` | number of upgrades per weapon; level 1 is the base weapon, upgrades are levels `FirstLevel`(2)..`LastLevel`(`UpgradeCount + 1`) |
+| `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` = `level - 1` (1..`UpgradeCount`) |
 | `WeaponUpgrades` | one entry per upgradeable weapon (see below) |
 
 A `WeaponUpgrades` entry:
@@ -69,7 +69,7 @@ Every hook file runs `dofile(path .. "/lib/scalings.lua")`, so the registry is r
 
 Run with a stand-alone Lua interpreter **from inside `lib/`** (it uses `dofile("scalings.lua")` and writes to `../weapons/`).
 It forces `moonshot` and `dlc2Var_Active` on so that stubs exist for every weapon, and writes
-`weapons/<name>/<name>_<level>.lua` for `level = 1..UpgradeCount`:
+`weapons/<name>/<name>_<level>.lua` for `level = FirstLevel..LastLevel` (2..`UpgradeCount + 1`):
 
 ```lua
 ModPath = "mods/weapon_pack"
@@ -127,6 +127,8 @@ Runs when Forts loads a generated stub:
 | stub file | `weapons/<weapon_filename without .lua>/<same>_<level>.lua` |
 
 Every stage depends on this `_<level>` suffix; keep it consistent.
+Level 1 is the unmodified base weapon, so suffixes start at `_2`. Names use the level; scaling functions get
+the upgrade step (`UpgradeStep(level)` = `level - 1`), so `<name>_2` is scaled by step 1.
 
 ## Tooling
 
