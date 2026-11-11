@@ -137,6 +137,15 @@ function AddUpgradesForWeapon(weapon_upgrade)
 	end
 end
 
+-- The orbital laser's beam is fired by a hidden weapon that picks its ammunition by the Tag the marker names.
+-- Point it to a wrapper (weapons/orbital_laser_source.lua) that adds an ammunition entry for every level beam.
+if OrbitalLaserSource then
+	local source = FindWeapon(OrbitalLaserSource.weapon_savename)
+	if source then
+		source.FileName = path .. "/weapons/orbital_laser_source.lua"
+	end
+end
+
 for _, weapon_upgrade in pairs(WeaponUpgrades) do
 	AddUpgradesForWeapon(weapon_upgrade)
 end

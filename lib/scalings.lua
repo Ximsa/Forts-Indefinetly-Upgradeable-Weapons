@@ -142,6 +142,31 @@ DomeScaling =
                      FireStdDev = DefaultScaleNone, FireStdDevAuto = DefaultScaleNone },
    }
 
+-- Orbital laser (High Seas): its marker shell orders a beam (dlc2_orbital = { Ammo = <tag>, Duration = ..., ... }) from
+-- a hidden weapon, the beam source. Level markers order level beams; the beam's Duration grows like beam duration.
+OrbitalLaserScaling =
+   {
+      ProjectileList =
+         {
+            dlc2_orbital = function(value, level)
+               local result = DeepCopy(value)
+               if type(result.Duration) == "number" then
+                  result.Duration = DefaultScaleLinear(result.Duration, level, RoundsEachBurstGrowScale)
+               end
+               return result
+            end,
+         },
+   }
+-- the beam source's original file (logged 2026-11-11) and the beams that get level ammunition there
+-- (weapons/orbital_laser_source.lua wraps it)
+OrbitalLaserSource =
+   {
+      weapon_savename = "orbital_laser_source",
+      mod = "mods/dlc_harpoon",
+      file = "mods/dlc_harpoon/weapons/orbital_laser_source.lua",
+      beams = { ["ol_beam_sweep"] = true, ["ol_beam_focus"] = true },
+   }
+
 -- The registry. One entry per base weapon that gets levels.
 --   mod, weapon_filename: where the original weapon file is (relative to the game's data folder)
 --   projectile: the projectile tree to scale (children nested under the projectile that spawns them)
@@ -198,6 +223,8 @@ if dlc2Var_Active then
 	 { mod = "mods/dlc2", weapon_savename = "dome", weapon_filename = "dome.lua", projectile = { ["dome"] = { ["dome_barrier"] = {} } }, ammunition = {}, scaling = DomeScaling, upgrade_time = 15, build_cost_factor = 0.5 },
 	 { mod = "mods/dlc2", weapon_savename = "subswarm", weapon_filename = "subswarm.lua", projectile = { ["missile"] = {} }, ammunition = {}, upgrade_time = 20, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "sublauncher", weapon_filename = "sublauncher.lua", projectile = { ["missile2"] = {} }, ammunition = {}, upgrade_time = 25, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "orbital_laser", weapon_filename = "orbital_laser.lua", projectile = { ["ol_marker_sweep"] = { ["ol_beam_sweep"] = {} }, ["ol_marker_focus"] = { ["ol_beam_focus"] = {} } }, ammunition = { ["ol_marker_sweep"] = {}, ["ol_marker_focus"] = {} }, scaling = OrbitalLaserScaling, upgrade_time = 10, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "orbital_laser2", weapon_filename = "orbital_laser2.lua", projectile = { ["ol_marker_sweep"] = { ["ol_beam_sweep"] = {} }, ["ol_marker_focus"] = { ["ol_beam_focus"] = {} } }, ammunition = { ["ol_marker_sweep"] = {}, ["ol_marker_focus"] = {} }, scaling = OrbitalLaserScaling, upgrade_time = 10, build_cost_factor = 1 },
    }) do
       table.insert(WeaponUpgrades, v)
    end
