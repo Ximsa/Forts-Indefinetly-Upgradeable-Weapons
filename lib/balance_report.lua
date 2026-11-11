@@ -6,7 +6,7 @@
 -- data/mods/iuw/weapons and its formulas (llm/V1.md); base values = the readable game files, DLC weapons from
 -- data/mods/iuw2/dump. Power is direct damage x rounds per burst (x beam duration x beam damage multiplier for beams)
 -- / reload time, as a multiple of the base weapon. Deviation = v2 / v1 - 1; averages are over levels 2..49 of
--- |ln(v2 / v1)| over levels 2..33 (see balance_to), shown as a percentage.
+-- |ln(v2 / v1)| over levels 2..24 (see balance_to), shown as a percentage.
 
 local env = dofile("offline_env.lua")
 env.Init(arg and arg[2])
@@ -17,9 +17,9 @@ dofile("../lib/scalings.lua")
 
 local tune = arg and arg[1] == "tune"
 local levels_from, levels_to = 2, 49
--- levels the averages and the tuning use: the owner asked to balance the first 32 levels (2026-11-11), since
--- rounds per burst jumps in whole rounds (1-round weapons get a second round at level 25)
-local balance_to = 33
+-- levels the averages and the tuning use: up to level 24, the last level before 1-round weapons get a second round
+-- (level 25); the jump in whole rounds distorts the fit too much (owner, 2026-11-11)
+local balance_to = 24
 local v1_root = env.game_data .. "/mods/iuw/weapons"
 
 -- v1's upgrade price constants U (metal, energy), from its weapons/weapon_list.lua (llm/V1.md)
@@ -30,8 +30,11 @@ local V1Prices = {
    magnabeam = { 160, 900 },
 }
 
--- base build costs of the packed DLC weapons, read from the game log (temporary Log in weapons/weapon_list.lua)
+-- base build costs of the packed DLC weapons, read from the game log on 2026-11-11 (a temporary Log in weapons/weapon_list.lua)
 local DlcBaseCosts = {
+   buzzsaw = { MetalCost = 200, EnergyCost = 2000 }, smokebomb = { MetalCost = 200, EnergyCost = 800 },
+   howitzer = { MetalCost = 1000, EnergyCost = 9000 }, magnabeam = { MetalCost = 600, EnergyCost = 5000 },
+   harpoon = { MetalCost = 250, EnergyCost = 3000 }, runway = { MetalCost = 500, EnergyCost = 4000 },
 }
 
 -- weapon-file dump sections for weapons whose file isn't readable
@@ -322,11 +325,7 @@ if tune then
    TuneLog("before: " .. current)
    TuneLog(string.format("  power %s, metal %s, fire cost per damage %s", Percent(Objective({ "power" })),
       Percent(Objective({ "metal" })), Percent(Objective({ "fire_cost_per_damage" }))))
-   -- power: damage and reload decay (rounds per burst is set by the owner: 1/24)
-   local best = Search({ "power" }, {
-      DamageGrowScale = Range(0.0, 0.2, 0.0025),
-      ReloadDecay = Range(0.97, 1.0, 0.0025),
-   })
+   -- power isn't tuned: the owner set damage (v1's 0.125), rounds per burst (1/24) and reload decay (0.98)
    -- spend: build cost (metal is compared; energy is reported)
    Search({ "metal" }, { BuildCostGrowScale = Range(0.05, 2, 0.01) })
    -- fire cost per point of damage, given the power parameters

@@ -8,13 +8,13 @@ FirstLevel = 2
 LastLevel = UpgradeCount + 1
 function UpgradeStep(level) return level - 1 end
 GrowScale = 0.15 -- base growth rate; secondary stats (range, splash, hitpoints, ...) use it unchanged
--- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..33 on 2026-11-11
+-- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..24 on 2026-11-11
 -- (llm/DESIGN.md, "Balance against v1"). Only these (and build_cost_factor per weapon) are tuned; the curve shapes stay.
-DamageGrowScale = 0.075                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage)
+DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
 RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam duration for beams (set by the owner: doubles by step 24)
-BuildCostGrowScale = 0.52                -- sub-quadratic: build cost
-FireCostGrowScale = 0.075                -- sub-quadratic: fire cost
-ReloadDecay = 1.0                        -- geometric: reload time (1.0: reload doesn't shorten; rounds per burst carries rate of fire)
+BuildCostGrowScale = 0.50                -- sub-quadratic: build cost
+FireCostGrowScale = 0.10                 -- sub-quadratic: fire cost
+ReloadDecay = 0.98                       -- geometric: reload time (set by the owner)
 
 function DefaultScaleNone(value, level, grow_scale) return value end
 

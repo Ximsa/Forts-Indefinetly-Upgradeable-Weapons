@@ -137,15 +137,6 @@ function AddUpgradesForWeapon(weapon_upgrade)
 	end
 end
 
--- TEMPORARY (PLAN step 2): log the packed DLC weapons' build costs for lib/balance_report.lua; remove once recorded
-for _, weapon_savename in ipairs({ "buzzsaw", "smokebomb", "howitzer", "magnabeam", "harpoon", "runway", "runway2" }) do
-	local weapon = FindWeapon(weapon_savename)
-	if weapon then
-		Log("IUW base " .. weapon_savename .. " MetalCost=" .. tostring(weapon.MetalCost) .. " EnergyCost=" .. tostring(weapon.EnergyCost)
-			.. " BuildTimeComplete=" .. tostring(weapon.BuildTimeComplete))
-	end
-end
-
 for _, weapon_upgrade in pairs(WeaponUpgrades) do
 	AddUpgradesForWeapon(weapon_upgrade)
 end

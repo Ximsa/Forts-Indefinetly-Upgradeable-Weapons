@@ -4,8 +4,8 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status: step 2 in progress (2026-11-11). Report and tuning done for the readable weapons; waiting for one in-game
-round that logs the DLC weapons' build costs (temporary `Log` in `weapons/weapon_list.lua`), then item 3 for the owner.**
+**Status: step 2 in progress (2026-11-11). Items 1 and 2 done (all 13 shared weapons, DLC costs recorded); item 3
+waits for the owner to accept the outlier list.**
 
 ## Working rules
 
@@ -59,7 +59,8 @@ Rules: DESIGN.md, "Balance against v1". Numbers: V1.md.
    deviation of v2 from v1 for each. Also report range, splash, hitpoints and accuracy without comparing.
    Take v1's values from its generated level files and formulas, base values from the readable game files, and
    DLC base values from `data\mods\iuw2\dump\`. Write the output to `dump/balance_<date>.txt` (git-ignored).
-2. **Tune** only the allowed parameters (DESIGN.md) until the average deviation over levels 2..49 is smallest.
+2. **Tune** only the allowed parameters (DESIGN.md) until the average deviation over levels 2..24 is smallest
+   (owner, 2026-11-11: the fit stops before 1-round weapons get their second round at level 25).
 3. **List** the weapons that stay far from v1, and the weapons v1 never had (machinegun, sniper, mortar, missiles,
    flak, rocketemp, harpoon, runway) next to a comparable shared weapon, for the owner to judge. Include the
    runway ammunition's rounds per burst.
@@ -147,8 +148,11 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
 - `upgrade_time` for weapons v1 didn't have is the reload time from `data\mods\iuw2\dump\weapons.lua`, except the
   runway: its reload time is 1.05 s, so the owner set 15 s (2026-11-11). The machinegun's 1.5 s is accepted.
 - Owner decisions for step 2 (2026-11-11): `RoundsEachBurstGrowScale = 1/24` (1-round weapons get a second round
-  in real battles); balance is fitted over levels 2..33; beams grow `BeamDuration` at the rounds-per-burst rate and
-  stop scaling `BeamDamageMultiplier`.
+  in real battles); balance is fitted over levels 2..24; beams grow `BeamDuration` at the rounds-per-burst rate and
+  stop scaling `BeamDamageMultiplier`; `ReloadDecay = 0.98` and `DamageGrowScale = 0.125` (v1's rate) are fixed by
+  the owner, so only the build and fire cost rates are tuned.
+- DLC base build costs (logged 2026-11-11, metal/energy): buzzsaw 200/2000, smokebomb 200/800, howitzer 1000/9000,
+  magnabeam 600/5000, harpoon 250/3000, runway 500/4000, runway2 1000/10000. They are in `lib/balance_report.lua`.
 - Beam weapons' energy fire cost was divided by `BeamDuration` twice (per-shot cost fell below the base); fixed in
   `weapon_file_upgrade.lua` on 2026-11-11.
 - The DLC weapons' build costs (buzzsaw, smokebomb, howitzer, magnabeam, harpoon, runway) are only in the packed

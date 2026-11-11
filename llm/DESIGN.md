@@ -52,8 +52,8 @@ rates, tuned against v1 (see below). With `L` = step:
 | Sub-quadratic | `v · (1 + g·L^1.3)` | build costs (`BuildCostGrowScale`), fire costs (`FireCostGrowScale`) |
 | Geometric decay | `v · d^L` | reload time (`ReloadDecay`), round period and spread (0.98 / 0.99) |
 
-The values (2026-11-11): `DamageGrowScale = 0.075`, `RoundsEachBurstGrowScale = 1/24`, `BuildCostGrowScale = 0.52`,
-`FireCostGrowScale = 0.075`, `ReloadDecay = 1.0`.
+The values (2026-11-11): `DamageGrowScale = 0.125` (v1's rate), `RoundsEachBurstGrowScale = 1/24`,
+`ReloadDecay = 0.98`, all three set by the owner; `BuildCostGrowScale = 0.50` and `FireCostGrowScale = 0.10`, tuned.
 
 The reasoning:
 
@@ -62,11 +62,12 @@ The reasoning:
   more slowly to avoid snowballing.
 - **Costs grow faster than power** (`L^1.3`), so each level becomes less efficient and players can't gain an
   advantage just by stacking levels.
-- **Rate of fire comes from rounds per burst, not reload.** With rounds per burst at `1/24`, tuning against v1 left
-  no room for a shorter reload, so `ReloadDecay` is 1.0 and reload times stay the base weapon's.
+- **Damage grows at v1's rate** (`0.125` per step) and **reload times keep shortening** at `ReloadDecay = 0.98`
+  (×0.63 at level 24, ×0.38 at 49), both set by the owner on 2026-11-11. Together with rounds per burst, power
+  therefore runs ahead of v1 (see below); only the costs are tuned.
 - **Rounds per burst** grows linearly at `1/24` (double by step 24), chosen by the owner so that 1-round weapons get
   a second round (level 25) and a third (level 49) within a real battle. It moves in whole rounds, which makes power
-  jump at those levels; that is why balance is fitted over the first 32 levels.
+  jump at those levels; that is why balance is fitted only up to level 24.
 - **Beam weapons** don't get more rounds; their `BeamDuration` grows at the same rate instead, and their
   `BeamDamageMultiplier` stays the base value, so a beam's damage grows through projectile damage and duration like
   any other weapon's. Their energy fire cost per shot is scaled like any other fire cost.
@@ -84,18 +85,18 @@ v1 is the reference for how much power a given spend buys. Its numbers are in [V
 - **What is compared.** Power is direct damage × rounds per burst (× beam duration for beams) ÷ reload time, as a
   multiple of the base weapon. Spend is the total metal to reach a level, with energy reported next to it. Fire cost
   per point of damage is a second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
-- **The curve shapes don't change.** Tuning only adjusts `DamageGrowScale`, `BuildCostGrowScale`,
-  `FireCostGrowScale` and `ReloadDecay` (the owner set `RoundsEachBurstGrowScale`).
+- **The curve shapes don't change.** Tuning only adjusts `BuildCostGrowScale` and `FireCostGrowScale` (the owner
+  set `DamageGrowScale`, `RoundsEachBurstGrowScale` and `ReloadDecay`).
 - **The global `GrowScale` stays 0.15**, so the secondary stats don't move.
-- **"Roughly match" is measured on average over levels 2..33** (the first 32 levels, as the owner asked on
-  2026-11-11), not only at one level, because the shapes differ (v1's spend grows with the square of the level,
-  and rounds per burst jumps in whole rounds).
+- **"Roughly match" is measured on average over levels 2..24**, the last level before 1-round weapons get a second
+  round (owner, 2026-11-11): the jump in whole rounds distorts the fit too much. Levels above 24 are reported, not
+  fitted. It is an average, not one level, because the shapes differ (v1's spend grows with the square of the level).
 - **Per-weapon corrections go only through `build_cost_factor`.** Weapons that stay far from v1, and weapons v1
   never had, are listed in the balance report for the owner to judge.
 
-Result of the 2026-11-11 tuning (averages over levels 2..33, shared non-DLC weapons): power 23 %, metal spend 19 %,
-fire cost per damage 22 %. Cannon at level 49: v1 about 11.3× base DPS for about 101,700 metal, v2 about 13.8× for
-about 72,700 metal (before tuning: about 43× for about 42,300).
+Result of the 2026-11-11 tuning (averages over levels 2..24, all 13 weapons both versions have): power 46 % (not
+tuned), metal spend 21 %, fire cost per damage 22 %. Cannon: level 10 v1 2.3× base DPS / v2 2.6×; level 24 v1 4.8×
+for about 30,000 metal / v2 6.2× for about 27,400; level 49 v1 11.3× for about 101,700 / v2 55× for about 69,900.
 
 ## Costs
 
