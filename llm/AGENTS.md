@@ -1,17 +1,23 @@
 # Agent guide
 
-Instructions for LLM coding agents working on this repository. All LLM-related material lives in `llm/`;
-don't put agent files anywhere else (the root `CLAUDE.md` only points here).
+Instructions for LLM coding agents working on this repository. LLM-related material lives in `llm/`
+(the root `CLAUDE.md` only points here). The glossary (`GLOSSARY.md`) and decision records (`docs/adr/`) are for
+people too and live at the repo root.
 
 ## Read first
 
+- [GLOSSARY.md](../GLOSSARY.md) – the project's terms (level, step, tier, variant, v1, v2, feature complete, parity). Use these words.
+- [PLAN.md](PLAN.md) – the agreed steps to feature complete, with a "Done when" for each. Start here to find the next piece of work.
+- [DESIGN.md](DESIGN.md) – the goals and the rules for levels, balance, costs and scope
 - [ARCHITECTURE.md](ARCHITECTURE.md) – how Forts loads mods and the pipeline this mod builds on top of it
-- [DESIGN.md](DESIGN.md) – the balance philosophy and the scaling curves
 - `lib/scalings.lua` – the registry; most changes start here
+- [V1.md](V1.md) – v1's formulas, numbers and its commander and AI mechanisms. Read when tuning balance or adding commander or AI support.
+- `docs/adr/` – decisions that are hard to undo, with their reasons
 
 ## Environment
 
-- Language: Lua 5.1 as embedded in Forts. The repo has no build system and no tests, and nothing can run the mod outside the game.
+- Language: Lua 5.1 as embedded in Forts. The repo has no build system and no tests. Outside the game, only
+  `lib/check_lists.lua` runs the list hooks (against stubs and the readable base lists); weapon files only run in-game.
 - Engine globals (`Weapons`, `Projectiles`, `FindWeapon`, `FindProjectile`, `InheritType`, `Log`, `L"..."`, `path`, ...)
   exist only in-game.
 - The owner tests in Forts. When a change can only be verified in-game, say so; don't claim it works.
@@ -33,12 +39,14 @@ don't put agent files anywhere else (the root `CLAUDE.md` only points here).
 1. Add a `WeaponUpgrades` entry in `lib/scalings.lua` (put DLC weapons in the matching `if moonshot` / `if dlc2Var_Active` block).
    The `projectile` tree must include every child projectile that needs scaling.
 2. Regenerate stubs: `cd lib && lua55 pregen_files.lua` (`lua55` is the owner's local Lua 5.5 install; any stand-alone Lua with `io`/`os` works).
-3. Tick the weapon off in `README.md`.
-4. Have the owner test it in-game.
+3. Run the offline check: `cd lib && lua55 check_lists.lua` (base-game and Tons of Guns weapons only; DLC lists are packed).
+4. Tick the weapon off in `README.md`.
+5. Have the owner test it in-game.
 
 ### Change `UpgradeCount`
 
-Regenerate all stubs afterwards. The generator doesn't delete stubs above the new count; remove them
+The release count is 48 (DESIGN.md, "Levels"). To test with fewer levels, don't change the repo: deploy with
+`.\deploy.ps1 -UpgradeCount <n>`. If the release count itself changes, regenerate all stubs afterwards. The generator doesn't delete stubs above the new count; remove them
 if the count gets smaller, or leave them on purpose and say so.
 
 ### Add a scaled stat
@@ -67,7 +75,9 @@ refer to the deployed file, which matches the repo file after `deploy.ps1`.
 
 ## Release
 
-Bump `ItemVersion` in `itemversion.lua`. Don't change `publishedfileid.lua`.
+Publish nothing until v2 is feature complete; until then, commits and local deploys only
+(`docs/adr/0001-v2-replaces-v1-only-when-feature-complete.md`). The release steps are in PLAN.md, step 6.
+Keep `publishedfileid.lua` as it is: v2 replaces v1 on the same Workshop item.
 
 ## Known issues
 

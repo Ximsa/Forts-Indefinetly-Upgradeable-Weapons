@@ -23,7 +23,10 @@ itemversion.lua             Workshop item version (bump on release)
 publishedfileid.lua         Workshop id
 preview.jpg                 Workshop preview image
 CLAUDE.md                   points to llm/AGENTS.md
-llm/                        all LLM agent material (AGENTS.md, ARCHITECTURE.md, DESIGN.md)
+llm/                        LLM agent material (AGENTS.md, ARCHITECTURE.md, DESIGN.md, PLAN.md, V1.md)
+GLOSSARY.md                 the project's terms
+docs/adr/                   decision records
+deploy.ps1                  copies the mod into the Steam Workshop folder for testing
 lib/
   scalings.lua              single source of truth: UpgradeCount, scaling functions, WeaponUpgrades registry
   util.lua                  DeepCopy, Merge, Compose, Significant3, RecursiveUpdateFiltered, ...
@@ -47,7 +50,7 @@ Everything is driven by three globals:
 | `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` = `level - 1` (1..`UpgradeCount`) |
 | `WeaponUpgrades` | one entry per upgradeable weapon (see below) |
 
-`UpgradeNumber` on level weapons is set to the upgrade step. No readable game file reads it, so it is probably unused.
+`UpgradeNumber` on level weapons is set to the upgrade step. No readable game file reads it. v1 used it for Overdrive commander support (see PLAN.md, phase 3).
 
 A `WeaponUpgrades` entry:
 
@@ -59,6 +62,7 @@ A `WeaponUpgrades` entry:
   projectile        = { flak = { shrapnel = {} } }, -- projectile tree: key = SaveName, value = child projectiles
   ammunition        = {},                 -- High Seas ammunition projectiles (renamed to <projectile>_<level>)
   overlays          = nil,                -- optional: { { mod = "mods/x", file = "mods/y/weapons/z.lua" } } other mods' overlay files to replay
+  upgrade_time      = 6.75,               -- seconds a level upgrade takes (BuildTimeComplete of the level weapons)
   build_cost_factor = 0.5,                -- multiplier on base build/repair cost
 }
 ```
@@ -88,12 +92,17 @@ only way to pass `UpgradeLevel` to the shared code. Generated files are committe
 
 For each `WeaponUpgrades` entry, `AddUpgradesForWeapon`:
 
-1. Finds the base weapon (`FindWeapon`) and adds an upgrade entry to it → `<savename>_1`.
+1. Finds the base weapon (`FindWeapon`), notes its tier upgrades to other registered weapons, and adds an upgrade
+   entry to it → `<savename>_2`.
 2. For each level, inserts a new weapon `InheritType(base, nil, {...})` with:
    - `SaveName = <savename>_<level>`, `FileName` = generated stub, `Enabled = false`, `Prerequisite = "upgrade"`
    - build/repair costs from `Scaling.WeaponList`; the upgrade price is the cost **difference** between two levels
    - `CompatibleGroupTypes` = base groups + base SaveName + all of its level SaveNames
-   - an upgrade entry pointing to `<savename>_<level+1>` (the last level gets `Upgrades = {}`)
+   - `BuildTimeComplete` = the entry's `upgrade_time` (else the base's)
+   - an upgrade entry pointing to `<savename>_<level+1>` (not on the last level)
+   - for each tier upgrade of the base (e.g. machinegun → minigun), one pointing to the same level of the target,
+     priced as the build-cost difference of the two level weapons, never below the game's price
+   - `InvertedType` = the same level of the base's inverted type, if that has levels
 
 ### 3. In game: `weapons/projectile_list.lua`
 

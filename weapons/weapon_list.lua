@@ -6,11 +6,51 @@ function AddUpgrade(weapon, upgrade)
 	table.insert(weapon.Upgrades, upgrade)
 end
 
-function HasUpgrades(weapon_savename)
+function FindWeaponUpgrade(weapon_savename)
 	for _, weapon_upgrade in pairs(WeaponUpgrades) do
-		if weapon_upgrade.weapon_savename == weapon_savename then return true end
+		if weapon_upgrade.weapon_savename == weapon_savename then return weapon_upgrade end
 	end
-	return false
+	return nil
+end
+
+function HasUpgrades(weapon_savename)
+	return FindWeaponUpgrade(weapon_savename) ~= nil
+end
+
+-- build cost of a registered weapon at a step (step 0 is the base weapon)
+function LevelBuildCost(weapon, weapon_upgrade, field, step)
+	local base_cost = weapon[field] * (weapon_upgrade.build_cost_factor or 1)
+	if step == 0 then return base_cost end
+	return Scaling.WeaponList[field](base_cost, step)
+end
+
+-- the base weapon's tier upgrades (e.g. machinegun -> minigun) whose target also has levels;
+-- taken before this mod adds its own level upgrade to the base weapon. The game keys some Upgrades entries
+-- by SaveName (["mortar2"] = {...}), so iterate with pairs
+function GetTierUpgrades(base_weapon)
+	local tier_upgrades = {}
+	for _, upgrade in pairs(base_weapon.Upgrades or {}) do
+		local target_upgrade = FindWeaponUpgrade(upgrade.SaveName)
+		local target_weapon = FindWeapon(upgrade.SaveName)
+		if target_upgrade and target_weapon then
+			table.insert(tier_upgrades, { upgrade = upgrade, target_weapon = target_weapon, target_upgrade = target_upgrade })
+		end
+	end
+	return tier_upgrades
+end
+
+-- a tier upgrade at a level leads to the same level of the target, priced as the build-cost difference
+-- between the two level weapons, never below the game's own price for that tier upgrade
+function MakeTierUpgrade(tier_upgrade, base_weapon, weapon_upgrade, level)
+	local step = UpgradeStep(level)
+	local upgrade = DeepCopy(tier_upgrade.upgrade)
+	upgrade.SaveName = tier_upgrade.upgrade.SaveName .. "_" .. level
+	for _, field in ipairs({ "MetalCost", "EnergyCost" }) do
+		local difference = LevelBuildCost(tier_upgrade.target_weapon, tier_upgrade.target_upgrade, field, step)
+			- LevelBuildCost(base_weapon, weapon_upgrade, field, step)
+		upgrade[field] = math.max(tier_upgrade.upgrade[field] or 0, difference)
+	end
+	return upgrade
 end
 
 function GetUpgradeCostByLevel(scaling_fn, base_cost, level)
@@ -42,6 +82,7 @@ function AddUpgradesForWeapon(weapon_upgrade)
 		Log("Error: Could not find weapon with savename " .. weapon_savename)
 		return
 	end
+	local tier_upgrades = GetTierUpgrades(base_weapon)
 	AddUpgrade(base_weapon,
 		{
 			Enabled = true,
@@ -68,6 +109,8 @@ function AddUpgradesForWeapon(weapon_upgrade)
 			CompatibleGroupTypes = compatible_group_types,
 			UpgradeNumber = step,
 			OriginalWeapon = base_weapon.SaveName,
+			BuildTimeComplete = weapon_upgrade.upgrade_time or base_weapon.BuildTimeComplete,
+			Upgrades = {},
 		}
 		-- the base points to its ceiling variant (e.g. missile -> missileinv); point levels to the same level of that variant
 		if base_weapon.InvertedType and HasUpgrades(base_weapon.InvertedType) then
@@ -81,8 +124,9 @@ function AddUpgradesForWeapon(weapon_upgrade)
 					MetalCost = GetUpgradeCostByLevel(Scaling.WeaponList.MetalCost, base_weapon.MetalCost * build_cost_factor, step + 1),
 					EnergyCost = GetUpgradeCostByLevel(Scaling.WeaponList.EnergyCost, base_weapon.EnergyCost * build_cost_factor, step + 1)
 				})
-		else
-			weapon.Upgrades = {}
+		end
+		for _, tier_upgrade in ipairs(tier_upgrades) do
+			AddUpgrade(weapon, MakeTierUpgrade(tier_upgrade, base_weapon, weapon_upgrade, level))
 		end
 		table.insert(
 			Weapons,
