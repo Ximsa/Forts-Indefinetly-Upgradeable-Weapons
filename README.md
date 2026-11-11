@@ -59,4 +59,4 @@ Roadmap of which weapons upgrades are already implemented
 
 ## Agentic Coding
 
-Since 2026-11-11 this repository used llm agents
+Since 2026-11-11 this repository uses llm agents
