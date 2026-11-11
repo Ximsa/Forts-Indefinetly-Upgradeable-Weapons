@@ -196,6 +196,8 @@ if dlc2Var_Active then
 	 { mod = "mods/dlc2", weapon_savename = "turret3", weapon_filename = "turret3.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 35, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "turret3_focus", weapon_filename = "turret3_focus.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 35, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "dome", weapon_filename = "dome.lua", projectile = { ["dome"] = { ["dome_barrier"] = {} } }, ammunition = {}, scaling = DomeScaling, upgrade_time = 15, build_cost_factor = 0.5 },
+	 { mod = "mods/dlc2", weapon_savename = "subswarm", weapon_filename = "subswarm.lua", projectile = { ["missile"] = {} }, ammunition = {}, upgrade_time = 20, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "sublauncher", weapon_filename = "sublauncher.lua", projectile = { ["missile2"] = {} }, ammunition = {}, upgrade_time = 25, build_cost_factor = 1 },
    }) do
       table.insert(WeaponUpgrades, v)
    end

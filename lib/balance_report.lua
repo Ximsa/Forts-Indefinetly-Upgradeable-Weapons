@@ -35,6 +35,11 @@ local DlcBaseCosts = {
    buzzsaw = { MetalCost = 200, EnergyCost = 2000 }, smokebomb = { MetalCost = 200, EnergyCost = 800 },
    howitzer = { MetalCost = 1000, EnergyCost = 9000 }, magnabeam = { MetalCost = 600, EnergyCost = 5000 },
    harpoon = { MetalCost = 250, EnergyCost = 3000 }, runway = { MetalCost = 500, EnergyCost = 4000 },
+   runway2 = { MetalCost = 1000, EnergyCost = 10000 }, dome = { MetalCost = 150, EnergyCost = 800 },
+   turret = { MetalCost = 700, EnergyCost = 4000 }, turret2 = { MetalCost = 900, EnergyCost = 6000 },
+   turret2_focus = { MetalCost = 900, EnergyCost = 6000 }, turret3 = { MetalCost = 1150, EnergyCost = 7500 },
+   turret3_focus = { MetalCost = 1150, EnergyCost = 7500 }, subswarm = { MetalCost = 600, EnergyCost = 3000 },
+   sublauncher = { MetalCost = 800, EnergyCost = 6000 },
 }
 
 -- weapon-file dump sections for weapons whose file isn't readable

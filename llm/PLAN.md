@@ -174,4 +174,10 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
   It fires 50 `dome` bolts 0.04 s apart (speed 1000, reload 15 s); each bolt becomes a `dome_barrier` beam (MaxAge 1 s,
   AntiAirDamage 1e6). Raising the barrier's MaxAge made no visible difference; the dome grows by firing longer
   (`DomeScaling`). Owner test: works.
+- High Seas weapon list (logged 2026-11-11; SaveName, file under `mods/dlc2/weapons/`, links, metal/energy): dome 150/800;
+  hardpoint → turret, orbital_laser (500/2000; a platform without a projectile, no levels); orbital_laser →
+  orbital_laser2 (700/4000); orbital_laser2 (800/6000); runway → runway2; subswarm (Marine Swarm, 600/3000) →
+  sublauncher (Marine Warhead, 800/6000); turret → turret2 (700/4000); turret2 → turret3, turret2_focus (900/6000);
+  turret2_focus → turret3_focus, turret2; turret3 → turret3_focus (1150/7500); turret3_focus → turret3. No
+  `InvertedType`. Marine Swarm fires `missile` (14 rounds, reload 20 s), Marine Warhead `missile2` (reload 25 s).
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.
