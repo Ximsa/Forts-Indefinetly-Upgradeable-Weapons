@@ -12,7 +12,7 @@ function FindAndReplaceChildProjectiles(parent_projectile, child_projectile_save
    end)
 end
 
-function AddProjectileUpgrades(projectile_savename, child_projectile_savenames)
+function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, scaling)
    if not added_projectiles[projectile_savename] then -- prevents adding the same projectile multiple times
       local base_projectile = DeepCopy(FindProjectile(projectile_savename))
       if not base_projectile then
@@ -30,7 +30,7 @@ function AddProjectileUpgrades(projectile_savename, child_projectile_savenames)
       for level = FirstLevel, LastLevel do
          -- indef projectile prototype
          local projectile = { SaveName = base_projectile.SaveName .. "_" .. level }
-         for field, fn in pairs(Scaling.ProjectileList) do
+         for field, fn in pairs(scaling) do
             if base_projectile[field] then
                projectile[field] = fn(base_projectile[field], UpgradeStep(level))
             end
@@ -46,14 +46,15 @@ function AddProjectileUpgrades(projectile_savename, child_projectile_savenames)
 end
 
 -- projectile_upgrade_table comes in the form of { ProjectileSavename = {} or {Child = {...}}} recursively
-function ProcessUpgradeTable(projectile_upgrade_table)
+-- scaling is the ProjectileList table for the entry that owns the tree (see ScalingFor); a projectile shared by
+-- several entries is built once, with the first entry's rules
+function ProcessUpgradeTable(projectile_upgrade_table, scaling)
    for projectile_savename, childs in pairs(projectile_upgrade_table) do
-      AddProjectileUpgrades(projectile_savename, childs)
-      ProcessUpgradeTable(childs)
+      AddProjectileUpgrades(projectile_savename, childs, scaling)
+      ProcessUpgradeTable(childs, scaling)
    end
 end
 
 for _, weapon_upgrade in ipairs(WeaponUpgrades) do
-   local projectile = weapon_upgrade.projectile
-   ProcessUpgradeTable(projectile)
+   ProcessUpgradeTable(weapon_upgrade.projectile, ScalingFor(weapon_upgrade, "ProjectileList"))
 end

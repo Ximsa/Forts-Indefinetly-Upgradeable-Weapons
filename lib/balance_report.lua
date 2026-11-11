@@ -119,7 +119,7 @@ local function Burst(weapon, damage, splash_radius)
 end
 
 -- mirrors weapons/weapon_file_upgrade.lua (AdjustRoundsEachBurst, ApplyScaling, ExtendBeamTable)
-local function V2Weapon(base_weapon, step)
+local function V2Weapon(base_weapon, step, weapon_upgrade)
    local weapon = {}
    for k, v in pairs(base_weapon) do weapon[k] = v end
    if not weapon.RoundsEachBurst then
@@ -127,7 +127,7 @@ local function V2Weapon(base_weapon, step)
       weapon.RoundPeriod = 1
    end
    local base_beam_duration = weapon.BeamDuration
-   for field, fn in pairs(Scaling.WeaponFile) do
+   for field, fn in pairs(ScalingFor(weapon_upgrade, "WeaponFile")) do
       if type(weapon[field]) == "number" then weapon[field] = fn(weapon[field], step) end
    end
    if weapon.IsBeam then
@@ -138,12 +138,13 @@ local function V2Weapon(base_weapon, step)
 end
 
 local function V2(base, step)
-   local weapon = step == 0 and base.weapon or V2Weapon(base.weapon, step)
+   local weapon = step == 0 and base.weapon or V2Weapon(base.weapon, step, base.upgrade)
    local p = base.projectile or {}
    local function Projectile(field)
       if not p[field] then return nil end
       if step == 0 then return p[field] end
-      return Scaling.ProjectileList[field](p[field], step)
+      local fn = ScalingFor(base.upgrade, "ProjectileList")[field]
+      return fn and fn(p[field], step) or p[field]
    end
    local damage = base.damage_field and Projectile(base.damage_field)
    local burst = Burst(weapon, damage, Projectile("ProjectileSplashDamageMaxRadius"))

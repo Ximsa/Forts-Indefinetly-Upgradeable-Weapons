@@ -71,6 +71,10 @@ The reasoning:
 - **Beam weapons** don't get more rounds; their `BeamDuration` grows at the same rate instead, and their
   `BeamDamageMultiplier` stays the base value, so a beam's damage grows through projectile damage and duration like
   any other weapon's. Their energy fire cost per shot is scaled like any other fire cost.
+- **Energy Dome** (owner, 2026-11-11) grows by firing longer: it keeps firing bolts every `RoundPeriod` (0.04 s) for
+  the whole burst, so its rounds per burst grows at twice the general rate (50 → 150 at level 25, 250 at 49) while its round period, size
+  (fire speed) and shape (spread, `FireStdDev`/`FireStdDevAuto`) stay; the barrier's own lifetime (`MaxAge`) didn't make the dome last visibly longer. Reload and hitpoints
+  follow the normal rules; its `build_cost_factor` is 0.5 (owner: it was underwhelming for its cost). Per-weapon rules like this live in the registry's `scaling` field (`DomeScaling`).
 - **Fire angle** widens by `L/3` degrees on each side.
 - **Numbers shown to the player** (costs, hitpoints, mass) are rounded to 3 significant digits (`Significant3`).
 - **High Seas ammunition** carries its own stats, which override the weapon's. They are scaled with the same
@@ -106,7 +110,7 @@ for about 30,000 metal / v2 6.2× for about 27,400; level 49 v1 11.3× for about
 - The price of a tier upgrade at a level is the build-cost difference between the two level weapons, never below
   the game's own price for that tier upgrade. The game prices its tier upgrades the same way.
 - `build_cost_factor` adjusts weapons whose base cost doesn't match their value at high levels
-  (e.g. buzzsaw ×3; flak and magnabeam ×0.5; machinegun and minigun ×1.2; incendiary mortar ×0.75).
+  (e.g. buzzsaw ×3; flak, magnabeam and energy dome ×0.5; machinegun and minigun ×1.2; incendiary mortar ×0.75).
 - **Upgrade time** is entered by hand per weapon in the `WeaponUpgrades` registry (`upgrade_time`, used as the level
   weapons' `BuildTimeComplete`): v1's value where v1 had the weapon, else the weapon's reload time. Without it, a level
   upgrade takes the base weapon's full build time (110 s for the cannon, against 26 s in v1).
@@ -131,6 +135,5 @@ This means the colour depends on `UpgradeCount`: changing the upgrade count chan
 
 ## Open design questions
 
-- How the Energy Dome should grow. It needs facts from the game first (which fields set its strength).
 - Whether the runway ammunition's rounds per burst (more aircraft per burst at high levels) is too strong;
   the balance report lists it for the owner.

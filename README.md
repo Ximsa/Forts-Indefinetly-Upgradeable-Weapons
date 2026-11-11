@@ -33,12 +33,12 @@ Roadmap of which weapons upgrades are already implemented
 - [X] Magnabeam
 
 ### High Seas
-- [ ] Energy Dome
+- [x] Energy Dome
 - [x] Runway Mk II
 - [ ] Marine Swarm
 - [ ] Marine Warhead
 - [ ] Harpoon
-- [ ] Deck Gun 3 Barrels (Focused)
+- [x] Deck Gun (1, 2 and 3 barrels, spread and focused)
 
 ## Commanders
 - [ ] Scattershot

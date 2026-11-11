@@ -165,4 +165,13 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
 - Runway Mk II (2026-11-11): owning mod `dlc2_skirmish` (file above). Its original sets `Projectile = "thunderbolt"`,
   `Sprites` (`runway2-base`, `runway2-headbg`) and `dlc2_Ammunition` (thunderbolt and nighthawk, 1 round each), the
   same projectile tree as the runway; no overlays needed. Loaded clean in skirmish and local multiplayer.
+- Deck Gun (2026-11-11): `turret`, `turret2`, `turret2_focus`, `turret3`, `turret3_focus`, owning mod `dlc2`, files
+  `mods/dlc2/weapons/<name>.lua`. Each original sets `Projectile = "turret"` (no child projectiles) and three sprites
+  (`turret-decal_*`, `turret-base*`, `turret-head*`), no `dlc2_Ammunition`, no overlays. Upgrade times are the reload
+  times (25 / 30 / 35 s). Tier upgrades and focus switches keep the level via the step 1 code. Owner test: works.
+- Energy Dome (2026-11-11): `dome`, owning mod `dlc2`, file `mods/dlc2/weapons/dome.lua`. The original sets
+  `Projectile = "dome"` and sprites `dome-base`, `dome-head`, `dome-arm`, `dome-flash`; no `dlc2_Ammunition`, no overlays.
+  It fires 50 `dome` bolts 0.04 s apart (speed 1000, reload 15 s); each bolt becomes a `dome_barrier` beam (MaxAge 1 s,
+  AntiAirDamage 1e6). Raising the barrier's MaxAge made no visible difference; the dome grows by firing longer
+  (`DomeScaling`). Owner test: works.
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.

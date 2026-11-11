@@ -121,11 +121,34 @@ Scaling =
 	 }
    }
 
+-- The scaling table of one stage ("WeaponFile" or "ProjectileList") for a registry entry: Scaling[stage] with the
+-- entry's own `scaling[stage]` rules on top (a rule there replaces the general one or adds a field).
+function ScalingFor(weapon_upgrade, stage)
+   local overrides = weapon_upgrade and weapon_upgrade.scaling and weapon_upgrade.scaling[stage]
+   if not overrides then return Scaling[stage] end
+   local result = {}
+   for field, fn in pairs(Scaling[stage]) do result[field] = fn end
+   for field, fn in pairs(overrides) do result[field] = fn end
+   return result
+end
+
+-- Energy Dome (owner, 2026-11-11): it grows by firing longer. Its bolts keep coming every RoundPeriod for the whole
+-- burst, so RoundsEachBurst grows at twice the general rate while RoundPeriod stays; the dome keeps its size
+-- (fire speed) and its shape (spread)
+DomeScaling =
+   {
+      WeaponFile = { RoundsEachBurst = function(value, level) return math.floor(DefaultScaleLinear(value, level, 2 * RoundsEachBurstGrowScale)) end,
+                     RoundPeriod = DefaultScaleNone, MinFireSpeed = DefaultScaleNone, MaxFireSpeed = DefaultScaleNone,
+                     FireStdDev = DefaultScaleNone, FireStdDevAuto = DefaultScaleNone },
+   }
+
 -- The registry. One entry per base weapon that gets levels.
 --   mod, weapon_filename: where the original weapon file is (relative to the game's data folder)
 --   projectile: the projectile tree to scale (children nested under the projectile that spawns them)
 --   ammunition: High Seas ammunition projectiles that the level weapon fires at its own level
 --   overlays: other mods' overlay files to replay on top of the original file (see llm/AGENTS.md, known issues)
+--   scaling: optional; per-weapon rules { WeaponFile = { Field = fn }, ProjectileList = { Field = fn } } on top of
+--     Scaling (see ScalingFor); ProjectileList rules apply to the entry's whole projectile tree
 --   original_file: optional; the original file's path if it isn't <mod>/weapons/<weapon_filename> (the file still runs
 --     with `path` set to mod)
 --   upgrade_time: seconds a level upgrade takes (the level weapons' BuildTimeComplete); v1's value, else the reload time
@@ -172,6 +195,7 @@ if dlc2Var_Active then
 	 { mod = "mods/dlc2", weapon_savename = "turret2_focus", weapon_filename = "turret2_focus.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 30, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "turret3", weapon_filename = "turret3.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 35, build_cost_factor = 1 },
 	 { mod = "mods/dlc2", weapon_savename = "turret3_focus", weapon_filename = "turret3_focus.lua", projectile = { ["turret"] = {} }, ammunition = {}, upgrade_time = 35, build_cost_factor = 1 },
+	 { mod = "mods/dlc2", weapon_savename = "dome", weapon_filename = "dome.lua", projectile = { ["dome"] = { ["dome_barrier"] = {} } }, ammunition = {}, scaling = DomeScaling, upgrade_time = 15, build_cost_factor = 0.5 },
    }) do
       table.insert(WeaponUpgrades, v)
    end
