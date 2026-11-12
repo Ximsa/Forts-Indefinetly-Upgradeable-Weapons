@@ -59,6 +59,10 @@ The state in which v2 may replace v1: every base-game and DLC weapon has levels,
 A file from another mod that changes a weapon the game has loaded.
 _Avoid_: patch, hook
 
+**List hook**:
+A file from another mod that changes the game's list of weapons or projectiles as a whole, rather than one weapon's file.
+_Avoid_: overlay (for this sense)
+
 **Replay**:
 Applying an overlay to a level weapon, because the game itself only applies it to the base weapon.
 

@@ -29,7 +29,8 @@ people too and live at the repo root.
 - Style: 3 spaces of indentation in most files (`weapon_list.lua` uses tabs; match the file you're editing), `snake_case` locals,
   `PascalCase` globals/functions.
 - Never edit an original weapon file's behaviour by copying it; always apply changes on top of it in `weapon_file_upgrade.lua`.
-- New tunable numbers go in `lib/scalings.lua`, not into the hook files.
+- New tunable numbers go in `lib/scalings.lua`, not into the hook files. Exception: commander adjustments live in
+  the commander's sub-mod `mods/commander-<x>/`, numbers included (DESIGN.md, "Commanders").
 - Keep the `<name>_<level>` suffix convention for SaveNames, projectiles, sprites and stub files.
 
 ## Commits

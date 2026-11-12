@@ -130,12 +130,46 @@ This means the colour depends on `UpgradeCount`: changing the upgrade count chan
 - **Weapons:** every base-game and DLC weapon (vanilla, Tons of Guns, Moonshot, High Seas including the orbital
   laser), plus weapons that only exist under a commander. Third-party weapons that v1 supported (Tanya's,
   Big Friendly Cannon, AA Laser, Cannon Cannon) are out.
-- **Commanders:** commander parity for all 15.
+- **Commanders:** commander parity for all 15, except Overdrive's upgrade time (see "Commanders").
 - **AI:** AI parity. Teaching AI forts to buy level upgrades is a separate item after the release.
 - **Game modes:** skirmish, multiplayer and sandbox. The campaign is not a target, which is why replaying an
   overlay from a skirmish-only mod is acceptable.
 - **Load time:** about one minute per match is acceptable for the finished mod (about 1,800 level weapons).
 - **v1 saves** are not carried over; v1 and v2 name level weapons differently.
+
+## Commanders
+
+Agreed with the owner on 2026-11-12.
+
+- **Each commander's support lives in its own sub-mod** `mods/commander-<x>/`, active only while that commander is.
+  Commander adjustments are written by hand there, copied from the commander's current files; nothing about
+  commanders is in `lib/scalings.lua` and no adjustment code is generated.
+- **Weapon-file overlays:** the change is copied once per weapon into a hand-written file in the sub-mod. The game
+  matches overlays by path, so `pregen_files.lua` writes one identical one-line file per level,
+  `mods/commander-<x>/mods/1369514837/weapons/<w>/<w>_<level>.lua`, that loads it. Which weapons get these files
+  comes from scanning the sub-mod's hand-written files.
+- **Applied after level scaling**, as in v1: the copied change runs on the finished level weapon, so absolute changes
+  stay absolute (`ReloadTime - 2` cuts 2 s at every level).
+- **Gameplay only:** sprite swaps (Scattershot's minigun head, Marksman's cannon barrel) are not copied, so the level
+  tint stays. Changes that affect play, including `HasLaserSight`, are.
+- **List hooks:** commander list hooks that loop over every weapon or projectile are left alone. For hooks that name
+  SaveNames (e.g. Heavy Weapons' `ProjectilesToAffect`), a hand-written list hook in the sub-mod extends the
+  commander's names to the level names; it reads the commander's numbers and globals where it can instead of copying them.
+- **Scripts and AI files** that name weapons (`commander.lua`, `ai/ai.lua`): hand-written files in the sub-mod, as in
+  v1. `commander.lua` wraps the original handlers. Level names are built in a loop over the levels, taking
+  `UpgradeCount` from `lib/scalings.lua` if scripts have `dofile`, otherwise a fixed 49.
+- **Commander-only weapons** (Turtle's `minigun2` and `sniper-ap`, Seep's armoured missiles, Armourdillo's
+  armour-piercing minigun) are normal `WeaponUpgrades` entries with stubs in `weapons/`, as v1 did with its
+  armour-piercing minigun. If the commander's list hook runs after this mod's, a list hook in the sub-mod triggers
+  their level creation.
+- **Overdrive exception to commander parity.** Overdrive (`commander-da-overclocker`) is the upgrade commander, so it
+  benefits most from levels. Its own hook gives level upgrades downgrades and halves their upgrade time; on top,
+  a hook in its sub-mod (`mods/commander-da-overclocker/weapons/weapon_list.lua`, constants included) multiplies the
+  level weapon's upgrade time by `m(level) / 0.5`, with v1's curve `m(n) = 1 − (n + 2^(1/0.75))^−0.75`
+  (`0.5` = Overdrive's multiplier, `0.75` = order). Applied once, Overdrive's upgrade time becomes `m(level)` of
+  normal: about 68 % at level 2, 85 % at level 10, 95 % at level 49. v1 applied it twice (to each weapon and again
+  through every upgrade pointing to it), which could make Overdrive slower than no commander; v2 does not.
+  `UpgradeNumber` stays the step; nothing else reads it.
 
 ## Open design questions
 
