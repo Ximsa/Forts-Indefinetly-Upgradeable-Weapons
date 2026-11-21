@@ -40,6 +40,9 @@ Sprite changes are undone, so that the level tint remains.
   A commander may make a weapon fire another projectile, e.g. Seep's armoured missiles.
   The level weapon then fires `<projectile>_<level>`, which must exist.
   If the commander creates that projectile after this mod's list hook, the sub-mod must create its levels.
+- **Beams.**
+  An overlay that sets its own `BeamTable` (Shockenaugh's firebeam fires a laser) keeps that table.
+  The level file then lengthens it rather than regenerating the original beam, which would lose the damage column.
 - **Wrong overlay paths.**
   A path in `CommanderOverlayFiles` that does not exist causes an error for every level in the game log.
   The path must also match the location of the original file, or the game does not apply it to the base weapon either.

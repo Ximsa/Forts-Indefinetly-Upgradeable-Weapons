@@ -43,7 +43,7 @@ Roadmap of which weapons upgrades are already implemented
 
 ## Commanders
 - [x] Scattershot
-- [ ] Seep
+- [x] Seep
 - [ ] Shockenaugh
 - [ ] Buster
 - [ ] Moonshine
