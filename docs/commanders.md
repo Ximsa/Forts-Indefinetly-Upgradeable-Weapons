@@ -34,6 +34,36 @@ A commander's weapon file is applied to the base weapon before level scaling,
 so set values and absolute changes grow with the level.
 Sprite changes are undone, so that the level tint remains.
 
+## Replaying a commander's weapon file
+
+The game applies a commander's overlay of a weapon file only when it loads the base file.
+The level weapons are built from separate stubs, so they would lack the change.
+For each listed overlay and level, `lib/pregen_files.lua` therefore writes a file such as
+`mods/commander-bpo-seep/mods/1369514837/weapons/missilelauncher/missilelauncher_2.lua`:
+
+```lua
+CommanderOverlays = { { mod = "mods/commander-bpo-seep", file = "mods/commander-bpo-seep/weapons/missilelauncher.lua" } }
+path = (string.gsub(path, "/mods/commander%-[%w%-]+$", "")) -- the mod root
+dofile(path .. "/weapons/weapon_file_upgrade.lua")
+```
+
+The folder `mods/1369514837/` overlays this mod's own files by path, as 1369514837 is its Workshop id.
+While the commander is active, the game thus runs this file directly after the level stub, with the same globals.
+At that point the level weapon is complete, but built without the commander's change.
+
+- The first line names the commander's file to replay; `mod` is the commander's folder,
+  which becomes `path` while that file runs.
+- The second line resets `path`, which points to the sub-mod in such a file, to the root of this mod.
+- The third line builds the level weapon a second time.
+
+In this second run, `weapons/weapon_file_upgrade.lua` loads the original weapon file, which restores the base values.
+`ReplayCommanderOverlays` then runs the commander's file on these values, and the level scaling follows as usual.
+The level weapon is thus the commander's version of the base weapon, scaled to its level.
+The repository holds only the path of the commander's file, never its code.
+
+The second run happens once per level and per loading pass of the commander, and adds a little to the loading time.
+Without the commander, the sub-mod is inactive and the first run alone defines the level weapon.
+
 ## Common pitfalls
 
 - **Projectile swaps.**
