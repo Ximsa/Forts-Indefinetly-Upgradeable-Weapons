@@ -1,1 +1,0 @@
-RoundsEachBurst = RoundsEachBurst + 2

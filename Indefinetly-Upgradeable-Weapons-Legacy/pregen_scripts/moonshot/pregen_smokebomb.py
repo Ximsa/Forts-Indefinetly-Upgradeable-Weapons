@@ -3,8 +3,8 @@ import math
 iterations = 64
 
 dofile ="""local tmp = path
-path = "mods/dlc1_weapons"
-dofile("mods/dlc1_weapons/weapons/smokebomb.lua")
+path = "mods/dlc_smokebomb"
+dofile("mods/dlc_smokebomb/weapons/smokebomb.lua")
 path = tmp"""
 EnergyFireCost = 300.0
 MetalFireCost = 30
@@ -14,7 +14,7 @@ base_Destroy_Projectile = "smoke"
 base_FireSpreadMultiplier = 0.025
 
 for x in range (2, iterations + 1):
-    newSprite = "Sprites={{Name = \"smokebomb_base"+str(x)+ "\",States={Normal={Frames={{texture=\"mods/dlc1_weapons/weapons/smokebomb/base.tga\",colour={"+str(math.sqrt(((x>>4) & 3)/4.0))+","+str(math.sqrt(((x>>2) & 3)/4.0))+","+str(math.sqrt((x & 3)/4.0))+",1},},mipmap=true,},},Idle=Normal,},},}"
+    newSprite = "Sprites={{Name = \"smokebomb_base"+str(x)+ "\",States={Normal={Frames={{texture=\"mods/dlc_smokebomb/weapons/smokebomb/base.tga\",colour={"+str(math.sqrt(((x>>4) & 3)/4.0))+","+str(math.sqrt(((x>>2) & 3)/4.0))+","+str(math.sqrt((x & 3)/4.0))+",1},},mipmap=true,},},Idle=Normal,},},}"
     newRoot = "Root.Sprite=\"smokebomb_base"+str(x)+"\""
     EnergyFireCost = EnergyFireCost + EnergyFireCost / 64 + 30
     MetalFireCost = MetalFireCost + MetalFireCost / 64 + 3

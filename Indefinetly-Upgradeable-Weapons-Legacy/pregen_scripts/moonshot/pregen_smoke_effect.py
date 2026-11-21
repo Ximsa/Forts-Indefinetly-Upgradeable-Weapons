@@ -2,7 +2,7 @@ import math
 
 iterations = 64
 
-line1 = 'dofile("mods/dlc1_weapons/effects/smoke.lua")\n'
+line1 = 'dofile("mods/dlc_smokebomb/effects/smoke.lua")\n'
 line2 =  'dofile(path .. "/effects/enlarge_my_effect.lua")\n'
 base_size = 150
 growth = 0.1

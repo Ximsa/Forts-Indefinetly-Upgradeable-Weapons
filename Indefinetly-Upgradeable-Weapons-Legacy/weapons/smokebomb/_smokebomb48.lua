@@ -1,8 +1,8 @@
 local tmp = path
-path = "mods/dlc1_weapons"
-dofile("mods/dlc1_weapons/weapons/smokebomb.lua")
+path = "mods/dlc_smokebomb"
+dofile("mods/dlc_smokebomb/weapons/smokebomb.lua")
 path = tmp
-Sprites={{Name = "smokebomb_base48",States={Normal={Frames={{texture="mods/dlc1_weapons/weapons/smokebomb/base.tga",colour={0.8660254037844386,0.0,0.0,1},},mipmap=true,},},Idle=Normal,},},}
+Sprites={{Name = "smokebomb_base48",States={Normal={Frames={{texture="mods/dlc_smokebomb/weapons/smokebomb/base.tga",colour={0.8660254037844386,0.0,0.0,1},},mipmap=true,},},Idle=Normal,},},}
 Root.Sprite="smokebomb_base48"
 NodeEffects = {}
 EnergyFireCost = 2680.6792842159025
