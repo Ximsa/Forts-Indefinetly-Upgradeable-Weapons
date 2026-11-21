@@ -112,7 +112,7 @@ function ApplyBaseValuesToLevels(projectile_savename, fields)
             if fn and type(base[field]) == "number" then
                projectile[field] = fn(base[field], UpgradeStep(level))
             else
-               projectile[field] = base[field]
+               projectile[field] = type(base[field]) == "table" and DeepCopy(base[field]) or base[field]
             end
          end
       end

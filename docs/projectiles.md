@@ -17,7 +17,7 @@ For each level, `weapons/projectile_list.lua` copies the base projectile, scales
 
 The game and the commanders transform projectiles during play:
 a firebeam sets a shell on fire, a hit damages a warhead, and an armoured missile loses its armour.
-Such versions are recognized by their prefix (`TransformedProjectilePrefixes`: flaming, damaged, armoured).
+Such versions are recognized by their prefix (`TransformedProjectilePrefixes`: flaming, damaged, armoured, uranium).
 Every projectile in a tree receives its existing transformed versions as children,
 so a level projectile becomes the same level of its transformed version, and back.
 Reactions keyed by the SaveName of another projectile, e.g. `Effects.Impact["firebeam"]`,

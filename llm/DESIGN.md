@@ -42,8 +42,8 @@ that a few levels stop being affordable or a single weapon breaks the match.
   game sets on fire, damages or splits becomes the same level of the resulting projectile. Every projectile in a
   registry tree gets its existing `flaming…`, `damaged…` and `armoured…` versions as children
   (`TransformedProjectilePrefixes`); a reaction in a transformed version that turns it back (a shot-down armoured
-  missile becomes the plain one) leads to the same level of the plain one. Buster's uranium versions will keep their
-  level too (step 5).
+  missile becomes the plain one) leads to the same level of the plain one. Buster's `uranium…` versions, which it
+  creates after this mod's list hook, get their levels in its sub-mod.
 - **Other projectiles react to a level projectile as to its base**: a reaction keyed by SaveName
   (`Effects.Impact["firebeam"]`: a shell catches fire) also applies to every level of that projectile, so a level
   firebeam sets shells on fire. Fixed 2026-11-21 after the High Seas test round.

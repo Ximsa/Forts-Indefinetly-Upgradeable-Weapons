@@ -43,7 +43,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Scattershot
 - [x] Seep
 - [x] Shockenaugh
-- [ ] Buster
+- [x] Buster
 - [ ] Moonshine
 - [ ] Phantom
 - [ ] Architect

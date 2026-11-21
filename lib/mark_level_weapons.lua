@@ -14,6 +14,6 @@ if type(MarkDevicesOnActiveList) == "table" and WeaponsToMark then
          MarkDevicesOnActiveList[level_name] = true
       end
    end
-elseif Log then
+elseif WeaponsToMark and Log then -- a commander without a focus icon (Buster) has neither list
    Log("IUW: MarkDevicesOnActiveList not found, level weapons get no focus icon")
 end
