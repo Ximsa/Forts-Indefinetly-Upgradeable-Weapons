@@ -50,7 +50,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Overdrive
 - [x] Hurricane
 - [x] Firebird
-- [ ] Warthog
+- [x] Warthog
 - [ ] Eagle Eye
 - [ ] Pinchfist
 - [ ] Spook
