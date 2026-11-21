@@ -66,6 +66,10 @@ CommanderOverlayFiles = {
       "mods/weapon_pack/weapons/rocket.lua",
       "mods/dlc1_weapons/weapons/buzzsaw.lua",
    },
+   ["commander-ee-fireman"] = {
+      "weapons/machinegun.lua",
+      "mods/weapon_pack/weapons/firebeam.lua",
+   },
 }
 
 for commander, files in pairs(CommanderOverlayFiles) do

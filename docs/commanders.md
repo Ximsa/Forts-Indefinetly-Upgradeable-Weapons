@@ -76,6 +76,8 @@ Without the commander, the sub-mod is inactive and the first run alone defines t
 - **Beams.**
   An overlay that sets its own `BeamTable` (Shockenaugh's firebeam fires a laser) keeps that table.
   The level file then lengthens it rather than regenerating the original beam, which would lose the damage column.
+  An overlay that regenerates the beam instead (Firebird: `GenerateBeamTable(3.2, 0.05, 1.25)`) has its interval and
+  scale recorded, and the level beam is regenerated at its own duration with them.
 - **Wrong overlay paths.**
   A path in `CommanderOverlayFiles` that does not exist causes an error for every level in the game log.
   The path must also match the location of the original file, or the game does not apply it to the base weapon either.
