@@ -34,12 +34,12 @@ that a few levels stop being affordable or a single weapon breaks the match.
 - **Every tier gets levels**, not only the last weapon of a chain.
 - **Variants keep their level**: a level weapon's tier upgrade, ceiling-mounted form or mode switch (such as the
   deck gun's focused form) leads to the same level of the other weapon. The game links weapons only through
-  `Upgrades` and `InvertedType`. Done for tier upgrades and ceiling-mounted forms; **(planned: the deck gun's
-  focused form, PLAN step 3)**
-- **Transformed projectiles keep their level**: a level projectile that the game sets on fire, damages or splits
-  becomes the same level of the resulting projectile. Every projectile in a registry tree gets its existing
-  `flaming…` and `damaged…` versions as children (`TransformedProjectilePrefixes`). Armoured versions (fired only under
-  commanders) come with step 5.
+  `Upgrades` and `InvertedType`, so a mode switch is a tier upgrade (the deck gun's focused form uses the upgrade
+  effect; to confirm in-game, PLAN status).
+- **Transformed projectiles keep their level** (GLOSSARY.md, "Transformed projectile"): a level projectile that the
+  game sets on fire, damages or splits becomes the same level of the resulting projectile. Every projectile in a
+  registry tree gets its existing `flaming…` and `damaged…` versions as children (`TransformedProjectilePrefixes`).
+  Commanders' armoured and uranium versions will keep their level too (step 5).
 
 ## Scaling curves
 
@@ -150,6 +150,17 @@ Agreed with the owner on 2026-11-12.
   comes from scanning the sub-mod's hand-written files.
 - **Applied after level scaling**, as in v1: the copied change runs on the finished level weapon, so absolute changes
   stay absolute (`ReloadTime - 2` cuts 2 s at every level).
+- **Set values become differences** (owner, 2026-11-12): where a commander sets a stat that levels scale to a fixed
+  value (Eagle Eye's minigun `RoundsEachBurst = 11`, Firebird's `BeamDuration = 3.2`, active fire costs), the copy
+  applies the same difference from the base value (`RoundsEachBurst + (11 - base)`), so the level keeps what it bought.
+  Stats that levels don't scale (`HeatPeriod`, `RoundPeriod`, ...) are set as written.
+- **Projectile swaps keep the level:** an effect that makes a weapon fire another projectile (Shockenaugh's 20mm
+  cannon firing `cannon`, its firebeam firing `laser`, Seep's `armoured...`) fires that projectile at the same level, and
+  the costs and beam values copied with it go through the same scaling functions at that level.
+- **Perks keyed to a threshold follow the base weapon:** a level weapon gets Eagle Eye's reload bank exactly when its
+  base weapon does, even if its own reload is below the 9 s threshold.
+- **Build-speed perks don't touch upgrade times:** Eagle Eye's faster sniper build, like Architect's, leaves level
+  upgrades alone (tier upgrades aren't sped up either). Overdrive is the only commander that changes upgrade time.
 - **Gameplay only:** sprite swaps (Scattershot's minigun head, Marksman's cannon barrel) are not copied, so the level
   tint stays. Changes that affect play, including `HasLaserSight`, are.
 - **List hooks:** commander list hooks that loop over every weapon or projectile are left alone. For hooks that name
@@ -157,11 +168,15 @@ Agreed with the owner on 2026-11-12.
   commander's names to the level names; it reads the commander's numbers and globals where it can instead of copying them.
 - **Scripts and AI files** that name weapons (`commander.lua`, `ai/ai.lua`): hand-written files in the sub-mod, as in
   v1. `commander.lua` wraps the original handlers. Level names are built in a loop over the levels, taking
-  `UpgradeCount` from `lib/scalings.lua` if scripts have `dofile`, otherwise a fixed 49.
-- **Commander-only weapons** (Turtle's `minigun2` and `sniper-ap`, Seep's armoured missiles, Armourdillo's
-  armour-piercing minigun) are normal `WeaponUpgrades` entries with stubs in `weapons/`, as v1 did with its
-  armour-piercing minigun. If the commander's list hook runs after this mod's, a list hook in the sub-mod triggers
-  their level creation.
+  `UpgradeCount` from `dofile(path .. "/lib/scalings.lua")` (in a sub-mod `commander.lua`, `path` is the mod root).
+- **Commander-only weapons** (Armourdillo's armour-piercing minigun `minigun2`) are normal `WeaponUpgrades` entries
+  with stubs in `weapons/`, as v1 did. Commander-only projectiles (Seep's `armoured<name>`, Buster's `uranium<name>`)
+  are transformed projectiles and will keep their level like the others (see "Levels"; not done yet, step 5). A
+  commander's own list hook runs after this mod's, so a weapon it defines there gets its levels from a list hook in
+  the sub-mod, which runs after the commander's.
+- **Load order** (in-game, 2026-11-12): this mod's list hook → the commander's list hook → the sub-mod's list hook →
+  `RegisterApplyMod` callbacks. A commander's change to a named base weapon or projectile therefore misses the level
+  ones and is copied in the sub-mod; its loops over everything reach them on their own.
 - **Overdrive exception to commander parity.** Overdrive (`commander-da-overclocker`) is the upgrade commander, so it
   benefits most from levels. Its own hook gives level upgrades downgrades and halves their upgrade time; on top,
   a hook in its sub-mod (`mods/commander-da-overclocker/weapons/weapon_list.lua`, constants included) multiplies the

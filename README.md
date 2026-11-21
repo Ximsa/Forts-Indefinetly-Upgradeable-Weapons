@@ -34,10 +34,10 @@ Roadmap of which weapons upgrades are already implemented
 
 ### High Seas
 - [x] Energy Dome
-- [x] Runway Mk II
+- [x] Runway (Mk I and Mk II)
 - [x] Marine Swarm
 - [x] Marine Warhead
-- [ ] Harpoon
+- [x] Harpoon
 - [x] Deck Gun (1, 2 and 3 barrels, spread and focused)
 - [x] Orbital Laser (Mk I and Mk II)
 

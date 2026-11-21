@@ -59,7 +59,8 @@ if the count gets smaller, or leave them on purpose and say so.
 ### Add a scaled stat
 
 Add `Field = fn` to the right table in `Scaling` (`WeaponList`, `WeaponFile` or `ProjectileList`). If it's a weapon-file
-global.
+global, `ApplyScaling` in `weapons/weapon_file_upgrade.lua` scales it (and the same field on each ammunition entry)
+like the others; a field nested in a table needs its own handling there.
 
 ## Deploy for testing
 

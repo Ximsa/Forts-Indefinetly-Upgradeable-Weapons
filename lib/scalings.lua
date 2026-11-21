@@ -14,7 +14,7 @@ DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDam
 RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam duration for beams (set by the owner: doubles by step 24)
 BuildCostGrowScale = 0.50                -- sub-quadratic: build cost
 FireCostGrowScale = 0.10                 -- sub-quadratic: fire cost
-ReloadDecay = 0.98                       -- geometric: reload time (set by the owner)
+ReloadDecay = 0.98                       -- geometric: reload time and round period (set by the owner)
 
 function DefaultScaleNone(value, level, grow_scale) return value end
 
@@ -65,7 +65,7 @@ Scaling =
 	    StructureSplashDamage = DefaultScaleFractionalPower,
 	    StructureSplashDamageMaxRadius = DefaultScaleFractionalPower,
 	    ReloadTime = function(value, level) return Significant3(value * ReloadDecay ^ level) end,
-	    RoundPeriod = function(value, level) return Significant3(value * 0.98 ^ level) end,
+	    RoundPeriod = function(value, level) return Significant3(value * ReloadDecay ^ level) end,
 	    MinFireSpeed = DefaultScaleNone,
 	    MaxFireSpeed = DefaultScaleFractionalPower,
 	    MinFireRadius = DefaultScaleNone,

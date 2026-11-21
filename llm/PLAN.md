@@ -4,15 +4,35 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status (end of session 2026-11-11): steps 1 and 2 done; steps 3 and 4 in code.**
+**Status (2026-11-21): steps 1 and 2 done; steps 3 and 4 in code, every High Seas weapon registered and ticked.**
 **Open before they count as done:**
-**- Step 3: one round with every High Seas weapon built and upgraded and a clean log.**
+**- Step 3: one round with every High Seas weapon built and upgraded and a clean log. In it, level-upgrade `turret2`,**
+**  switch it to focused and expect `turret2_focus_2`; if it isn't, untick Deck Gun in the README.**
 **- Step 4: AI parity confirmed by the owner (AI anti-air works without hangs); not yet checked: a level cannon through a**
 **  firebeam keeps its level (level flaming projectiles), and `damagedmissile2` levels in-game.**
-**- Ask the owner whether to tick Harpoon in the README (it has had levels since before step 3).**
 **- Optional: check once (temporary Log in `ai/ai.lua`) whether the AI scripts have `path` and `dofile`; if so, replace**
 **  the generated `ai/ai.lua` with hand-written code that reads the registry (offered; the owner hasn't decided).**
-**Then step 5 (commanders).**
+**Step 5 (commanders): design agreed, 5.1 (in-game facts) done 2026-11-12; 5.2 (survey) recorded below except the**
+**packed Buster, Moonshine and Phantom (the `?` cells) and the open facts under the table.**
+
+## Consistency cleanup (agreed 2026-11-21)
+
+A review found docs and code disagreeing. GLOSSARY.md is already updated (AI parity, transformed projectile,
+commander parity's Overdrive exception). Work these in order, one per session if needed:
+
+1. ~~Remove the step 5.1 probe (`lib/probe.lua`, `mods/commander-*` probe sub-mods, `-- IUW probe` lines).~~ Done 2026-11-21.
+2. ~~Rewrite step 4.1 and its "Done when" to the new AI parity: `ShootableProjectile` and the four anti-air tables only,
+   because copying more AI tables made the game hang.~~ Done 2026-11-21.
+3. ~~DESIGN: point "Transformed projectiles keep their level" to the glossary term; armoured and uranium versions
+   "will keep their level (step 5)" (where they get their levels is decided in step 5.3).~~ Done 2026-11-21.
+4. ~~DESIGN: drop "planned: the deck gun's focused form" (the dump suggests it is a tier upgrade). Add an open check:
+   level-upgrade `turret2`, switch to focused, expect `turret2_focus_2`; if not, untick Deck Gun in the README.~~
+   Done 2026-11-21 (the check is in the status above).
+5. ~~README: tick Harpoon; rename the runway line to "Runway (Mk I and Mk II)".~~ Done 2026-11-21.
+6. ~~`lib/scalings.lua`: `RoundPeriod` uses `ReloadDecay` instead of a literal 0.98 (same value today).~~ Done 2026-11-21.
+7. ~~AGENTS.md "Add a scaled stat": finish the sentence: a weapon-file global is scaled by `ApplyScaling` (and on each
+   ammunition entry) like the others; a field nested in a table needs its own handling in `weapon_file_upgrade.lua`.~~ Done 2026-11-21.
+8. ~~Bring the step 3 table and the status lines above up to date.~~ Done 2026-11-21.
 
 ## Working rules
 
@@ -80,14 +100,17 @@ the list from item 3.
 One weapon at a time: find its facts in-game, add the registry entry (with `upgrade_time`), regenerate stubs,
 deploy, owner tests, tick the README.
 
+All rows are registered and ticked; what's left is the test round in the status above.
+
 | README name | SaveName(s) | Notes |
 |---|---|---|
-| Runway Mk II | `runway2` | `runway` is registered; `runway2` is its tier upgrade and uses the same projectile tree |
-| Deck Gun | `turret`, `turret2`, `turret2_focus`, `turret3`, `turret3_focus` | all five get levels; the focused forms are variants |
-| Energy Dome | `dome` (projectile `dome`) | open: how it should grow. Find which fields set its strength, then ask the owner |
-| Marine Swarm | to confirm (dump header `subSwarm`) | likely a variant of the swarm |
-| Marine Warhead | to confirm (a second `Missile [missile2]` dump section) | likely a variant of the warhead |
-| Orbital Laser | `orbital_laser`, `orbital_laser2` | last; marker and beam setup is unusual |
+| Runway (Mk I and Mk II) | `runway`, `runway2` | `runway2` is the tier upgrade and uses the same projectile tree |
+| Deck Gun | `turret`, `turret2`, `turret2_focus`, `turret3`, `turret3_focus` | all five get levels; the focused forms are variants (to confirm in-game) |
+| Energy Dome | `dome` (projectiles `dome`, `dome_barrier`) | grows by firing longer (`DomeScaling`, owner 2026-11-11) |
+| Marine Swarm | `subswarm` (projectile `missile`) | |
+| Marine Warhead | `sublauncher` (projectile `missile2`) | |
+| Orbital Laser | `orbital_laser`, `orbital_laser2` | level markers order level beams through the wrapped beam source |
+| Harpoon | `harpoon` | had levels before step 3; ammunition from overlays |
 
 For each weapon, record: the owning mod (the log's "Activating mod" lines), whether the original file already has
 `Projectile`, `Sprites` and `dlc2_Ammunition`, and which overlays add to it (list them under `overlays`).
@@ -96,10 +119,12 @@ Done when every row is ticked in the README and the game log is clean with all o
 
 ## Step 4: AI parity and transformed projectiles
 
-1. **AI parity.** Add `ai/ai.lua`. For every level, copy each AI entry that names a registered base weapon or one
-   of its projectiles to the level's name: `ShootableProjectile`, `data.AntiAirErrorStdDev`, `data.AntiAirOpenDoor`
-   (also its inner per-projectile tables), `data.AntiAirFireProbability`, `AntiAirFireProbabilityHumanAssist`, and
-   any other table in the game's `ai\ai.lua` (and Tons of Guns' `ai\ai.lua`) keyed by weapon or projectile name.
+1. **AI parity**, as v1 did it. `lib/pregen_files.lua` generates `ai/ai.lua`. For every level, it copies the
+   `ShootableProjectile` entry of each registered projectile (with its transformed versions) to the level projectile,
+   and for each registered weapon that has anti-air settings it copies `data.AntiAirErrorStdDev`,
+   `data.AntiAirOpenDoor`, `data.AntiAirFireProbability` and `AntiAirFireProbabilityHumanAssist` to the level weapon.
+   Nothing else: copying more (the inner per-projectile tables of `AntiAirOpenDoor`, target priority lists, the
+   `data` tables recursively) made the game hang (2026-11-11).
    Done when a level-1 flak shoots down a level-7 mortar shell as it does a base one, and a level-7 flak
    behaves as anti-air like the base flak.
 2. **Transformed projectiles keep their level.** The game makes a separate projectile `"flaming" .. SaveName`
@@ -118,7 +143,7 @@ which README name before starting.
 The design was agreed on 2026-11-12 and is in DESIGN.md, "Commanders": one hand-written sub-mod per commander,
 copied changes applied after level scaling, gameplay changes only, and the Overdrive exception.
 
-1. **In-game facts first** (temporary `Log`, one round), record them under "Facts collected so far":
+1. **In-game facts first** (done 2026-11-12; see "Commander loading" under "Facts collected so far"):
    does `mods/commander-<x>/mods/1369514837/weapons/...` still apply to a Workshop-loaded mod; what `path` is inside
    such an overlay; whether commander list hooks (`RegisterApplyMod`) run before or after this mod's list hooks;
    whether commander scripts have `dofile`.
@@ -137,6 +162,35 @@ Done per commander when, in a skirmish with that commander, a level-2 and a leve
 and active effects as their base weapon (sprite swaps excepted), and the commander is ticked in the README.
 Overdrive instead: a level-2 upgrade takes about 68 % and a level-49 upgrade about 95 % of its normal time, and
 downgrades work at every level.
+
+### Survey (2026-11-12, from the current files in `data\mods\commander-*`)
+
+Weapons by SaveName (file → SaveName: `snipertower` sniper, `sniper-ap` sniper2, `mortar-incendiary` mortar,
+`mortar` mortar2, `missileswarm` missile, `missilelauncher` missile2, `beamlaser` laser, `20mmcannon` cannon20mm).
+"Overlay" = weapon-file change to copy into the sub-mod; "named" = list hook or script that names base SaveNames
+(misses levels); "all" = reaches levels by itself (loops over everything, `weapons/weapon.lua` hooks, or applies only
+to weapons that aren't upgrades). Sprite swaps are left out (DESIGN.md).
+
+| Commander (folder) | Overlays | Named list hooks | Scripts / AI / other | Reaches levels by itself |
+|---|---|---|---|---|
+| Scattershot (`bpo-scattershot`) | machinegun (+1 round, HeatPeriod, ±8° arc; active CoolPeriod), minigun +1, cannon20mm +1 (active: 5 projectiles per round, spray), flak +1, shotgun +4 with spread, buzzsaw +1, smokebomb +1, rocket (active: `RoundsEachBurst = 3`, fire cost ×1.5), sniper and sniper2 (spread ×2; active: +1 round, reload ×1.5 / ×1.7, `Sprites[3]` reload frame) | projectile `flak` shrapnel 18 | `WeaponsToMark` (machinegun, minigun, sniper, sniper2) | active spread `weapon.lua`; trajectory preview |
+| Seep (`bpo-seep`) | missile, missileinv (FireDelay 2; active `Projectile = "armouredmissile"`), missile2, missile2inv (FireDelay 2), rocket, rocketemp (energy fire cost ×0.9; active armoured projectile) | `damagedmissile2` splits into 15 `missile`; active: `rocket`, `rocketemp`, `flamingrocketemp` erratic; `smoke` MaxAge, FieldRadius | `WeaponsToMark` (4 missiles); `common`: `MakeArmouredVersion` missile, rocketemp, AI `ShootableProjectile` armoured | thrust loop |
+| Shockenaugh (`bpo-shockenaugh`) | cannon20mm (active: fires `cannon` with cannon stats and costs), firebeam (active: fires `laser` with its own beam table and costs), smokebomb `DestroyProjectile = nil` | weapon `buzzsaw` MaxWeaponGroupSize nil | AI: `AntiAirAddContextButton`, `data.AntiAirPower` for shotgun; rules `MaxWeaponGroupSize = 4` | – |
+| Architect (`da-builder`) | – | – | – | build time ×0.25 only for weapons without `Prerequisite == "upgrade"` (levels excluded, as tier upgrades) |
+| Overdrive (`da-overclocker`) | – | – | – | downgrades and halved upgrade `BuildDuration` (nerf: DESIGN.md) |
+| Hurricane (`da-speed-demon`) | machinegun (`HeatPeriod = 1.2`, RoundPeriod −0.04), minigun, cannon20mm, flak, buzzsaw (RoundPeriod −0.04), mortar, mortar2 (`HurricaneActiveReloadFactor = 0.75`), rocket (reload +⅓ × activeValue) | – | `WeaponsToMark` (14 names) | active reload `weapon.lua`; build, scrap and repair loop |
+| Firebird (`ee-fireman`) | machinegun (active `HeatPeriod = 1.2`), firebeam (`BeamDuration = 3.2`, `GenerateBeamTable`) | callback: `mortar`, `cannon`, `cannon20mm`, `flaming*` (7), active `sniper`, `sniper2`, `mortar2`, `missile2`, `damagedmissile2`; its active loop over all projectiles excludes base `sniper2`, `cannon`, `mortar` by reference, so their levels wrongly get the generic radius | `WeaponsToMark` (8 registered) | active incendiary loop |
+| Warthog (`ee-heavy-weapons`) | ReloadTime −2, range ×1.2, MinVisibility: cannon, cannon20mm, laser (active beam ×activeValue), howitzer, turret (5), orbital_laser (2); missile, missile2 ReloadTime −2; mortar2 −0.54 | callback: `ProjectilesToAffect` (global) | `WeaponsToMark`, `WeaponsWithSecondChance` | thrust loop |
+| Eagle Eye (`ee-marksman`) | machinegun (kickback ×0.5; active `RoundsEachBurst = 9`, RoundPeriod, `HeatPeriod = 1.9`), minigun (`RoundsEachBurst = 11`, reload + FireDelay; active fire cost 600 / 30, splash), mortar, mortar2 kickback, sniper, sniper2 reload ×0.8, `HasLaserSight` on these and cannon, cannon20mm, flak, rocket, rocketemp, shotgun, harpoon | weapon `sniper` build time ×0.5, `sniper`/`sniper2` group size and grouping; callback `ExplosiveProjectileDamageFactor` (global, keyed minigun, sniper, sniper2) | `WeaponsToMark`, `WeaponsWithSights` (tip only); AI `AntiAirAddContextButton` minigun; `weapon.lua` gives a `ReloadBank` when `ReloadTime >= 9` | drag loop |
+| Pinchfist (`iba-miser`) | – | – | – | fire cost `weapon.lua`, reclaim loop, icon on every weapon type |
+| Spook (`iba-spy`) | – | – | – | nothing weapon-specific |
+| Armourdillo (`iba-turtle`) | sniper2 active FireEffect (cosmetic) | tier upgrade `minigun` → `minigun2`; active `sniper2` and `minigun2` projectile penetration | `common`: commander-only weapon `minigun2` (AP minigun) with projectile and flaming version | repair cost loop |
+| Buster (`cf-buster`, packed; v1 hint) | ? | v1: `uranium<name>` projectiles of mortar2, cannon, rocket, cannon20mm, howitzer (`ProjectilesToUranium`, `ProjectileEffects`); active EMP on sniper2 projectile; sniper2 `SpotterFactor = 1` | v1: `WeaponsToMark` | ? |
+| Moonshine (`cf-moonshine`, packed; v1 hint) | ? | v1: material `shield` `ForcedReflection` lists sniper2 | – | ? |
+| Phantom (`cf-phantom`, packed) | ? | ? | ? | ? |
+
+Open facts for the in-game check of each commander: whether `weapons/weapon.lua` hooks and `common/` lists reach level
+weapons (and whether `common/` runs before this mod's list hook, which decides where `minigun2` gets its levels).
 
 ## Step 6: finish
 
@@ -213,3 +267,20 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
   hang.
 - Forts gives mods no `loadfile` (a temporary log that used it broke `weapon_list.lua` for a round).
 - The AI tables are keyed by weapon or projectile SaveName, so no level weapon or projectile is in them today.
+- Commander loading (probe round with Scattershot vs. an AI Phantom, 2026-11-12):
+  - The sub-mod layout works for the Workshop mod: `mods/commander-bpo-scattershot/mods/1369514837/weapons/minigun/minigun_2.lua`
+    ran after the level stub, in the same globals (`UpgradeLevel` and the scaled stats are visible). It runs only in the
+    passes for the commander's own team (inactive and active), not for the other team's.
+  - `path` is `<mod root>/mods/commander-<x>` in sub-mod overlays and sub-mod list hooks, but `<mod root>` in a sub-mod
+    `commander.lua`. Inside `RegisterApplyMod` callbacks, even this mod's own, `path` is the commander's
+    (`mods/commander-<x>`, or `.` in the first pass), so callbacks must not build paths from it.
+  - Lists are loaded once per team and commander state (inactive, then active); weapon lists get one more pass first
+    (sprites). `active` is nil in this mod's list hooks and false/true in sub-mod list hooks and callbacks.
+  - Order per pass: this mod's list hook → the commander's own list hook → this mod's sub-mod list hook → `RegisterApplyMod`
+    callbacks. So a commander's top-level change to a named base projectile misses the level projectiles (Scattershot
+    sets `flak` shrapnel to 18, `flak_2` stays 12); its loops over all weapons or projectiles, top-level or in callbacks,
+    reach them (level weapons exist by then). The sub-mod list hook sees the commander's change and can copy it.
+  - Commander scripts load before the lists; a sub-mod `commander.lua` is appended to the commander's script
+    (`OnActivation` already defined) and has `dofile`. `teamId` is nil at load time.
+  - Phantom's folder is `commander-cf-phantom`.
+  - Active abilities that act on any selected device (Scattershot's trajectory preview) already reach level weapons.

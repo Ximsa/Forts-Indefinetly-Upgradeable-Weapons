@@ -37,6 +37,10 @@ _Avoid_: vanilla upgrade
 A weapon the game treats as another form of the same weapon, such as its ceiling-mounted or focused form. A level weapon's variants are at the same level.
 _Avoid_: inverted type, alternate weapon
 
+**Transformed projectile**:
+A version of a projectile that the game or a commander makes from it, such as its flaming, damaged, armoured or uranium version. A level projectile's transformed versions are at the same level.
+_Avoid_: projectile swap (a weapon firing a different projectile, which is not a transformation)
+
 **Upgrade count**:
 The number of level upgrades available for each weapon.
 _Avoid_: level count, iterations
@@ -67,7 +71,7 @@ _Avoid_: overlay (for this sense)
 Applying an overlay to a level weapon, because the game itself only applies it to the base weapon.
 
 **Commander parity**:
-The rule that a commander affects a level weapon exactly as it affects that weapon's base weapon, no more and no less.
+The rule that a commander affects a level weapon exactly as it affects that weapon's base weapon, no more and no less. Overdrive is the one agreed exception.
 
 **AI parity**:
-The rule that the game's AI data treats a level weapon or its projectiles exactly as it treats the base weapon's.
+The rule that the AI shoots down a level projectile as it does the base projectile, and fires a level anti-air weapon as it does the base weapon.
