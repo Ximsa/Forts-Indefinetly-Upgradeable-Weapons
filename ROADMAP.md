@@ -46,8 +46,8 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Buster
 - [x] Moonshine
 - [x] Phantom
-- [ ] Architect
-- [ ] Overdrive
+- [x] Architect
+- [x] Overdrive
 - [ ] Hurricane
 - [ ] Firebird
 - [ ] Warthog
