@@ -49,7 +49,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Architect
 - [x] Overdrive
 - [x] Hurricane
-- [ ] Firebird
+- [x] Firebird
 - [ ] Warthog
 - [ ] Eagle Eye
 - [ ] Pinchfist

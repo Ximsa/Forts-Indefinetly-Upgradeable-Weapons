@@ -10,8 +10,8 @@ LastLevel = UpgradeCount + 1
 -- (llm/DESIGN.md). 1.5 (owner, 2026-11-21: 32 levels instead of 48, for loading time) makes the top level 33 equal
 -- the old top level 49 (step 48).
 GlobalScale = 1.5
-function UpgradeStep(level) return (level - 1) * GlobalScale end
-SecondaryGrowScale = 0.15 -- growth rate of every stat without its own rate (range, splash, hitpoints, ...)
+-- growth rate of every stat without its own rate (range, splash, hitpoints, ...)
+SecondaryGrowScale = 0.15 
 -- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..24 on 2026-11-11
 -- (llm/DESIGN.md, "Balance against v1"). Only these (and build_cost_factor per weapon) are tuned; the curve shapes stay.
 DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
@@ -19,6 +19,8 @@ RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam d
 BuildCostGrowScale = 0.50                -- sub-quadratic: build cost
 FireCostGrowScale = 0.10                 -- sub-quadratic: fire cost
 ReloadDecay = 0.98                       -- geometric: reload time and round period (set by the owner)
+
+function UpgradeStep(level) return (level - 1) * GlobalScale end
 
 function DefaultScaleNone(value, level, grow_scale) return value end
 
