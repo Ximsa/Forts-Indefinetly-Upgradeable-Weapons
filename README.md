@@ -1,10 +1,10 @@
 # Indefinitely Upgradeable Weapons
 
-Keep upgrading your weapons long after the game would let you stop. Select a built weapon and press its upgrade button to reach the next level, e.g. "Cannon Level 2", and keep going.
+Keep upgrading your weapons long after the game would let you stop. Select a built weapon and press its upgrade button to reach the next level and keep going.
 
-Each level deals more damage, fires more rounds or for longer, and reloads faster, while range, splash and hitpoints grow more slowly. Each level also costs more than the one before, so a high level is a real investment. Upgraded weapons keep their level when they change tier or form, and their projectiles keep it when they catch fire or lose their armour. Each level has its own tint.
+Each level deals more damage, fires more rounds or for longer, and reloads faster. Each level also costs more than the one before, so a high level is a real investment.
 
-All weapons of the base game, Tons of Guns, Moonshot and High Seas are supported; DLC weapons require the DLC. Commander abilities work on upgraded weapons as on the originals, except that Overdrive speeds up level upgrades less than normal upgrades. The AI shoots down upgraded projectiles and uses upgraded anti-air weapons. Weapons from other mods are not upgradeable, saves from earlier versions of the mod do not carry over, and loading a match takes a little longer.
+All weapons of the base game, Tons of Guns, Moonshot and High Seas are supported; DLC weapons require the DLC. Commander abilities work on upgraded weapons as on the originals, except that Overdrive speeds up level upgrades less than normal upgrades. Loading a match takes a little longer.
 
 ## Development
 
