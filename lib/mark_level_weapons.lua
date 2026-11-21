@@ -12,17 +12,22 @@ if type(MarkDevicesOnActiveList) == "table" and MarkDevicesOnActiveList ~= Weapo
    table.insert(lists, MarkDevicesOnActiveList)
 end
 
-if #lists > 0 then
-   dofile(path .. "/lib/scalings.lua")
-   local base_names = {} -- copied first: the lists grow below
-   for _, name in ipairs(WeaponsToMark or {}) do table.insert(base_names, name) end
-   for _, list in ipairs(lists) do
-      for _, name in ipairs(base_names) do
-         for level = FirstLevel, LastLevel do
-            local level_name = name .. "_" .. level
-            table.insert(list, level_name)
-            list[level_name] = true
-         end
+dofile(path .. "/lib/scalings.lua")
+
+-- adds the level names of `names` (default: the list's own names) to `list`, as list entries and as name keys;
+-- also for a commander's other weapon lists (Warthog's WeaponsWithSecondChance)
+function AddLevelNames(list, names)
+   local base_names = {} -- copied first: the list may be `names` itself, which grows below
+   for _, name in ipairs(names or list) do table.insert(base_names, name) end
+   for _, name in ipairs(base_names) do
+      for level = FirstLevel, LastLevel do
+         local level_name = name .. "_" .. level
+         table.insert(list, level_name)
+         list[level_name] = true
       end
    end
 end
+
+local mark_names = {}
+for _, name in ipairs(WeaponsToMark or {}) do table.insert(mark_names, name) end
+for _, list in ipairs(lists) do AddLevelNames(list, mark_names) end
