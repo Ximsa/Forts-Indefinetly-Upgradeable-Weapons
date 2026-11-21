@@ -44,7 +44,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Seep
 - [x] Shockenaugh
 - [x] Buster
-- [ ] Moonshine
+- [x] Moonshine
 - [ ] Phantom
 - [ ] Architect
 - [ ] Overdrive
