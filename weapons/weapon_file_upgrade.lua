@@ -253,8 +253,14 @@ if Inverted then
 else
    UpdateSprite()
    AdjustRoundsEachBurst()
-   local base_beam_duration = BeamDuration
+   local base_beam_duration, base_reload_time = BeamDuration, ReloadTime
    ApplyScaling()
+   -- Eagle Eye's weapons/weapon.lua gives a reload bank to weapons that reload in 9 s or more, or that set
+   -- EagleEyeReloadBank. A level weapon gets it exactly when its base weapon does (llm/DESIGN.md, "Commanders"), even
+   -- though its own reload is shorter. Nothing else reads this global.
+   if base_reload_time and base_reload_time >= 9 and ReloadTime and ReloadTime < 9 and EagleEyeReloadBank == nil then
+      EagleEyeReloadBank = {}
+   end
    UpgradeAmmunition()
    ExtendBeamTable(base_beam_duration)
    if Projectile then

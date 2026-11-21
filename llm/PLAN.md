@@ -15,7 +15,8 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 **rockets and missiles, AI anti-air fires at them). Shockenaugh done (in-game 2026-11-21). Buster in code (2026-11-21): no weapon-file overlays (a probe found none;**
 **Forts' dofile ignores missing files silently), level names added to its ProjectilesToUranium; done (in-game 2026-11-21). Moonshine done (in-game 2026-11-21: level**
 **snipers EMP under the power; no weapon files and no shield ForcedReflection, per probe). Phantom done (in-game 2026-11-21: level magnabeams damage and burn). Architect needs no sub-mod (level weapons
-**have Prerequisite "upgrade", which its build-time perk skips); Overdrive done (both in-game 2026-11-21). Hurricane done (in-game 2026-11-21). Firebird done (in-game 2026-11-21). Warthog done (in-game 2026-11-21). Next: Eagle Eye.**
+**have Prerequisite "upgrade", which its build-time perk skips); Overdrive done (both in-game 2026-11-21). Hurricane done (in-game 2026-11-21). Firebird done (in-game 2026-11-21). Warthog done (in-game 2026-11-21). Eagle Eye done (in-game 2026-11-21). Pinchfist and Spook need no sub-mod (their changes reach the levels; folders
+**with .gitkeep), waiting for their in-game check. Then Armourdillo.**
 
 ## Working rules
 
@@ -271,3 +272,5 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
     (`OnActivation` already defined) and has `dofile`. `teamId` is nil at load time.
   - Phantom's folder is `commander-cf-phantom`.
   - Active abilities that act on any selected device (Scattershot's trajectory preview) already reach level weapons.
+- Without High Seas active (owner, 2026-11-21): a match with High Seas owned but not active loads with a clean log; the
+  High Seas registry entries are skipped quietly. Not yet tested: an account that doesn't own the DLCs.

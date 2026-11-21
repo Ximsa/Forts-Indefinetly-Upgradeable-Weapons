@@ -51,7 +51,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Hurricane
 - [x] Firebird
 - [x] Warthog
-- [ ] Eagle Eye
+- [x] Eagle Eye
 - [ ] Pinchfist
 - [ ] Spook
 - [ ] Armourdillo

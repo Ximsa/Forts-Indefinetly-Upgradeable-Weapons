@@ -168,7 +168,8 @@ Agreed with the owner on 2026-11-12; revised 2026-11-21: no commander code is co
   the costs and beam values set with it go through the same scaling functions at that level (the level file adds the
   level suffix to `Projectile` after the replay).
 - **Perks keyed to a threshold follow the base weapon:** a level weapon gets Eagle Eye's reload bank exactly when its
-  base weapon does, even if its own reload is below the 9 s threshold.
+  base weapon does, even if its own reload is below the 9 s threshold (the level weapon file sets `EagleEyeReloadBank`,
+  which Eagle Eye's `weapons/weapon.lua` honours).
 - **Build-speed perks don't touch upgrade times:** Eagle Eye's faster sniper build, like Architect's, leaves level
   upgrades alone (tier upgrades aren't sped up either). Hurricane's build time ×0.9 applies to every weapon, so it
   shortens tier and level upgrades alike (parity, 2026-11-21). Overdrive's upgrade-time change is the one exception.
