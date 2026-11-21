@@ -1,0 +1,6 @@
+dofile("devices/mine.lua")
+Sprites={{Name="wheel_anim27",InitialState="Normal",States={Normal={RandomStartFrame=true,Frames={{texture="devices/mine/Mine01.tga",colour={0.5,0.7071067811865476,0.8660254037844386,1}},{texture="devices/mine/Mine02.tga",colour={0.5,0.7071067811865476,0.8660254037844386,1}},{texture="devices/mine/Mine03.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine04.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine05.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine06.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine07.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine08.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine09.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},{ texture = "devices/mine/Mine10.tga", colour={0.5,0.7071067811865476,0.8660254037844386,1 }},duration = 0.1,blendColour = false,blendCoordinates = false,mipmap = true,},NextState = "Normal",},Idle ={Frames ={{ texture = "devices/mine/Mine10.tga" },	mipmap = true,},NextState = "Idle",	},},},}
+Root.ChildrenBehind[1].Sprite="wheel_anim27"
+NodeEffects = {} 
+MetalProductionRate = 56
+EnergyProductionRate = -83
