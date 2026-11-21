@@ -45,7 +45,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Shockenaugh
 - [x] Buster
 - [x] Moonshine
-- [ ] Phantom
+- [x] Phantom
 - [ ] Architect
 - [ ] Overdrive
 - [ ] Hurricane
