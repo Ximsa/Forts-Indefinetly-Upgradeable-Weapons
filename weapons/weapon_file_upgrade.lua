@@ -156,14 +156,21 @@ end
 -- swaps are left out: Root and Sprites are restored afterwards, so the level tint stays. While the overlays run, Sprites
 -- is a table that grows any path they touch: Scattershot's AP sniper sets a frame of a sprite state ("ReloadBPO") that
 -- only the game's faction files add.
-local function SpriteSink()
-   return setmetatable({}, { __index = function(t, k) local v = SpriteSink() rawset(t, k, v) return v end })
+-- The overlays run on a copy of the sprites (their sprite functions look up the weapon's own sprites) in which every
+-- missing key reads as a new such table, so they can write paths the base file doesn't have: Scattershot's AP sniper
+-- sets Sprites[3].States.ReloadBPO.Frames[10], a state only the faction files add. Lua 5.1's ipairs and # read raw,
+-- so loops over the sprites don't see these tables. Weapon files have no rawset; assigning inside __index doesn't
+-- call it again.
+local function SpriteSink(t)
+   local copy = {}
+   for k, v in pairs(t or {}) do copy[k] = type(v) == "table" and SpriteSink(v) or v end
+   return setmetatable(copy, { __index = function(s, k) local v = SpriteSink() s[k] = v return v end })
 end
 
 function ReplayCommanderOverlays()
    if not CommanderOverlays then return end
    local root, sprites = DeepCopy(Root), Sprites
-   Sprites = SpriteSink()
+   Sprites = SpriteSink(sprites)
    for _, overlay in ipairs(CommanderOverlays) do
       local tmp_path = path
       path = overlay.mod -- the commander's folder, as when the game runs the overlay
