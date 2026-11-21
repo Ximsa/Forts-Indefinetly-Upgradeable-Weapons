@@ -22,7 +22,7 @@ Each level is a small generated stub that loads the original file and scales its
    It covers the base game and Tons of Guns only, since the DLC files are packed.
 4. Deploy with `.\deploy.ps1` and test the weapon in a match.
    Build it, upgrade it to level 2 and to the top level, and read the game log afterwards.
-5. Tick the weapon in `README.md`.
+5. Tick the weapon in `ROADMAP.md`.
 
 ## Common pitfalls
 

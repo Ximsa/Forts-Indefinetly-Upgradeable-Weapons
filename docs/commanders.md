@@ -23,7 +23,7 @@ Code from the commander is never copied into the repository, partly for reasons 
    For the focus icon, it consists of a single line: `dofile(path .. "/lib/mark_level_weapons.lua")`.
 5. **Test in a match.**
    Compare a level-2 and a top-level weapon with the base weapon, with and without the active ability.
-   Then tick the commander in `README.md`.
+   Then tick the commander in `ROADMAP.md`.
 
 ## Order of application
 

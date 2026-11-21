@@ -1,63 +1,39 @@
-# Indefinitely Upgradeable Weapons
+# Indefinitely Upgradeable Weapons 2
 
-This mod adds seemingly indefinitely upgradeable weapons to Forts, allowing weapons to scale far beyond their vanilla upgrade limits!
+Keep upgrading your weapons long after the game would let you stop.
+Every supported weapon gains 32 extra levels, from Level 2 up to Level 33.
 
-## Weapons
+## How it works
 
-Roadmap of which weapons upgrades are already implemented
+- Select a built weapon and press its upgrade button. The weapon becomes the next level, e.g. "Cannon Level 2".
+- Each level deals more damage, fires more rounds or for longer, and reloads faster.
+  Range, splash, hitpoints and similar stats grow more slowly.
+- Each level costs more than the one before, so a high level is a real investment, not a free win.
+- Upgraded weapons keep their level when you switch tiers or forms:
+  a Level 5 Machine Gun upgrades to a Level 5 Minigun, and a Level 5 Deck Gun switches to a Level 5 focused Deck Gun.
+- Projectiles keep their level too: a Level 5 cannon shell that flies through a firebeam becomes a Level 5 flaming shell.
+- Each level has its own tint, so you can tell upgraded weapons apart at a glance.
 
-### Vanilla
-- [x] Machinegun
-- [X] Minigun
-- [X] Sniper
-- [X] AP-Sniper
-- [X] Incendiary Mortar
-- [X] Heavy Mortar
-- [X] Swarm Missiles
-- [X] Warhead
-- [X] Cannon   
-- [X] Laser
+## Supported content
 
-### Tons of Guns
-- [X] Flak
-- [X] Shotgun
-- [X] Emp Rocket
-- [X] Rockets
-- [X] 20mm Cannon
-- [X] Firebeam
+- **Base game:** Machine Gun, Minigun, Sniper, AP Sniper, Incendiary Mortar, Heavy Mortar, Swarm Missiles, Warhead, Cannon, Laser
+- **Tons of Guns:** Flak, Shotgun, EMP Rocket, Rockets, 20mm Cannon, Firebeam
+- **Moonshot:** Buzzsaw, Smoke Bomb, Howitzer, Magnabeam
+- **High Seas:** Energy Dome, Runway (Mk I and Mk II), Marine Swarm, Marine Warhead, Harpoon, Deck Gun, Orbital Laser (Mk I and Mk II)
 
-### Moonshot
-- [X] Buzzsaw
-- [X] Smoke Bomb
-- [X] Howitzer
-- [X] Magnabeam
+DLC weapons are only available if you own the DLC.
 
-### High Seas
-- [x] Energy Dome
-- [x] Runway (Mk I and Mk II)
-- [x] Marine Swarm
-- [x] Marine Warhead
-- [x] Harpoon
-- [x] Deck Gun (1, 2 and 3 barrels, spread and focused)
-- [x] Orbital Laser (Mk I and Mk II)
+## Commanders and AI
 
-## Commanders
-- [x] Scattershot
-- [x] Seep
-- [x] Shockenaugh
-- [ ] Buster
-- [ ] Moonshine
-- [ ] Phantom
-- [ ] Architect
-- [ ] Overdrive
-- [ ] Hurricane
-- [ ] Firebird
-- [ ] Warthog
-- [ ] Eagle Eye
-- [ ] Pinchfist
-- [ ] Spook
-- [ ] Armourdillo
+- Commander abilities work on upgraded weapons as they do on the originals,
+  e.g. Scattershot's extra rounds or Seep's armoured missiles.
+- Overdrive is the one exception: it speeds up level upgrades less than normal upgrades, to keep it fair.
+- The AI shoots down upgraded projectiles and uses upgraded anti-air weapons like the originals.
 
-## Agentic Coding
+## Notes
 
-Since 2026-11-11 this repository uses llm agents
+- This is version 2 of the mod. Saves and replays from version 1 do not carry over.
+- Weapons from other mods are not upgradeable.
+- Loading a match takes a little longer, as the mod adds many weapons.
+
+The current state of development is in the roadmap (`ROADMAP.md`) of the source repository.

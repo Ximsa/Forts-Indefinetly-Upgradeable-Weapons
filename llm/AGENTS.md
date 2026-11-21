@@ -48,7 +48,7 @@ suggested commit message for the uncommitted changes (`git status`) in a code bl
 2. Regenerate the stubs: `cd lib && lua55 pregen_files.lua` (`ai/ai.lua` reads the registry itself) (`lua55` is the owner's local Lua 5.5 install; any stand-alone Lua with `io`/`os` works).
 3. Run the offline check: `cd lib && lua55 check_lists.lua` (base-game and Tons of Guns weapons only; DLC lists are packed).
    For balance, `lua55 balance_report.lua` compares v2 with v1 (DESIGN.md, "Balance against v1").
-4. Tick the weapon off in `README.md`.
+4. Tick the weapon off in `ROADMAP.md`.
 5. Have the owner test it in-game.
 
 ### Change `UpgradeCount`

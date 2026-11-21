@@ -78,11 +78,11 @@ the list from item 3.
 ## Step 3: remaining High Seas weapons
 
 One weapon at a time: find its facts in-game, add the registry entry (with `upgrade_time`), regenerate stubs,
-deploy, owner tests, tick the README.
+deploy, owner tests, tick the roadmap (`ROADMAP.md`).
 
 All rows are registered and ticked; what's left is the test round in the status above.
 
-| README name | SaveName(s) | Notes |
+| Roadmap name | SaveName(s) | Notes |
 |---|---|---|
 | Runway (Mk I and Mk II) | `runway`, `runway2` | `runway2` is the tier upgrade and uses the same projectile tree |
 | Deck Gun | `turret`, `turret2`, `turret2_focus`, `turret3`, `turret3_focus` | all five get levels; the focused forms are variants (to confirm in-game) |
@@ -95,7 +95,7 @@ All rows are registered and ticked; what's left is the test round in the status 
 For each weapon, record: the owning mod (the log's "Activating mod" lines), whether the original file already has
 `Projectile`, `Sprites` and `dlc2_Ammunition`, and which overlays add to it (list them under `overlays`).
 
-Done when every row is ticked in the README and the game log is clean with all of them built and upgraded.
+Done when every row is ticked in the roadmap and the game log is clean with all of them built and upgraded.
 
 ## Step 4: AI parity and transformed projectiles
 
@@ -118,7 +118,7 @@ Done when every row is ticked in the README and the game log is clean with all o
 Commander mods in `data\mods`: `commander-bpo-scattershot`, `-bpo-seep`, `-bpo-shockenaugh`, `-da-builder`,
 `-da-overclocker`, `-da-speed-demon`, `-ee-fireman`, `-ee-heavy-weapons`, `-ee-marksman`, `-iba-miser`, `-iba-spy`,
 `-iba-turtle`. Buster and Moonshine (`commander-cf-*`) and Phantom are only in the packs. Confirm which folder is
-which README name before starting.
+which roadmap name before starting.
 
 The design was agreed on 2026-11-12 and is in DESIGN.md, "Commanders": one hand-written sub-mod per commander,
 copied changes applied after level scaling, gameplay changes only, and the Overdrive exception.
@@ -139,7 +139,7 @@ copied changes applied after level scaling, gameplay changes only, and the Overd
    Commander-only weapons (e.g. Armourdillo's armour-piercing minigun) get levels as part of their commander.
 
 Done per commander when, in a skirmish with that commander, a level-2 and a level-33 weapon show the same passive
-and active effects as their base weapon (sprite swaps excepted), and the commander is ticked in the README.
+and active effects as their base weapon (sprite swaps excepted), and the commander is ticked in the roadmap.
 Overdrive instead: a level-2 upgrade takes about 68 % and a level-33 upgrade about 93 % of its normal time, and
 downgrades work at every level.
 
@@ -182,7 +182,7 @@ weapons (and whether `common/` runs before this mod's list hook, which decides w
 2. Measure the match load time with everything active (`Loading took` in the game log). About one minute is
    acceptable; raise it with the owner if it is clearly more.
 3. Release: `ItemVersion` above v1's last (the old v1 copy says 51), release notes (v1 saves don't carry over;
-   third-party weapons are gone; levels now run 2..33), README complete, known issues in AGENTS.md cleaned up.
+   third-party weapons are gone; levels now run 2..33), README (the Workshop description) and roadmap complete, known issues in AGENTS.md cleaned up.
    The owner publishes from Forts.
 
 Done when every part of "feature complete" in GLOSSARY.md holds and the owner has published.

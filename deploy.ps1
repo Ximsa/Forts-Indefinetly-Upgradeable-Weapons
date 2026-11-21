@@ -13,7 +13,7 @@ if (-not (Test-Path $WorkshopDir)) { throw "Workshop folder not found: $Workshop
 # Replace the workshop item's contents with the mod files (/MIR deletes anything not in the repo).
 robocopy $src $WorkshopDir /MIR /NJH /NP `
     /XD .git .idea .vscode .agent-shell llm dump docs `
-    /XF .gitignore CLAUDE.md README.md GLOSSARY.md deploy.ps1 | Out-Host
+    /XF .gitignore CLAUDE.md README.md ROADMAP.md GLOSSARY.md deploy.ps1 | Out-Host
 
 # robocopy: exit codes < 8 mean success
 if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
