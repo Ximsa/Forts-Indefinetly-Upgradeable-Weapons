@@ -343,10 +343,10 @@ if tune then
    -- power isn't tuned: the owner set damage (v1's 0.125), rounds per burst (1/24) and reload decay (0.98)
    -- spend: build cost (metal is compared; energy is reported)
    -- priced by firepower (owner, 2026-11-21): metal per multiple of base power like v1's, over levels 2..24
-   -- (v2 levels 2..15, before 1-round weapons get a second round); the exponent is shared with the fire cost
-   Search({ "metal_per_power" }, { CostPower = Range(1.0, 2, 0.1), BuildCostGrowScale = Range(0.01, 2, 0.01) })
+   -- (v2 levels 2..15, before 1-round weapons get a second round)
+   Search({ "metal_per_power" }, { BuildCostGrowScale = Range(0.01, 2, 0.01) })
    -- fire cost per point of damage, given the power parameters
-   Search({ "fire_cost_per_damage" }, { FireCostGrowScale = Range(0.0, 1, 0.005) })
+   Search({ "fire_cost_per_damage" }, { CostPower = Range(1.0, 2, 0.1), FireCostGrowScale = Range(0.0, 0.5, 0.005) })
    TuneLog(string.format("after:  DamageGrowScale=%.4f RoundsEachBurstGrowScale=1/%d ReloadDecay=%.4f CostPower=%.1f BuildCostGrowScale=%.2f FireCostGrowScale=%.3f",
       DamageGrowScale, math.floor(1 / RoundsEachBurstGrowScale + 0.5), ReloadDecay, CostPower, BuildCostGrowScale, FireCostGrowScale))
    TuneLog(string.format("  power %s, metal %s, metal per power %s, fire cost per damage %s", Percent(Objective({ "power" })),

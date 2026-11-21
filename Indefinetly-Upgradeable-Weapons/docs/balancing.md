@@ -34,7 +34,8 @@ The rules use four curves, each with a growth rate `g` and the step `L`:
 |---|---|---|
 | Linear | `v · (1 + g·L)` | direct damage, rounds per burst, beam duration |
 | Fractional power | `v · (1 + g·√L)` | splash, range, hitpoints, mass |
-| Sub-quadratic | `v · (1 + g·L^p)`, p = `CostPower` | build cost, fire cost |
+| v1's price | `v · (1 + g·L·(L + 15)/12)` | build cost |
+| Sub-quadratic | `v · (1 + g·L^p)`, p = `CostPower` | fire cost |
 | Geometric decay | `v · d^L` | reload time, round period, spread |
 
 The growth rates are named constants at the top of the file:
@@ -43,8 +44,9 @@ The growth rates are named constants at the top of the file:
 - `RoundsEachBurstGrowScale` (1/24) governs rounds per burst and, for beams, the beam duration.
   Rounds are whole numbers, so power rises in jumps: a weapon with one round gains its second at step 24.
 - `ReloadDecay` (0.98) governs reload time and round period; a smaller value shortens them faster.
-- `BuildCostGrowScale` (0.32), `FireCostGrowScale` (0.045) and their shared exponent `CostPower` (1.6) govern the costs.
-  They grow faster than power, so that each level is less efficient than the one before.
+- `BuildCostGrowScale` (0.63) governs the build cost in v1's shape: the upgrade to step `s` costs about
+  `g · base · (1 + (s + 1)/6)`, like v1's `U · (1 + level/6)`.
+- `FireCostGrowScale` (0.13) and `CostPower` (1.2) govern the fire cost.
 - `SecondaryGrowScale` (0.15) governs every stat without a rate of its own.
 
 To adjust one stat, change its rate.

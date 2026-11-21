@@ -59,20 +59,22 @@ rates, tuned against v1 (see below). With `L` = step:
 | None | `v` | build time, fire speed minimum, heat/cool periods, drag, beam damage multiplier, ... |
 | Fractional power | `v · (1 + g·√L)` | splash damage and radius, hitpoints, mass, range, impact, damage bonuses |
 | Linear | `v · (1 + g·L)` | direct damage (`DamageGrowScale`), rounds per burst and beam duration (`RoundsEachBurstGrowScale`), EMP duration, production/storage |
-| Sub-quadratic | `v · (1 + g·L^p)`, p = `CostPower` | build costs (`BuildCostGrowScale`), fire costs (`FireCostGrowScale`) |
+| v1's price | `v · (1 + g·L·(L + 15)/12)` | build costs (`BuildCostGrowScale`): v1's upgrade price `U·(1 + level/6)` summed, `U = g·v` |
+| Sub-quadratic | `v · (1 + g·L^p)`, p = `CostPower` | fire costs (`FireCostGrowScale`) |
 | Geometric decay | `v · d^L` | reload time (`ReloadDecay`), round period and spread (0.98 / 0.99) |
 
 The values: `DamageGrowScale = 0.125` (v1's rate), `RoundsEachBurstGrowScale = 1/24`,
-`ReloadDecay = 0.98`, all three set by the owner (2026-11-11); `CostPower = 1.6`, `BuildCostGrowScale = 0.32` and
-`FireCostGrowScale = 0.045`, tuned (2026-11-21).
+`ReloadDecay = 0.98`, all three set by the owner (2026-11-11); `BuildCostGrowScale = 0.63`, `CostPower = 1.2` and
+`FireCostGrowScale = 0.13`, tuned (2026-11-21).
 
 The reasoning:
 
 - **Damage grows linearly, other stats grow with √L.** Damage per shot is the main thing a player pays for.
   Splash radius, range and similar stats work together with each other (and with area), so they grow
   more slowly to avoid snowballing.
-- **Costs grow faster than power** (`L^1.6`), so each level becomes less efficient and players can't gain an
-  advantage just by stacking levels.
+- **Build cost uses v1's price shape** (owner, 2026-11-21): each upgrade costs a fixed part plus a part that grows
+  linearly, so the first upgrade is priced like v1's and the total grows with the square of the step. The `L^p`
+  curves tried before started near zero and made the first upgrades 30–55 % cheaper than v1's.
 - **Damage grows at v1's rate** (`0.125` per step) and **reload times keep shortening** at `ReloadDecay = 0.98`
   (×0.63 at level 24, ×0.38 at 49), both set by the owner on 2026-11-11. Together with rounds per burst, power
   therefore runs ahead of v1 (see below); only the costs are tuned.
@@ -104,7 +106,7 @@ v1 is the reference for how much power a given spend buys. Its numbers are in [V
 - **What is compared.** Power is direct damage × rounds per burst (× beam duration for beams) ÷ reload time, as a
   multiple of the base weapon. Spend is the total metal to reach a level, with energy reported next to it. Fire cost
   per point of damage is a second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
-- **The curve shapes don't change.** Tuning only adjusts `CostPower`, `BuildCostGrowScale` and `FireCostGrowScale`
+- **The curve shapes don't change.** Tuning only adjusts `BuildCostGrowScale`, `CostPower` and `FireCostGrowScale`
   (the owner set `DamageGrowScale`, `RoundsEachBurstGrowScale` and `ReloadDecay`).
 - **`SecondaryGrowScale` stays 0.15**, so the secondary stats don't move.
 - **"Roughly match" is measured on average over v1 levels 2..24 (steps 1..23)**, the last level before 1-round weapons get a second
@@ -112,15 +114,16 @@ v1 is the reference for how much power a given spend buys. Its numbers are in [V
   fitted. It is an average, not one level, because the shapes differ (v1's spend grows with the square of the level).
   **Prices follow firepower** (owner, 2026-11-21): the build cost is fitted to v1's metal spent per multiple of base
   power (spend ÷ power), not to the spend alone, so a weapon whose power grows faster than in v1 costs more.
-  The tuner fits `CostPower` and `BuildCostGrowScale` to the average over all weapons, then each weapon's
+  The tuner fits `BuildCostGrowScale` to the average over all weapons, then each weapon's
   `build_cost_factor` (weapons without damage, smokebomb and magnabeam, by spend).
 - **Per-weapon corrections go only through `build_cost_factor`**, set from the tuner's suggestions (2026-11-21). Weapons that stay far from v1, and weapons v1
   never had, are listed in the balance report for the owner to judge.
 
 Result of the 2026-11-21 tuning (averages over levels 2..24, all 13 weapons both versions have): power 46 % (not
-tuned), metal per power 11 %, fire cost per damage 24 %. Cannon (by step; v1 level N = step N − 1): level 10 v1 2.3×
-base DPS for 8,100 metal / v2 2.6× for 9,135; level 24 v1 4.8× for 30,000 / v2 6.2× for 37,800; level 49 v1 11.3× for
-101,700 / v2 55× for 121,100; level 64 (v2's top, level 33) v1 17.8× for 164,700 / v2 95× for 186,100. Above the
+tuned), metal per power 17 %, fire cost per damage 22 %. Cannon (by step; v1 level N = step N − 1): first upgrade
+v1 533 metal / v2 600; level 16 v1 3.3× base DPS for 15,900 metal / v2 3.9× for 17,880; level 64 (v2's top, level 33)
+v1 17.8× for 164,700 / v2 95× for 186,200. Energy follows the same factor as metal, so weapons whose v1 energy price
+was low relative to their base energy cost (rocket, buzzsaw, mortar2) now cost far more energy than in v1. Above the
 second round (step 24) power jumps but price doesn't, so the top is cheap for its power.
 
 ## Costs

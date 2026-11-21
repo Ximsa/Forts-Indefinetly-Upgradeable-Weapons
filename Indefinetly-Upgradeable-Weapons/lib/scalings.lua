@@ -18,9 +18,9 @@ SecondaryGrowScale = 0.15
 -- per weapon) are tuned.
 DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
 RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam duration for beams (set by the owner: doubles by step 24)
-BuildCostGrowScale = 0.32                -- sub-quadratic: build cost
-FireCostGrowScale = 0.045                -- sub-quadratic: fire cost
-CostPower = 1.6                          -- exponent of the sub-quadratic cost curve (build and fire cost)
+BuildCostGrowScale = 0.63                -- v1's shape: build cost (v1's U per base cost)
+FireCostGrowScale = 0.13                 -- sub-quadratic: fire cost
+CostPower = 1.2                          -- exponent of the sub-quadratic fire cost curve
 ReloadDecay = 0.98                       -- geometric: reload time and round period (set by the owner)
 
 function UpgradeStep(level)
@@ -44,7 +44,11 @@ function DefaultScaleSubQuadratic(value, level, grow_scale)
       value * (level ^ CostPower) * (grow_scale and grow_scale or SecondaryGrowScale)
 end
 
-function BuildCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, BuildCostGrowScale)) end
+-- v1's build cost: its upgrade to level L cost U * (1 + L/6), so the total at step s is U * s * (s + 15) / 12
+-- (owner, 2026-11-21: a first upgrade priced like v1's), with U = base cost * BuildCostGrowScale
+function BuildCostScale(value, level)
+   return Significant3(value * (1 + BuildCostGrowScale * level * (level + 15) / 12))
+end
 
 function FireCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, FireCostGrowScale)) end
 
@@ -212,28 +216,28 @@ WeaponUpgrades =
       { mod = ".",                weapon_savename = "sniper",      weapon_filename = "snipertower.lua",              projectile = { ["sniper"] = {} },                  ammunition = {}, upgrade_time = 2.1, build_cost_factor = 1 },
       { mod = ".",                weapon_savename = "sniper2",     weapon_filename = "sniper-ap.lua",                projectile = { ["sniper2"] = {} },                 ammunition = {}, upgrade_time = 5, build_cost_factor = 0.9 },
       { mod = ".",                weapon_savename = "mortar",      weapon_filename = "mortar-incendiary.lua",        projectile = { ["mortar"] = {} },                  ammunition = {}, upgrade_time = 9, build_cost_factor = 0.75 },
-      { mod = ".",                weapon_savename = "mortar2",     weapon_filename = "mortar.lua",                   projectile = { ["mortar2"] = {} },                 ammunition = {}, upgrade_time = 9, build_cost_factor = 1.3 },
+      { mod = ".",                weapon_savename = "mortar2",     weapon_filename = "mortar.lua",                   projectile = { ["mortar2"] = {} },                 ammunition = {}, upgrade_time = 9, build_cost_factor = 1.25 },
       { mod = ".",                weapon_savename = "missile",     weapon_filename = "missileswarm.lua",             projectile = { ["missile"] = {} },                 ammunition = {}, upgrade_time = 20.3, build_cost_factor = 1 },
       { mod = ".",                weapon_savename = "missileinv",  weapon_filename = "missileswarm_inverted.lua",    projectile = { ["missile"] = {} },                 ammunition = {}, upgrade_time = 20.3, build_cost_factor = 1 },
       { mod = ".",                weapon_savename = "missile2",    weapon_filename = "missilelauncher.lua",          projectile = { ["missile2"] = {} },                ammunition = {}, upgrade_time = 21, build_cost_factor = 1 },
       { mod = ".",                weapon_savename = "missile2inv", weapon_filename = "missilelauncher_inverted.lua", projectile = { ["missile2"] = {} },                ammunition = {}, upgrade_time = 21, build_cost_factor = 1 },
-      { mod = ".",                weapon_savename = "cannon",      weapon_filename = "cannon.lua",                   projectile = { ["cannon"] = {} },                  ammunition = {}, upgrade_time = 26, build_cost_factor = 0.85 },
-      { mod = ".",                weapon_savename = "laser",       weapon_filename = "beamlaser.lua",                projectile = { ["laser"] = {} },                   ammunition = {}, upgrade_time = 24, build_cost_factor = 1.55 },
+      { mod = ".",                weapon_savename = "cannon",      weapon_filename = "cannon.lua",                   projectile = { ["cannon"] = {} },                  ammunition = {}, upgrade_time = 26, build_cost_factor = 0.8 },
+      { mod = ".",                weapon_savename = "laser",       weapon_filename = "beamlaser.lua",                projectile = { ["laser"] = {} },                   ammunition = {}, upgrade_time = 24, build_cost_factor = 1.5 },
       { mod = "mods/weapon_pack", weapon_savename = "flak",        weapon_filename = "flak.lua",                     projectile = { ["flak"] = { ["shrapnel"] = {} } }, ammunition = {}, upgrade_time = 6.75, build_cost_factor = 0.5 },
       { mod = "mods/weapon_pack", weapon_savename = "shotgun",     weapon_filename = "shotgun.lua",                  projectile = { ["shotgun"] = {} },                 ammunition = {}, upgrade_time = 9, build_cost_factor = 1.35 },
       { mod = "mods/weapon_pack", weapon_savename = "rocketemp",   weapon_filename = "rocketemp.lua",                projectile = { ["rocketemp"] = {} },               ammunition = {}, upgrade_time = 10, build_cost_factor = 1 },
       { mod = "mods/weapon_pack", weapon_savename = "rocket",      weapon_filename = "rocket.lua",                   projectile = { ["rocket"] = {} },                  ammunition = {}, upgrade_time = 12, build_cost_factor = 1.35 },
       { mod = "mods/weapon_pack", weapon_savename = "cannon20mm",  weapon_filename = "20mmcannon.lua",               projectile = { ["cannon20mm"] = {} },              ammunition = {}, upgrade_time = 26, build_cost_factor = 0.85 },
-      { mod = "mods/weapon_pack", weapon_savename = "firebeam",    weapon_filename = "firebeam.lua",                 projectile = { ["firebeam"] = {} },                ammunition = {}, upgrade_time = 14, build_cost_factor = 2.1 },
+      { mod = "mods/weapon_pack", weapon_savename = "firebeam",    weapon_filename = "firebeam.lua",                 projectile = { ["firebeam"] = {} },                ammunition = {}, upgrade_time = 14, build_cost_factor = 2.05 },
       -- Armourdillo's AP minigun; its commander's common/ lists define it, so its levels may come from the sub-mod
       -- mods/commander-iba-turtle (DESIGN.md, "Commanders"). upgrade_time: its reload time (minigun 7 + 4)
       { mod = "mods/commander-iba-turtle", weapon_savename = "minigun2", weapon_filename = "minigun2.lua", original_file = "mods/commander-iba-turtle/common/weapons/minigun2.lua", projectile = { ["minigun2"] = {} }, ammunition = {}, upgrade_time = 11, build_cost_factor = 1.2, commander = "commander-iba-turtle" },
    }
 if moonshot then
    for _, v in pairs({
-	 { mod = "mods/dlc1_weapons", weapon_savename = "buzzsaw",   weapon_filename = "buzzsaw.lua",   projectile = { ["buzzsaw"] = {} },                           ammunition = {}, upgrade_time = 9, build_cost_factor = 1.9 },
+	 { mod = "mods/dlc1_weapons", weapon_savename = "buzzsaw",   weapon_filename = "buzzsaw.lua",   projectile = { ["buzzsaw"] = {} },                           ammunition = {}, upgrade_time = 9, build_cost_factor = 1.85 },
 	 { mod = "mods/dlc_smokebomb",  weapon_savename = "smokebomb", weapon_filename = "smokebomb.lua", projectile = { ["smokebomb"] = { ["smoke"] = {} } },         ammunition = {}, upgrade_time = 9, build_cost_factor = 1 },
-	 { mod = "mods/dlc1_weapons", weapon_savename = "howitzer",  weapon_filename = "howitzer.lua",  projectile = { ["howitzer"] = {} },                          ammunition = {}, upgrade_time = 26, build_cost_factor = 0.95 },
+	 { mod = "mods/dlc1_weapons", weapon_savename = "howitzer",  weapon_filename = "howitzer.lua",  projectile = { ["howitzer"] = {} },                          ammunition = {}, upgrade_time = 26, build_cost_factor = 0.9 },
 	 { mod = "mods/dlc1_weapons", weapon_savename = "magnabeam", weapon_filename = "magnabeam.lua", projectile = { ["magnabeam"] = { ["magneticfield"] = {} } }, ammunition = {}, upgrade_time = 28, build_cost_factor = 0.5 },
    }) do
       table.insert(WeaponUpgrades, v)
