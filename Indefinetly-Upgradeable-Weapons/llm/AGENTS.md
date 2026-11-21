@@ -1,28 +1,25 @@
 # Agent guide
 
-Instructions for LLM coding agents working on this repository. LLM-related material lives in `llm/`
-(the root `CLAUDE.md` only points here). The glossary (`GLOSSARY.md`) and decision records (`docs/adr/`) are for
-people too and live at the repo root.
+Instructions for LLM coding agents working on this mod (v2 of Indefinitely Upgradeable Weapons). Repo-wide rules
+(environment, how Forts loads mods, reading the game log, commits) are in [../../llm/AGENTS.md](../../llm/AGENTS.md).
+LLM-related material for this mod lives in `llm/` (the mod's `CLAUDE.md` only points here). The glossary (`GLOSSARY.md`) and decision records (`docs/adr/`) are for
+people too and live at the mod root.
 
 ## Read first
 
 - [GLOSSARY.md](../GLOSSARY.md) – the project's terms (level, step, tier, variant, v1, v2, feature complete, parity). Use these words.
 - [PLAN.md](PLAN.md) – the agreed steps to feature complete, with a "Done when" for each. Start here to find the next piece of work.
 - [DESIGN.md](DESIGN.md) – the goals and the rules for levels, balance, costs and scope
-- [ARCHITECTURE.md](ARCHITECTURE.md) – how Forts loads mods and the pipeline this mod builds on top of it
+- [ARCHITECTURE.md](ARCHITECTURE.md) – the pipeline this mod builds on top of Forts' mod loading
 - `lib/scalings.lua` – the registry; most changes start here
 - [V1.md](V1.md) – v1's formulas, numbers and its commander and AI mechanisms. Read when tuning balance or adding commander or AI support.
 - `docs/adr/` – decisions that are hard to undo, with their reasons
 
 ## Environment
 
-- Language: Lua 5.1 as embedded in Forts. The repo has no build system and no tests. Outside the game, only
-  `lib/check_lists.lua` runs the list hooks (against stubs and the readable base lists); weapon files only run in-game.
-- Engine globals (`Weapons`, `Projectiles`, `FindWeapon`, `FindProjectile`, `InheritType`, `Log`, `L"..."`, `path`, ...)
-  exist only in-game.
-- The owner tests in Forts. When a change can only be verified in-game, say so; don't claim it works.
-- Original weapon files of the base game and DLCs are **not** in this repo. Don't guess their field names;
-  ask, or point to what needs checking.
+- Outside the game, only `lib/check_lists.lua` runs the list hooks (against stubs and the readable base lists);
+  weapon files only run in-game.
+- v1 is `../Indefinetly-Upgradeable-Weapons-Legacy/` in this repo (see also V1.md).
 
 ## Conventions
 
@@ -34,18 +31,13 @@ people too and live at the repo root.
   commander's own code.
 - Keep the `<name>_<level>` suffix convention for SaveNames, projectiles, sprites and stub files.
 
-## Commits
-
-The owner commits; don't commit yourself. When a request that changed repo files is finished, end your reply with a
-suggested commit message for the uncommitted changes (`git status`) in a code block: one short line, no body.
-
 ## Common tasks
 
 ### Add support for a weapon
 
 1. Add a `WeaponUpgrades` entry in `lib/scalings.lua` (put DLC weapons in the matching `if moonshot` / `if dlc2Var_Active` block).
    The `projectile` tree must include every child projectile that needs scaling.
-2. Regenerate the stubs: `cd lib && lua55 pregen_files.lua` (`ai/ai.lua` reads the registry itself) (`lua55` is the owner's local Lua 5.5 install; any stand-alone Lua with `io`/`os` works).
+2. Regenerate the stubs: `cd lib && lua55 pregen_files.lua` (`ai/ai.lua` reads the registry itself).
 3. Run the offline check: `cd lib && lua55 check_lists.lua` (base-game and Tons of Guns weapons only; DLC lists are packed).
    For balance, `lua55 balance_report.lua` compares v2 with v1 (DESIGN.md, "Balance against v1").
 4. Tick the weapon off in `ROADMAP.md`.
@@ -79,21 +71,12 @@ like the others; a field nested in a table needs its own handling there.
 ## Deploy for testing
 
 The owner tests from the Steam Workshop folder (`...\steamapps\workshop\content\410900\1369514837`),
-not the local Forts `data\mods` folder. Run `.\deploy.ps1` from the repo root.
+not the local Forts `data\mods` folder. Run `.\deploy.ps1` from this mod's folder.
 
 ## Reading the game log
 
-After a launch, check `C:\Program Files (x86)\Steam\steamapps\common\Forts\users\<steamid>\log.txt`
-(the owner's is `76561198059031497`; ignore the stale copy under `G:\SteamLibrary`). Forts rewrites it on every launch.
-It is UTF-16 LE, so plain `grep` finds nothing. Convert it first:
-
-```sh
-iconv -f UTF-16 -t UTF-8 "/c/Program Files (x86)/Steam/steamapps/common/Forts/users/76561198059031497/log.txt" \
-  | grep -niE "error|warn|1369514837"
-```
-
-Errors from this mod mention `workshop\content\410900\1369514837`. Line numbers in `[string "..."]` messages
-refer to the deployed file, which matches the repo file after `deploy.ps1`.
+See the repo-wide guide; this mod's Workshop id is `1369514837`. Line numbers in the log match the repo file after
+`deploy.ps1`.
 
 ## Release
 

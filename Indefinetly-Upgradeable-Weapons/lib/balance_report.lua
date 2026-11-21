@@ -3,7 +3,7 @@
 --   lua55 balance_report.lua          writes ../dump/balance_<date>.txt and prints the summary
 --   lua55 balance_report.lua tune     also searches the balance parameters for the smallest deviation
 -- Sources: v2 = this repo's lib/scalings.lua applied to the base values; v1 = its generated level files in
--- data/mods/iuw/weapons and its formulas (llm/V1.md); base values = the readable game files, DLC weapons from
+-- ../Indefinetly-Upgradeable-Weapons-Legacy/weapons and its formulas (llm/V1.md); base values = the readable game files, DLC weapons from
 -- data/mods/iuw2/dump. Power is direct damage x rounds per burst (x beam duration x beam damage multiplier for beams)
 -- / reload time, as a multiple of the base weapon. Deviation = v2 / v1 - 1; averages are over levels 2..49 of
 -- |ln(v2 / v1)| over levels 2..24 (see balance_to), shown as a percentage.
@@ -22,7 +22,7 @@ local levels_from, levels_to = 2, 49
 -- levels the averages and the tuning use: up to level 24, the last level before 1-round weapons get a second round
 -- (level 25); the jump in whole rounds distorts the fit too much (owner, 2026-11-11)
 local balance_to = 24
-local v1_root = env.game_data .. "/mods/iuw/weapons"
+local v1_root = "../../Indefinetly-Upgradeable-Weapons-Legacy/weapons"
 
 -- v1's upgrade price constants U (metal, energy), from its weapons/weapon_list.lua (llm/V1.md)
 local V1Prices = {

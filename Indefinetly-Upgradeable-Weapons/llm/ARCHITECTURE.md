@@ -5,14 +5,8 @@ For *why* the numbers are what they are, see [DESIGN.md](DESIGN.md).
 
 ## Background: how Forts loads mods
 
-- A mod is a folder whose `mod.lua` holds the metadata (`Selectable`, `Priority`, `Category`, DLC flags).
-- Mods don't replace game files. After Forts loads a base data file (e.g. `weapons/weapon_list.lua`),
-  it runs every active mod's file at the **same relative path** in the same Lua environment.
-  Mod files therefore change the global tables that already exist (`Weapons`, `Projectiles`, `Weapon` strings, ...).
-- `path` is the folder of the mod whose file is currently running. Other mods are referred to by
-  their paths: `mods/weapon_pack` (Tons of Guns), `mods/dlc1_weapons` (Moonshot), `mods/dlc2` (High Seas).
-- `Priority = 9.99` in `mod.lua` makes this mod load late, after other weapon mods (e.g. Tanya at 9.9),
-  so their weapons and projectiles already exist when this mod reads them.
+See [../../llm/AGENTS.md](../../llm/AGENTS.md), "How Forts loads mods". This mod's `Priority = 9.99` makes it load
+after other weapon mods (e.g. Tanya at 9.9), so their weapons and projectiles already exist when it reads them.
 
 ## Repository layout
 

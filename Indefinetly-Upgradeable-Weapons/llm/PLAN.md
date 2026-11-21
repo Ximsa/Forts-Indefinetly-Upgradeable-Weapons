@@ -24,7 +24,7 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 - Publish nothing until v2 is feature complete (`docs/adr/0001-v2-replaces-v1-only-when-feature-complete.md`).
   Commits and local deploys only.
 - Each change that affects the game ends with `.\deploy.ps1`, a round in Forts by the owner, and a check of the
-  game log (AGENTS.md). Say what was verified in-game and what was not.
+  game log (repo-wide `llm/AGENTS.md`). Say what was verified in-game and what was not.
 - DLC files are packed and unreadable. Find their facts with a temporary `Log` and one round in-game, as was done for
   harpoon; remove the logging once the fact is recorded.
 - When a step needs a decision that isn't written here or in DESIGN.md, ask the owner.
