@@ -53,6 +53,9 @@ CommanderOverlayFiles = {
       "mods/weapon_pack/weapons/firebeam.lua",
       "mods/dlc_smokebomb/weapons/smokebomb.lua",
    },
+   ["commander-cf-phantom"] = {
+      "mods/dlc1_weapons/weapons/magnabeam.lua", -- packed; path found by a probe (2026-11-21)
+   },
 }
 
 for commander, files in pairs(CommanderOverlayFiles) do
