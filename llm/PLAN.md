@@ -12,7 +12,7 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 **and Phantom from probe rounds (2026-11-21); still open: their overlay cells (`?`) and the open facts under the table.**
 **5.3: generator done; Scattershot done (in-game 2026-11-21: clean log, level AP sniper fires 2 shots under the**
 **power, level weapons get the focus icon). Seep done (in-game 2026-11-21: level armoured**
-**rockets and missiles, AI anti-air fires at them). Shockenaugh in code (2026-11-21), waiting for its in-game check.**
+**rockets and missiles, AI anti-air fires at them). Shockenaugh done (in-game 2026-11-21). Next: Buster.**
 
 ## Working rules
 
