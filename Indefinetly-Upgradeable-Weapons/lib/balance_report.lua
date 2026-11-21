@@ -16,6 +16,10 @@ env.LoadBaseLists(function(message) io.stderr:write(message .. "\n") end)
 path = ".."
 moonshot, dlc2Var_Active = true, true
 dofile("../lib/scalings.lua")
+-- commander-only weapons: their commander's lists aren't loaded offline
+for i = #WeaponUpgrades, 1, -1 do
+   if WeaponUpgrades[i].commander then table.remove(WeaponUpgrades, i) end
+end
 
 local tune = arg and arg[1] == "tune"
 local levels_from, levels_to = 2, 49

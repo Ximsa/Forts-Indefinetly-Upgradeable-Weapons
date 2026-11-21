@@ -199,6 +199,7 @@ TransformedProjectilePrefixes = { "flaming", "damaged", "armoured", "uranium" }
 --     with `path` set to mod)
 --   upgrade_time: seconds a level upgrade takes (the level weapons' BuildTimeComplete); v1's value, else the reload time
 --   build_cost_factor: multiplies the base build cost before scaling
+--   commander: optional; the commander folder whose lists define this weapon (offline checks skip the entry)
 WeaponUpgrades =
    {
       { mod = ".",                weapon_savename = "machinegun",  weapon_filename = "machinegun.lua",               projectile = { ["machinegun"] = {} },              ammunition = {}, upgrade_time = 1.5, build_cost_factor = 1.2 },
@@ -219,6 +220,9 @@ WeaponUpgrades =
       { mod = "mods/weapon_pack", weapon_savename = "rocket",      weapon_filename = "rocket.lua",                   projectile = { ["rocket"] = {} },                  ammunition = {}, upgrade_time = 12, build_cost_factor = 1 },
       { mod = "mods/weapon_pack", weapon_savename = "cannon20mm",  weapon_filename = "20mmcannon.lua",               projectile = { ["cannon20mm"] = {} },              ammunition = {}, upgrade_time = 26, build_cost_factor = 1 },
       { mod = "mods/weapon_pack", weapon_savename = "firebeam",    weapon_filename = "firebeam.lua",                 projectile = { ["firebeam"] = {} },                ammunition = {}, upgrade_time = 14, build_cost_factor = 1 },
+      -- Armourdillo's AP minigun; its commander's common/ lists define it, so its levels may come from the sub-mod
+      -- mods/commander-iba-turtle (DESIGN.md, "Commanders"). upgrade_time: its reload time (minigun 7 + 4)
+      { mod = "mods/commander-iba-turtle", weapon_savename = "minigun2", weapon_filename = "minigun2.lua", original_file = "mods/commander-iba-turtle/common/weapons/minigun2.lua", projectile = { ["minigun2"] = {} }, ammunition = {}, upgrade_time = 11, build_cost_factor = 1.2, commander = "commander-iba-turtle" },
    }
 if moonshot then
    for _, v in pairs({

@@ -16,7 +16,12 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 **Forts' dofile ignores missing files silently), level names added to its ProjectilesToUranium; done (in-game 2026-11-21). Moonshine done (in-game 2026-11-21: level**
 **snipers EMP under the power; no weapon files and no shield ForcedReflection, per probe). Phantom done (in-game 2026-11-21: level magnabeams damage and burn). Architect needs no sub-mod (level weapons
 **have Prerequisite "upgrade", which its build-time perk skips); Overdrive done (both in-game 2026-11-21). Hurricane done (in-game 2026-11-21). Firebird done (in-game 2026-11-21). Warthog done (in-game 2026-11-21). Eagle Eye done (in-game 2026-11-21). Pinchfist and Spook need no sub-mod (their changes reach the levels; folders
-**with .gitkeep), waiting for their in-game check. Then Armourdillo.**
+**with .gitkeep), waiting for their in-game check. Armourdillo in code (2026-11-21): `minigun2` is a registry entry (`commander` field,**
+**skipped offline). First round: `common/` runs after this mod's list hook for every team, so levels made only in the**
+**sub-mod gave "inconsistent device counts" and missing level head sprites. Now its levels and the level minigun →**
+**same level AP minigun upgrade come from `RegisterApplyMod` callbacks in this mod's own list hooks (every team);**
+**active AP sniper penetration copied to level `sniper2`; cosmetic AP sniper FireEffect left out. Round 2 (2026-11-21):**
+**loads with a clean log, both teams 1225 device types. Armourdillo done (in-game 2026-11-21).**
 
 ## Working rules
 
@@ -271,6 +276,10 @@ Done when every part of "feature complete" in GLOSSARY.md holds and the owner ha
   - Commander scripts load before the lists; a sub-mod `commander.lua` is appended to the commander's script
     (`OnActivation` already defined) and has `dofile`. `teamId` is nil at load time.
   - Phantom's folder is `commander-cf-phantom`.
+  - A commander's `common/` lists (Armourdillo's AP minigun) run for every team, after this mod's list hook (2026-11-21).
+    Every team must end with the same weapon list ("inconsistent device counts" otherwise), and level weapons missing in
+    the sprite pass get no sprites. `RegisterApplyMod` callbacks from this mod's list hooks may add weapons and
+    projectiles, and run in every pass including the sprite pass.
   - Active abilities that act on any selected device (Scattershot's trajectory preview) already reach level weapons.
 - Without High Seas active (owner, 2026-11-21): a match with High Seas owned but not active loads with a clean log; the
   High Seas registry entries are skipped quietly. Not yet tested: an account that doesn't own the DLCs.

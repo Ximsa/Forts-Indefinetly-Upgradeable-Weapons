@@ -188,8 +188,9 @@ Agreed with the owner on 2026-11-12; revised 2026-11-21: no commander code is co
 - **Commander-only weapons** (Armourdillo's armour-piercing minigun `minigun2`) are normal `WeaponUpgrades` entries
   with stubs in `weapons/`, as v1 did. Commander-only projectiles (Seep's `armoured<name>`, Buster's `uranium<name>`)
   are transformed projectiles and will keep their level like the others (see "Levels"; not done yet, step 5). A
-  commander's own list hook runs after this mod's, so a weapon it defines there gets its levels from a list hook in
-  the sub-mod, which runs after the commander's.
+  commander's `common/` list hook runs after this mod's for every team, so a weapon it defines there (registry field
+  `commander`) gets its levels in `RegisterApplyMod` callbacks of this mod's own list hooks, which run for every team
+  and pass; a sub-mod hook would give them to one team only (2026-11-21: "inconsistent device counts").
 - **Load order** (in-game, 2026-11-12): this mod's list hook → the commander's list hook → the sub-mod's list hook →
   `RegisterApplyMod` callbacks. A commander's change to a named base weapon or projectile therefore misses the level
   ones and is extended in the sub-mod; its loops over everything reach them on their own.

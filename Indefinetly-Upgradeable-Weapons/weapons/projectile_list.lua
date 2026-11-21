@@ -83,20 +83,43 @@ end
 
 -- Projectiles react to other projectiles by SaveName: Effects.Impact["firebeam"] turns a cannon shell into
 -- flamingcannon (MakeFlamingVersion). Give every such reaction to a level-scaled projectile the same reaction to its
--- levels, so a level firebeam sets shells on fire like the base one.
-for _, projectile in ipairs(Projectiles) do
-   local impact = projectile.Effects and projectile.Effects.Impact
-   if type(impact) == "table" then
-      local scaled = {}
-      for name in pairs(impact) do
-         if added_projectiles[name] then table.insert(scaled, name) end
-      end
-      for _, name in ipairs(scaled) do
-         for level = FirstLevel, LastLevel do
-            if impact[name .. "_" .. level] == nil then impact[name .. "_" .. level] = impact[name] end
+-- levels, so a level firebeam sets shells on fire like the base one. Commander sub-mods call it again after adding
+-- level projectiles.
+function AddLevelReactions()
+   for _, projectile in ipairs(Projectiles) do
+      local impact = projectile.Effects and projectile.Effects.Impact
+      if type(impact) == "table" then
+         local scaled = {}
+         for name in pairs(impact) do
+            if added_projectiles[name] then table.insert(scaled, name) end
+         end
+         for _, name in ipairs(scaled) do
+            for level = FirstLevel, LastLevel do
+               if impact[name .. "_" .. level] == nil then impact[name .. "_" .. level] = impact[name] end
+            end
          end
       end
    end
+end
+AddLevelReactions()
+
+-- A commander-only weapon's projectile (Armourdillo's AP minigun shell) comes from its commander's common/ list hook,
+-- which runs after this one; give it levels in a callback, after all list hooks, for every team (as its weapon in
+-- weapons/weapon_list.lua). The levels inherit the commander's changes to the base projectile made by then.
+if RegisterApplyMod then
+   RegisterApplyMod(function()
+      local added = false
+      for _, weapon_upgrade in ipairs(WeaponUpgrades) do
+         for name in pairs(weapon_upgrade.commander and weapon_upgrade.projectile or {}) do
+            if FindProjectile(name) and not added_projectiles[name] then
+               AddTransformedProjectiles(weapon_upgrade.projectile)
+               ProcessUpgradeTable(weapon_upgrade.projectile, ScalingFor(weapon_upgrade, "ProjectileList"), true)
+               added = true
+            end
+         end
+      end
+      if added then AddLevelReactions() end
+   end)
 end
 
 -- For commander sub-mods (DESIGN.md, "Commanders"): after a commander's list hook changed `fields` of a base

@@ -31,6 +31,10 @@ end
 path = ".."
 moonshot, dlc2Var_Active = nil, nil
 env.raw_dofile("../lib/scalings.lua")
+-- commander-only weapons: their commander's lists aren't loaded offline
+for i = #WeaponUpgrades, 1, -1 do
+   if WeaponUpgrades[i].commander then table.remove(WeaponUpgrades, i) end
+end
 
 local weapons_by_name = {}
 for _, weapon in ipairs(Weapons or {}) do weapons_by_name[weapon.SaveName] = weapon end

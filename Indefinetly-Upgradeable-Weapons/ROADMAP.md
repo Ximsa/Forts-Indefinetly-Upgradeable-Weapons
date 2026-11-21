@@ -54,7 +54,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Eagle Eye
 - [ ] Pinchfist
 - [ ] Spook
-- [ ] Armourdillo
+- [x] Armourdillo
 
 ## Agentic Coding
 

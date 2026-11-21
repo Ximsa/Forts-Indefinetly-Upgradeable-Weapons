@@ -151,3 +151,35 @@ end
 for _, weapon_upgrade in pairs(WeaponUpgrades) do
 	AddUpgradesForWeapon(weapon_upgrade)
 end
+
+-- A commander-only weapon (Armourdillo's AP minigun) comes from its commander's common/ list hook, which runs after
+-- this one, for every team. Every team needs the same weapon list (else "inconsistent device counts"), so give it levels
+-- in a callback, which runs after all list hooks; the commander's own tier upgrade to it is there by then too.
+-- Callbacks run with the commander's `path`, so keep this mod's.
+local mod_path = path
+if RegisterApplyMod then
+	RegisterApplyMod(function()
+		local callback_path = path
+		path = mod_path
+		for _, weapon_upgrade in pairs(WeaponUpgrades) do
+			local name = weapon_upgrade.weapon_savename
+			if weapon_upgrade.commander and FindWeapon(name) and not FindWeapon(name .. "_" .. FirstLevel) then
+				AddUpgradesForWeapon(weapon_upgrade)
+				-- a level of a registered weapon upgrades to the same level of it
+				for _, base_upgrade in pairs(WeaponUpgrades) do
+					local base_weapon = FindWeapon(base_upgrade.weapon_savename)
+					for _, upgrade in pairs(base_weapon and base_weapon.Upgrades or {}) do
+						if upgrade.SaveName == name then
+							local tier_upgrade = { upgrade = upgrade, target_weapon = FindWeapon(name), target_upgrade = weapon_upgrade }
+							for level = FirstLevel, LastLevel do
+								local weapon = FindWeapon(base_upgrade.weapon_savename .. "_" .. level)
+								if weapon then AddUpgrade(weapon, MakeTierUpgrade(tier_upgrade, base_weapon, base_upgrade, level)) end
+							end
+						end
+					end
+				end
+			end
+		end
+		path = callback_path
+	end)
+end
