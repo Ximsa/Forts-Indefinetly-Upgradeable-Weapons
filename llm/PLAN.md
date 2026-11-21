@@ -4,13 +4,10 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status (2026-11-21): steps 1 and 2 done; steps 3 and 4 in code, every High Seas weapon registered and ticked.**
-**Open before they count as done:**
-**- Step 3: one round with every High Seas weapon built and upgraded and a clean log. In it, level-upgrade `turret2`,**
-**  switch it to focused and expect `turret2_focus_2`; if it isn't, untick Deck Gun in the README.**
-**- Step 4: AI parity confirmed in-game 2026-11-21 (level flak shoots down level shells, no hang); not yet checked: a level cannon through a**
-**  firebeam keeps its level (level flaming projectiles), and `damagedmissile2` levels in-game.**
-**- `ai/ai.lua` is hand-written and loads the registry; confirmed in-game 2026-11-21 (it has `path`, `dofile` and `Log`).**
+**Status (2026-11-21): steps 1 to 4 done. The High Seas round passed in-game 2026-11-21: every High Seas weapon built**
+**and upgraded with a clean log, a level `turret2` switches to `turret2_focus_<level>`, level flak shoots down level**
+**shells, level cannons through level firebeams catch fire and keep their level, damaged level warheads keep theirs.**
+**`ai/ai.lua` is hand-written and loads the registry (it has `path`, `dofile` and `Log`).**
 **Step 5 (commanders): design agreed, 5.1 (in-game facts) done 2026-11-12; 5.2 (survey) recorded below except the**
 **packed Buster, Moonshine and Phantom (the `?` cells) and the open facts under the table.**
 

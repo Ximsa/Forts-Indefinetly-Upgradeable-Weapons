@@ -75,3 +75,21 @@ for _, weapon_upgrade in ipairs(WeaponUpgrades) do
    AddTransformedProjectiles(weapon_upgrade.projectile)
    ProcessUpgradeTable(weapon_upgrade.projectile, ScalingFor(weapon_upgrade, "ProjectileList"), weapon_upgrade.mod ~= ".")
 end
+
+-- Projectiles react to other projectiles by SaveName: Effects.Impact["firebeam"] turns a cannon shell into
+-- flamingcannon (MakeFlamingVersion). Give every such reaction to a level-scaled projectile the same reaction to its
+-- levels, so a level firebeam sets shells on fire like the base one.
+for _, projectile in ipairs(Projectiles) do
+   local impact = projectile.Effects and projectile.Effects.Impact
+   if type(impact) == "table" then
+      local scaled = {}
+      for name in pairs(impact) do
+         if added_projectiles[name] then table.insert(scaled, name) end
+      end
+      for _, name in ipairs(scaled) do
+         for level = FirstLevel, LastLevel do
+            if impact[name .. "_" .. level] == nil then impact[name .. "_" .. level] = impact[name] end
+         end
+      end
+   end
+end

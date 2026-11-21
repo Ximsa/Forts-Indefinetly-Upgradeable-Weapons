@@ -40,6 +40,9 @@ that a few levels stop being affordable or a single weapon breaks the match.
   game sets on fire, damages or splits becomes the same level of the resulting projectile. Every projectile in a
   registry tree gets its existing `flaming…` and `damaged…` versions as children (`TransformedProjectilePrefixes`).
   Commanders' armoured and uranium versions will keep their level too (step 5).
+- **Other projectiles react to a level projectile as to its base**: a reaction keyed by SaveName
+  (`Effects.Impact["firebeam"]`: a shell catches fire) also applies to every level of that projectile, so a level
+  firebeam sets shells on fire. Fixed 2026-11-21 after the High Seas test round.
 
 ## Scaling curves
 

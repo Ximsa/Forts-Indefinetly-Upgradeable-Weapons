@@ -96,6 +96,23 @@ for _, weapon_upgrade in ipairs(WeaponUpgrades) do
    end
 end
 
+-- a level firebeam sets shells on fire like the base one, and a level shell stays at its level when it catches fire
+local function FlamingTypeOn(shell_name, beam_name)
+   local shell = projectiles_by_name[shell_name]
+   local reaction = shell and shell.Effects and shell.Effects.Impact and shell.Effects.Impact[beam_name]
+   return reaction and reaction.Projectile and reaction.Projectile.Type
+end
+for _, case in ipairs({
+   { "cannon", "firebeam_" .. LastLevel, "flamingcannon" },
+   { "cannon_" .. FirstLevel, "firebeam_" .. LastLevel, "flamingcannon_" .. FirstLevel },
+   { "cannon_" .. FirstLevel, "firebeam", "flamingcannon_" .. FirstLevel },
+}) do
+   local got = FlamingTypeOn(case[1], case[2])
+   if got ~= case[3] then
+      Problem(case[1] .. " hit by " .. case[2] .. " becomes " .. tostring(got) .. ", expected " .. case[3])
+   end
+end
+
 print(string.format("checked %d weapons (%d level weapons) and %d projectiles; DLC entries skipped",
    #(Weapons or {}), level_weapon_count, #(Projectiles or {})))
 if #problems == 0 then
