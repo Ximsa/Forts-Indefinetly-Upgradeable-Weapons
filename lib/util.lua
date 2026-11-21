@@ -39,12 +39,14 @@ function Significant(n, x)
     -- determine the amount of shifts
     local decimal_places = math.ceil(math.log10(x))
     local shifts_wanted = n - decimal_places
-    -- shift unwanted digits beyond the comma separator
-    x = x * 10 ^ shifts_wanted
-    -- round to nearest integer
-    x = x >= 0 and math.floor(x + 0.5) or math.ceil(x - 0.5)
-    -- shift back
-    x = x / 10 ^ shifts_wanted
+    -- shift unwanted digits beyond the comma separator, round, shift back. Only scale by whole powers of ten
+    -- (10 ^ -3 = 0.001 isn't exact in binary: 193 / 0.001 gave 192999.99999999997, shown as 192999)
+    local scale = 10 ^ math.abs(shifts_wanted)
+    if shifts_wanted >= 0 then
+       x = math.floor(x * scale + 0.5) / scale
+    else
+       x = math.floor(x / scale + 0.5) * scale
+    end
     return x * sign
 end
 

@@ -40,6 +40,14 @@ CommanderOverlayFiles = {
       "mods/weapon_pack/weapons/20mmcannon.lua",
       "mods/dlc1_weapons/weapons/buzzsaw.lua",
    },
+   ["commander-bpo-seep"] = {
+      "weapons/missileswarm.lua",
+      "weapons/missileswarm_inverted.lua",
+      "weapons/missilelauncher.lua",
+      "weapons/missilelauncher_inverted.lua",
+      "mods/weapon_pack/weapons/rocket.lua",
+      "mods/weapon_pack/weapons/rocketemp.lua",
+   },
 }
 
 for commander, files in pairs(CommanderOverlayFiles) do

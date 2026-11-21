@@ -40,8 +40,10 @@ that a few levels stop being affordable or a single weapon breaks the match.
   effect; to confirm in-game, PLAN status).
 - **Transformed projectiles keep their level** (GLOSSARY.md, "Transformed projectile"): a level projectile that the
   game sets on fire, damages or splits becomes the same level of the resulting projectile. Every projectile in a
-  registry tree gets its existing `flaming…` and `damaged…` versions as children (`TransformedProjectilePrefixes`).
-  Commanders' armoured and uranium versions will keep their level too (step 5).
+  registry tree gets its existing `flaming…`, `damaged…` and `armoured…` versions as children
+  (`TransformedProjectilePrefixes`); a reaction in a transformed version that turns it back (a shot-down armoured
+  missile becomes the plain one) leads to the same level of the plain one. Buster's uranium versions will keep their
+  level too (step 5).
 - **Other projectiles react to a level projectile as to its base**: a reaction keyed by SaveName
   (`Effects.Impact["firebeam"]`: a shell catches fire) also applies to every level of that projectile, so a level
   firebeam sets shells on fire. Fixed 2026-11-21 after the High Seas test round.
@@ -174,7 +176,9 @@ Agreed with the owner on 2026-11-12; revised 2026-11-21: no commander code is co
 - **List hooks:** commander list hooks that loop over every weapon or projectile are left alone. For hooks that name
   SaveNames (e.g. Heavy Weapons' `ProjectilesToAffect`), a hand-written list hook in the sub-mod extends the
   commander's names to the level names; it reads the commander's numbers from the changed base entry or the
-  commander's globals, never copies them.
+  commander's globals, never copies them (`ApplyBaseValuesToLevels` in `weapons/projectile_list.lua` gives a changed
+  base field to every level, scaled where levels scale it). Sub-mod list hooks share their globals with this mod's
+  list hook, so they don't load `lib/scalings.lua` again (its `path` would be the sub-mod's).
 - **Scripts and AI files** that name weapons (`commander.lua`, `ai/ai.lua`): hand-written files in the sub-mod, as in
   v1, that extend the commander's lists or wrap its handlers. A sub-mod `commander.lua` is appended to the commander's
   script; don't call the game's `MarkDevicesOnActive` again there (a second call made its handlers recurse, 2026-11-21). Level names are built in a loop over the levels, taking

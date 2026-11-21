@@ -184,7 +184,7 @@ OrbitalLaserSource =
 -- firebeam) and "damaged" .. SaveName (e.g. damagedmissile2) versions of projectiles. Each projectile in a registry
 -- tree gets the ones that exist as children (recursively, so damagedmissile2 -> flamingdamagedmissile2), so a level
 -- projectile turns into the same level of its transformed version.
-TransformedProjectilePrefixes = { "flaming", "damaged" }
+TransformedProjectilePrefixes = { "flaming", "damaged", "armoured" }
 
 -- The registry. One entry per base weapon that gets levels.
 --   mod, weapon_filename: where the original weapon file is (relative to the game's data folder)

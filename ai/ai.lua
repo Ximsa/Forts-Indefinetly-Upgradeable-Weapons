@@ -5,23 +5,29 @@
 local function AddLevels()
    dofile(path .. "/lib/scalings.lua")
 
-   -- every registered projectile with its transformed versions (flaming, damaged, and both in either order)
+   -- every registered projectile (name -> its plain name) with its transformed versions (flaming, damaged, armoured,
+   -- and two of them in either order)
    local projectile_names = {}
    local function AddProjectileNames(tree)
       for name, children in pairs(tree) do
-         projectile_names[name] = true
+         projectile_names[name] = name
          for _, prefix in ipairs(TransformedProjectilePrefixes) do
-            projectile_names[prefix .. name] = true
-            for _, prefix2 in ipairs(TransformedProjectilePrefixes) do projectile_names[prefix2 .. prefix .. name] = true end
+            projectile_names[prefix .. name] = name
+            for _, prefix2 in ipairs(TransformedProjectilePrefixes) do projectile_names[prefix2 .. prefix .. name] = name end
          end
          AddProjectileNames(children)
       end
    end
    for _, weapon_upgrade in ipairs(WeaponUpgrades) do AddProjectileNames(weapon_upgrade.projectile or {}) end
 
-   for name in pairs(projectile_names) do
-      if ShootableProjectile[name] then
-         for level = FirstLevel, LastLevel do ShootableProjectile[name .. "_" .. level] = ShootableProjectile[name] end
+   -- A transformed version without an entry of its own is shootable like its plain projectile: a commander's AI file
+   -- that adds its armoured versions (Seep's common/ai/ai.lua) may run after this one (level armoured rockets weren't
+   -- shot at, 2026-11-21).
+   for name, plain in pairs(projectile_names) do
+      local shootable = ShootableProjectile[name]
+      if shootable == nil then shootable = ShootableProjectile[plain] end
+      if shootable then
+         for level = FirstLevel, LastLevel do ShootableProjectile[name .. "_" .. level] = shootable end
       end
    end
 

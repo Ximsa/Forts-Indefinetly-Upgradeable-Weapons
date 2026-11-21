@@ -1,6 +1,6 @@
 -- Scattershot's weapons/projectile_list.lua sets flak's shrapnel by name, which misses the level flak. Its hook has run
 -- by now, so copy its numbers from the base flak to every level (the level shrapnel is shrapnel_<level>).
-dofile((string.gsub(path, "/mods/commander%-[%w%-]+$", "")) .. "/lib/scalings.lua")
+-- This hook shares its globals with this mod's list hook, so FirstLevel, AddProjectileUpgrades, ... are defined.
 
 local base = FindProjectile("flak")
 local base_impact = base and base.Effects and base.Effects.Impact

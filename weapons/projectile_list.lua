@@ -13,8 +13,10 @@ function FindAndReplaceChildProjectiles(parent_projectile, child_projectile_save
 end
 
 -- quiet: the entry belongs to another mod, which may be inactive in this match (Lua can't tell), so a missing
--- projectile isn't an error
-function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, scaling, quiet)
+-- projectile isn't an error. parent_savename: the projectile this one is a transformed version of; a reaction that
+-- turns it back (a shot-down armoured missile becomes the plain one) leads to the parent's same level. Only in
+-- Effects: elsewhere a SaveName like "missile" or "mortar" is also a ProjectileType value.
+function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, scaling, quiet, parent_savename)
    if not added_projectiles[projectile_savename] then -- prevents adding the same projectile multiple times
       local base_projectile = DeepCopy(FindProjectile(projectile_savename))
       if not base_projectile then
@@ -41,6 +43,9 @@ function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, 
          projectile = InheritType(base_projectile, nil, projectile)
          -- add child projectiles
          FindAndReplaceChildProjectiles(projectile, child_projectile_savenames, level)
+         if parent_savename and type(projectile.Effects) == "table" then
+            FindAndReplaceChildProjectiles(projectile.Effects, { [parent_savename] = true }, level)
+         end
          -- add projectile to global list
          table.insert(Projectiles, projectile)
       end
@@ -64,10 +69,10 @@ end
 
 -- scaling is the ProjectileList table for the entry that owns the tree (see ScalingFor); a projectile shared by
 -- several entries is built once, with the first entry's rules
-function ProcessUpgradeTable(projectile_upgrade_table, scaling, quiet)
+function ProcessUpgradeTable(projectile_upgrade_table, scaling, quiet, parent_savename)
    for projectile_savename, childs in pairs(projectile_upgrade_table) do
-      AddProjectileUpgrades(projectile_savename, childs, scaling, quiet)
-      ProcessUpgradeTable(childs, scaling, quiet)
+      AddProjectileUpgrades(projectile_savename, childs, scaling, quiet, parent_savename)
+      ProcessUpgradeTable(childs, scaling, quiet, projectile_savename)
    end
 end
 
@@ -89,6 +94,26 @@ for _, projectile in ipairs(Projectiles) do
       for _, name in ipairs(scaled) do
          for level = FirstLevel, LastLevel do
             if impact[name .. "_" .. level] == nil then impact[name .. "_" .. level] = impact[name] end
+         end
+      end
+   end
+end
+
+-- For commander sub-mods (DESIGN.md, "Commanders"): after a commander's list hook changed `fields` of a base
+-- projectile by name, give every level of it the changed value, scaled to the level where levels scale that field.
+function ApplyBaseValuesToLevels(projectile_savename, fields)
+   local base = FindProjectile(projectile_savename)
+   if not base then return end
+   for level = FirstLevel, LastLevel do
+      local projectile = FindProjectile(projectile_savename .. "_" .. level)
+      if projectile then
+         for _, field in ipairs(fields) do
+            local fn = Scaling.ProjectileList[field]
+            if fn and type(base[field]) == "number" then
+               projectile[field] = fn(base[field], UpgradeStep(level))
+            else
+               projectile[field] = base[field]
+            end
          end
       end
    end
