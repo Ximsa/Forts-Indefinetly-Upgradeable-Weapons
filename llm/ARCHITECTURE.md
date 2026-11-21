@@ -47,7 +47,7 @@ Everything is driven by three globals:
 | Global | Purpose |
 |---|---|
 | `UpgradeCount` | number of upgrades per weapon; level 1 is the base weapon, upgrades are levels `FirstLevel`(2)..`LastLevel`(`UpgradeCount + 1`) |
-| `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` = `level - 1` (1..`UpgradeCount`) |
+| `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` = `(level - 1) * GlobalScale` |
 | `WeaponUpgrades` | one entry per upgradeable weapon (see below) |
 
 `UpgradeNumber` on level weapons is set to the upgrade step. No readable game file reads it. v1 used it for Overdrive commander support (see PLAN.md, phase 3).
@@ -118,10 +118,10 @@ and each level, it builds `<projectile>_<level>`: it applies the `Scaling.Projec
 inherits the rest from the base, and renames child projectile references (e.g. `shrapnel` → `shrapnel_<level>`)
 via `RecursiveUpdateFiltered`. Incendiary splash projectiles without an `IncendiaryRadius` are given one so that it can scale.
 
-### 4. In game: `ai/ai.lua` (generated)
+### 4. In game: `ai/ai.lua`
 
-`lib/pregen_files.lua` writes it with the registered weapon and projectile names embedded (the AI scripts may not
-have `path`). It runs after the game's AI script and does what v1 did: `ShootableProjectile` entries of registered
+Hand-written; it loads `lib/scalings.lua` for the registered names (with `moonshot` and `dlc2Var_Active` set while it
+loads, so DLC weapons are listed too) and logs `IUW ai/ai.lua: ...` if that fails. It runs after the game's AI script and does what v1 did: `ShootableProjectile` entries of registered
 projectiles (and their transformed versions) are copied to every level, and weapons with anti-air settings get
 `data.AntiAirErrorStdDev`, `data.AntiAirOpenDoor`, `data.AntiAirFireProbability` and
 `AntiAirFireProbabilityHumanAssist` at every level. Nothing else: copying more AI tables (all of `data`, the target
@@ -157,7 +157,7 @@ Runs when Forts loads a generated stub:
 
 Every stage depends on this `_<level>` suffix; keep it consistent.
 Level 1 is the unmodified base weapon, so suffixes start at `_2`. Names use the level; scaling functions get
-the upgrade step (`UpgradeStep(level)` = `level - 1`), so `<name>_2` is scaled by step 1.
+the upgrade step (`UpgradeStep(level)` = `(level - 1) * GlobalScale`), so at `GlobalScale = 1` `<name>_2` is scaled by step 1.
 
 ## Tooling
 

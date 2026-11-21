@@ -12,11 +12,13 @@ function FindAndReplaceChildProjectiles(parent_projectile, child_projectile_save
    end)
 end
 
-function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, scaling)
+-- quiet: the entry belongs to another mod, which may be inactive in this match (Lua can't tell), so a missing
+-- projectile isn't an error
+function AddProjectileUpgrades(projectile_savename, child_projectile_savenames, scaling, quiet)
    if not added_projectiles[projectile_savename] then -- prevents adding the same projectile multiple times
       local base_projectile = DeepCopy(FindProjectile(projectile_savename))
       if not base_projectile then
-         Log("Error: Could not find projectile with savename " .. projectile_savename)
+         if not quiet then Log("Error: Could not find projectile with savename " .. projectile_savename) end
          return
       end
       added_projectiles[projectile_savename] = true
@@ -62,14 +64,14 @@ end
 
 -- scaling is the ProjectileList table for the entry that owns the tree (see ScalingFor); a projectile shared by
 -- several entries is built once, with the first entry's rules
-function ProcessUpgradeTable(projectile_upgrade_table, scaling)
+function ProcessUpgradeTable(projectile_upgrade_table, scaling, quiet)
    for projectile_savename, childs in pairs(projectile_upgrade_table) do
-      AddProjectileUpgrades(projectile_savename, childs, scaling)
-      ProcessUpgradeTable(childs, scaling)
+      AddProjectileUpgrades(projectile_savename, childs, scaling, quiet)
+      ProcessUpgradeTable(childs, scaling, quiet)
    end
 end
 
 for _, weapon_upgrade in ipairs(WeaponUpgrades) do
    AddTransformedProjectiles(weapon_upgrade.projectile)
-   ProcessUpgradeTable(weapon_upgrade.projectile, ScalingFor(weapon_upgrade, "ProjectileList"))
+   ProcessUpgradeTable(weapon_upgrade.projectile, ScalingFor(weapon_upgrade, "ProjectileList"), weapon_upgrade.mod ~= ".")
 end

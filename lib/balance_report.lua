@@ -257,7 +257,7 @@ local function Compare(base)
    for level = levels_from, levels_to do
       local v1 = V1(base, level)
       if v1 then
-         local row = { level = level, v2 = Relative(V2(base, level - 1), v2_base), v1 = Relative(v1, v1_base) }
+         local row = { level = level, v2 = Relative(V2(base, UpgradeStep(level)), v2_base), v1 = Relative(v1, v1_base) }
          for _, metric in ipairs(Compared) do
             local a, b = row.v2[metric], row.v1[metric]
             if a and b and a > 0 and b > 0 and level <= balance_to then
@@ -375,8 +375,8 @@ local function Deviation(a, b)
 end
 
 Out("IUW balance report " .. os.date("%Y-%m-%d") .. " (lib/balance_report.lua" .. (tune and " tune" or "") .. ")")
-Out(string.format("parameters: GrowScale=%.3f DamageGrowScale=%.4f RoundsEachBurstGrowScale=%.5f ReloadDecay=%.4f BuildCostGrowScale=%.3f FireCostGrowScale=%.3f",
-   GrowScale, DamageGrowScale, RoundsEachBurstGrowScale, ReloadDecay, BuildCostGrowScale, FireCostGrowScale))
+Out(string.format("parameters: GlobalScale=%.3f SecondaryGrowScale=%.3f DamageGrowScale=%.4f RoundsEachBurstGrowScale=%.5f ReloadDecay=%.4f BuildCostGrowScale=%.3f FireCostGrowScale=%.3f",
+   GlobalScale, SecondaryGrowScale, DamageGrowScale, RoundsEachBurstGrowScale, ReloadDecay, BuildCostGrowScale, FireCostGrowScale))
 Out("Power, fire cost per damage, fire speed, splash radius, hitpoints and spread are multiples of the base weapon;")
 Out("metal and energy are the totals spent to reach the level. Deviation = v2 / v1 - 1.")
 for _, line in ipairs(tuning_lines) do Out("tune: " .. line) end
@@ -416,7 +416,7 @@ for _, pair in ipairs(Comparisons) do
    local base, other = bases_by_name[pair[1]], bases_by_name[pair[2]]
    local function Cell(b, level)
       if not b or not b.weapon then return "n/a" end
-      local v = Relative(V2(b, level - 1), V2(b, 0))
+      local v = Relative(V2(b, UpgradeStep(level)), V2(b, 0))
       return string.format("%sx %s %d", F(v.power), F(v.metal), v.rounds)
    end
    if base then

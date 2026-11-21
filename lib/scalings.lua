@@ -3,11 +3,14 @@ dofile(path .. "/lib/util.lua")
 
 UpgradeCount = 48 -- number of upgrades per weapon (release value; deploy.ps1 -UpgradeCount lowers it for testing)
 -- Level 1 is the unmodified base weapon, so the upgrades are levels FirstLevel..LastLevel.
--- Levels name things (SaveNames, files, sprites, "Level N"); scaling functions get the upgrade step (1..UpgradeCount).
+-- Levels name things (SaveNames, files, sprites, "Level N"); scaling functions get the upgrade step.
 FirstLevel = 2
 LastLevel = UpgradeCount + 1
-function UpgradeStep(level) return level - 1 end
-GrowScale = 0.15 -- base growth rate; secondary stats (range, splash, hitpoints, ...) use it unchanged
+-- How much one level upgrade is worth, for power and cost alike: 1 is the tuned balance, 0.5 makes every level give
+-- half as much for half the extra cost. Only 1 keeps "v2 level N roughly matches v1 level N" (llm/DESIGN.md).
+GlobalScale = 1
+function UpgradeStep(level) return (level - 1) * GlobalScale end
+SecondaryGrowScale = 0.15 -- growth rate of every stat without its own rate (range, splash, hitpoints, ...)
 -- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..24 on 2026-11-11
 -- (llm/DESIGN.md, "Balance against v1"). Only these (and build_cost_factor per weapon) are tuned; the curve shapes stay.
 DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
@@ -20,17 +23,17 @@ function DefaultScaleNone(value, level, grow_scale) return value end
 
 function DefaultScaleFractionalPower(value, level, grow_scale)
    return value +
-      value * math.sqrt(level) * (grow_scale and grow_scale or GrowScale)
+      value * math.sqrt(level) * (grow_scale and grow_scale or SecondaryGrowScale)
 end
 
 function DefaultScaleLinear(value, level, grow_scale)
    return value +
-      value * level * (grow_scale and grow_scale or GrowScale)
+      value * level * (grow_scale and grow_scale or SecondaryGrowScale)
 end
 
 function DefaultScaleSubQuadratic(value, level, grow_scale)
    return value +
-      value * (level ^ 1.3) * (grow_scale and grow_scale or GrowScale)
+      value * (level ^ 1.3) * (grow_scale and grow_scale or SecondaryGrowScale)
 end
 
 function BuildCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, BuildCostGrowScale)) end
@@ -39,7 +42,7 @@ function FireCostScale(value, level) return Significant3(DefaultScaleSubQuadrati
 
 function DamageScale(value, level) return DefaultScaleLinear(value, level, DamageGrowScale) end
 
-function IncendiaryRadiusScale(value, level) return DefaultScaleFractionalPower(value, level, 2 * GrowScale) end
+function IncendiaryRadiusScale(value, level) return DefaultScaleFractionalPower(value, level, 2 * SecondaryGrowScale) end
 
 Scaling =
    {

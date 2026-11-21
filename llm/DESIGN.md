@@ -43,7 +43,7 @@ that a few levels stop being affordable or a single weapon breaks the match.
 
 ## Scaling curves
 
-`GrowScale = 0.15` is the base growth rate of the secondary stats. The stats that set power and cost have their own
+`SecondaryGrowScale = 0.15` is the growth rate of the secondary stats. The stats that set power and cost have their own
 rates, tuned against v1 (see below). With `L` = step:
 
 | Curve | Formula | Used for |
@@ -89,13 +89,14 @@ The reasoning:
 v1 is the reference for how much power a given spend buys. Its numbers are in [V1.md](V1.md). The comparison is
 `lib/balance_report.lua` (`lua55 balance_report.lua [tune]` from `lib/`; output in `dump/balance_<date>.txt`).
 
-- **Balance is per step: v2 level N should roughly match v1 level N.** The owner may change the step sizing later.
+- **Balance is per step: v2 level N should roughly match v1 level N.** This holds at `GlobalScale = 1`; `GlobalScale`
+  is the owner's knob for the step sizing (each step counts as `GlobalScale` steps, for power and cost alike).
 - **What is compared.** Power is direct damage × rounds per burst (× beam duration for beams) ÷ reload time, as a
   multiple of the base weapon. Spend is the total metal to reach a level, with energy reported next to it. Fire cost
   per point of damage is a second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
 - **The curve shapes don't change.** Tuning only adjusts `BuildCostGrowScale` and `FireCostGrowScale` (the owner
   set `DamageGrowScale`, `RoundsEachBurstGrowScale` and `ReloadDecay`).
-- **The global `GrowScale` stays 0.15**, so the secondary stats don't move.
+- **`SecondaryGrowScale` stays 0.15**, so the secondary stats don't move.
 - **"Roughly match" is measured on average over levels 2..24**, the last level before 1-round weapons get a second
   round (owner, 2026-11-11): the jump in whole rounds distorts the fit too much. Levels above 24 are reported, not
   fitted. It is an average, not one level, because the shapes differ (v1's spend grows with the square of the level).

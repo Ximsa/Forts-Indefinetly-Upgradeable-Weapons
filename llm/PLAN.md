@@ -8,31 +8,11 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 **Open before they count as done:**
 **- Step 3: one round with every High Seas weapon built and upgraded and a clean log. In it, level-upgrade `turret2`,**
 **  switch it to focused and expect `turret2_focus_2`; if it isn't, untick Deck Gun in the README.**
-**- Step 4: AI parity confirmed by the owner (AI anti-air works without hangs); not yet checked: a level cannon through a**
+**- Step 4: AI parity confirmed in-game 2026-11-21 (level flak shoots down level shells, no hang); not yet checked: a level cannon through a**
 **  firebeam keeps its level (level flaming projectiles), and `damagedmissile2` levels in-game.**
-**- Optional: check once (temporary Log in `ai/ai.lua`) whether the AI scripts have `path` and `dofile`; if so, replace**
-**  the generated `ai/ai.lua` with hand-written code that reads the registry (offered; the owner hasn't decided).**
+**- `ai/ai.lua` is hand-written and loads the registry; confirmed in-game 2026-11-21 (it has `path`, `dofile` and `Log`).**
 **Step 5 (commanders): design agreed, 5.1 (in-game facts) done 2026-11-12; 5.2 (survey) recorded below except the**
 **packed Buster, Moonshine and Phantom (the `?` cells) and the open facts under the table.**
-
-## Consistency cleanup (agreed 2026-11-21)
-
-A review found docs and code disagreeing. GLOSSARY.md is already updated (AI parity, transformed projectile,
-commander parity's Overdrive exception). Work these in order, one per session if needed:
-
-1. ~~Remove the step 5.1 probe (`lib/probe.lua`, `mods/commander-*` probe sub-mods, `-- IUW probe` lines).~~ Done 2026-11-21.
-2. ~~Rewrite step 4.1 and its "Done when" to the new AI parity: `ShootableProjectile` and the four anti-air tables only,
-   because copying more AI tables made the game hang.~~ Done 2026-11-21.
-3. ~~DESIGN: point "Transformed projectiles keep their level" to the glossary term; armoured and uranium versions
-   "will keep their level (step 5)" (where they get their levels is decided in step 5.3).~~ Done 2026-11-21.
-4. ~~DESIGN: drop "planned: the deck gun's focused form" (the dump suggests it is a tier upgrade). Add an open check:
-   level-upgrade `turret2`, switch to focused, expect `turret2_focus_2`; if not, untick Deck Gun in the README.~~
-   Done 2026-11-21 (the check is in the status above).
-5. ~~README: tick Harpoon; rename the runway line to "Runway (Mk I and Mk II)".~~ Done 2026-11-21.
-6. ~~`lib/scalings.lua`: `RoundPeriod` uses `ReloadDecay` instead of a literal 0.98 (same value today).~~ Done 2026-11-21.
-7. ~~AGENTS.md "Add a scaled stat": finish the sentence: a weapon-file global is scaled by `ApplyScaling` (and on each
-   ammunition entry) like the others; a field nested in a table needs its own handling in `weapon_file_upgrade.lua`.~~ Done 2026-11-21.
-8. ~~Bring the step 3 table and the status lines above up to date.~~ Done 2026-11-21.
 
 ## Working rules
 
@@ -119,7 +99,7 @@ Done when every row is ticked in the README and the game log is clean with all o
 
 ## Step 4: AI parity and transformed projectiles
 
-1. **AI parity**, as v1 did it. `lib/pregen_files.lua` generates `ai/ai.lua`. For every level, it copies the
+1. **AI parity**, as v1 did it, in the hand-written `ai/ai.lua` (names from the registry). For every level, it copies the
    `ShootableProjectile` entry of each registered projectile (with its transformed versions) to the level projectile,
    and for each registered weapon that has anti-air settings it copies `data.AntiAirErrorStdDev`,
    `data.AntiAirOpenDoor`, `data.AntiAirFireProbability` and `AntiAirFireProbabilityHumanAssist` to the level weapon.
