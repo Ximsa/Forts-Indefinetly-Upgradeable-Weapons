@@ -9,15 +9,16 @@ After any change, regenerate nothing unless `UpgradeCount` changed, deploy, and 
 
 ## The whole scale
 
-The step of a level is `(level - 1) * GlobalScale`, and the top level is `UpgradeCount + 1`.
+The step of a level is `(level - 1) ^ StepPower` (`UpgradeStep`), and the top level is `UpgradeCount + 1`.
 
-- `GlobalScale` sets how much one level upgrade is worth, in power and in cost alike.
-  At 1.5, the value since 2026-11-21, every level counts as one and a half steps.
-  Raising it makes each upgrade larger and dearer; lowering it makes the progression finer.
+- `StepPower` sets how much each level upgrade is worth, in power and in cost alike.
+  Since 2026-11-21 it is `log 63 / log 32` (about 1.195): the first upgrade is one step, like v1, each further one
+  is worth a little more, and level 33 reaches step 63, v1's top level 64.
+  Raising it makes the high upgrades larger and dearer; the first upgrade stays one step.
 - `UpgradeCount` sets the number of levels, and thus the loading time, as every level adds one weapon per registry entry.
   A change requires regenerating the stubs (`lua55 pregen_files.lua` in `lib/`) and deleting those above the new top level.
-- The two interact: the top level reaches the step `UpgradeCount * GlobalScale`, currently 48.
-  To trade levels for loading time without changing the top, keep this product constant.
+- The two interact: the top level reaches the step `UpgradeStep(UpgradeCount + 1)`, currently 63.
+  To trade levels for loading time without changing the top, retune `StepPower` so that step stays the same.
 
 Since every curve is tuned per step, changing either value leaves the per-step balance intact;
 only the power and cost of a given level move.
@@ -33,7 +34,7 @@ The rules use four curves, each with a growth rate `g` and the step `L`:
 |---|---|---|
 | Linear | `v · (1 + g·L)` | direct damage, rounds per burst, beam duration |
 | Fractional power | `v · (1 + g·√L)` | splash, range, hitpoints, mass |
-| Sub-quadratic | `v · (1 + g·L^1.3)` | build cost, fire cost |
+| Sub-quadratic | `v · (1 + g·L^p)`, p = `CostPower` | build cost, fire cost |
 | Geometric decay | `v · d^L` | reload time, round period, spread |
 
 The growth rates are named constants at the top of the file:
@@ -42,7 +43,7 @@ The growth rates are named constants at the top of the file:
 - `RoundsEachBurstGrowScale` (1/24) governs rounds per burst and, for beams, the beam duration.
   Rounds are whole numbers, so power rises in jumps: a weapon with one round gains its second at step 24.
 - `ReloadDecay` (0.98) governs reload time and round period; a smaller value shortens them faster.
-- `BuildCostGrowScale` (0.5) and `FireCostGrowScale` (0.1) govern the costs.
+- `BuildCostGrowScale` (0.23), `FireCostGrowScale` (0.045) and their shared exponent `CostPower` (1.6) govern the costs.
   They grow faster than power, so that each level is less efficient than the one before.
 - `SecondaryGrowScale` (0.15) governs every stat without a rate of its own.
 
@@ -81,7 +82,7 @@ Weapons that version 1 never had are listed next to a comparable weapon, for jud
 ## Common pitfalls
 
 - **Power and cost move together.**
-  `GlobalScale` scales both, so it cannot make the mod cheaper or stronger as a whole; the cost rates can.
+  The step curve scales both, so it cannot make the mod cheaper or stronger as a whole; the cost rates can.
 - **Jumps in rounds.**
   A small change to `RoundsEachBurstGrowScale` moves the level at which a weapon gains a round,
   which changes its power by half or more at once.

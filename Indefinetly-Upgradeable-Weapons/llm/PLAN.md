@@ -4,7 +4,7 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status (2026-11-21): steps 1 to 4 done. Upgrade count lowered to 32 with `GlobalScale = 1.5` (loading time; DESIGN.md, "Levels"). The High Seas round passed in-game 2026-11-21: every High Seas weapon built**
+**Status (2026-11-21): steps 1 to 5 done (every commander checked in-game 2026-11-21). Upgrade count lowered to 32 (loading time); a sub-quadratic step curve makes level 2 = v1 level 2 and level 33 = v1 level 64 (DESIGN.md, "Levels"). The High Seas round passed in-game 2026-11-21: every High Seas weapon built**
 **and upgraded with a clean log, a level `turret2` switches to `turret2_focus_<level>`, level flak shoots down level**
 **shells, level cannons through level firebeams catch fire and keep their level, damaged level warheads keep theirs.**
 **`ai/ai.lua` is hand-written and loads the registry (it has `path`, `dofile` and `Log`).**
@@ -16,7 +16,7 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 **Forts' dofile ignores missing files silently), level names added to its ProjectilesToUranium; done (in-game 2026-11-21). Moonshine done (in-game 2026-11-21: level**
 **snipers EMP under the power; no weapon files and no shield ForcedReflection, per probe). Phantom done (in-game 2026-11-21: level magnabeams damage and burn). Architect needs no sub-mod (level weapons
 **have Prerequisite "upgrade", which its build-time perk skips); Overdrive done (both in-game 2026-11-21). Hurricane done (in-game 2026-11-21). Firebird done (in-game 2026-11-21). Warthog done (in-game 2026-11-21). Eagle Eye done (in-game 2026-11-21). Pinchfist and Spook need no sub-mod (their changes reach the levels; folders
-**with .gitkeep), waiting for their in-game check. Armourdillo in code (2026-11-21): `minigun2` is a registry entry (`commander` field,**
+**with .gitkeep), done (in-game 2026-11-21). Armourdillo in code (2026-11-21): `minigun2` is a registry entry (`commander` field,**
 **skipped offline). First round: `common/` runs after this mod's list hook for every team, so levels made only in the**
 **sub-mod gave "inconsistent device counts" and missing level head sprites. Now its levels and the level minigun →**
 **same level AP minigun upgrade come from `RegisterApplyMod` callbacks in this mod's own list hooks (every team);**

@@ -15,7 +15,7 @@ A weapon's position in this mod's upgrade chain: 1 is the base weapon, each high
 _Avoid_: upgrade number, rank, stage
 
 **Step**:
-The number of level upgrades bought on a weapon, which is its level minus 1. Balance is expressed in steps.
+What drives the scaling functions; `UpgradeStep(level)` maps a level to its step (`(level - 1) ^ StepPower`: level 2 is step 1, level 33 is step 63). Balance is expressed in steps.
 _Avoid_: upgrade level, iteration
 
 **Level weapon**:

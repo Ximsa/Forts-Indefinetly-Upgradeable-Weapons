@@ -26,10 +26,11 @@ that a few levels stop being affordable or a single weapon breaks the match.
 
 ## Levels
 
-- The base weapon is level 1. Level upgrades are levels 2 and up; the step is (level − 1) × `GlobalScale`.
-- **The release upgrade count is 32** (levels 2..33; owner, 2026-11-21: 48 made loading slow). With
-  `GlobalScale = 1.5`, a level is worth 1.5 steps, so level 33 is step 48, the old top level 49: power and total cost
-  at the top didn't change, and the curves tuned per step (below) still hold. The repository always holds 32. Lower counts are only for
+- The base weapon is level 1. Level upgrades are levels 2 and up; the step is `UpgradeStep(level)` = (level − 1)^`StepPower`.
+- **The release upgrade count is 32** (levels 2..33; owner, 2026-11-21: 48 made loading slow). The step
+  curve (owner, 2026-11-21) is sub-quadratic, `StepPower = log 63 / log 32` ≈ 1.195: the first upgrade is one step,
+  like v1, and level 33 is step 63, v1's top level 64. The curves tuned per step
+  (below) still hold; only the steps each level reaches moved (level 10 ≈ step 14, level 16 ≈ 25.5, level 24 ≈ 42.5). The repository always holds 32. Lower counts are only for
   faster loading while testing (`.\deploy.ps1 -UpgradeCount <n>` deploys fewer).
 - **A level's stats don't depend on the upgrade count.** Raising the count only adds levels on top. The sprite
   tint is the one exception, because it is only cosmetic.
@@ -58,18 +59,19 @@ rates, tuned against v1 (see below). With `L` = step:
 | None | `v` | build time, fire speed minimum, heat/cool periods, drag, beam damage multiplier, ... |
 | Fractional power | `v · (1 + g·√L)` | splash damage and radius, hitpoints, mass, range, impact, damage bonuses |
 | Linear | `v · (1 + g·L)` | direct damage (`DamageGrowScale`), rounds per burst and beam duration (`RoundsEachBurstGrowScale`), EMP duration, production/storage |
-| Sub-quadratic | `v · (1 + g·L^1.3)` | build costs (`BuildCostGrowScale`), fire costs (`FireCostGrowScale`) |
+| Sub-quadratic | `v · (1 + g·L^p)`, p = `CostPower` | build costs (`BuildCostGrowScale`), fire costs (`FireCostGrowScale`) |
 | Geometric decay | `v · d^L` | reload time (`ReloadDecay`), round period and spread (0.98 / 0.99) |
 
-The values (2026-11-11): `DamageGrowScale = 0.125` (v1's rate), `RoundsEachBurstGrowScale = 1/24`,
-`ReloadDecay = 0.98`, all three set by the owner; `BuildCostGrowScale = 0.50` and `FireCostGrowScale = 0.10`, tuned.
+The values: `DamageGrowScale = 0.125` (v1's rate), `RoundsEachBurstGrowScale = 1/24`,
+`ReloadDecay = 0.98`, all three set by the owner (2026-11-11); `CostPower = 1.6`, `BuildCostGrowScale = 0.23` and
+`FireCostGrowScale = 0.045`, tuned (2026-11-21).
 
 The reasoning:
 
 - **Damage grows linearly, other stats grow with √L.** Damage per shot is the main thing a player pays for.
   Splash radius, range and similar stats work together with each other (and with area), so they grow
   more slowly to avoid snowballing.
-- **Costs grow faster than power** (`L^1.3`), so each level becomes less efficient and players can't gain an
+- **Costs grow faster than power** (`L^1.6`), so each level becomes less efficient and players can't gain an
   advantage just by stacking levels.
 - **Damage grows at v1's rate** (`0.125` per step) and **reload times keep shortening** at `ReloadDecay = 0.98`
   (×0.63 at level 24, ×0.38 at 49), both set by the owner on 2026-11-11. Together with rounds per burst, power
@@ -96,24 +98,27 @@ The reasoning:
 v1 is the reference for how much power a given spend buys. Its numbers are in [V1.md](V1.md). The comparison is
 `lib/balance_report.lua` (`lua55 balance_report.lua [tune]` from `lib/`; output in `dump/balance_<date>.txt`).
 
-- **Balance is per step: v2 at step N − 1 should roughly match v1 level N.** v2 reaches that step at level
-  (N − 1) / `GlobalScale` + 1 (v1 level 49 = v2 level 33). `GlobalScale` is the owner's knob for how many steps one
-  level is worth, for power and cost alike; the report compares per step, so it doesn't change the tuning.
+- **Balance is per step: v2 at step N − 1 should roughly match v1 level N.** v2 reaches that step at the level
+  whose `UpgradeStep` is N − 1 (v1 level 2 = v2 level 2, v1 level 24 ≈ v2 level 15, v1 level 64 = v2 level 33). The step curve is the owner's
+  knob for how many steps each level is worth, for power and cost alike; the report compares per step, so it doesn't change the tuning.
 - **What is compared.** Power is direct damage × rounds per burst (× beam duration for beams) ÷ reload time, as a
   multiple of the base weapon. Spend is the total metal to reach a level, with energy reported next to it. Fire cost
   per point of damage is a second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
-- **The curve shapes don't change.** Tuning only adjusts `BuildCostGrowScale` and `FireCostGrowScale` (the owner
-  set `DamageGrowScale`, `RoundsEachBurstGrowScale` and `ReloadDecay`).
+- **The curve shapes don't change.** Tuning only adjusts `CostPower`, `BuildCostGrowScale` and `FireCostGrowScale`
+  (the owner set `DamageGrowScale`, `RoundsEachBurstGrowScale` and `ReloadDecay`).
 - **`SecondaryGrowScale` stays 0.15**, so the secondary stats don't move.
 - **"Roughly match" is measured on average over v1 levels 2..24 (steps 1..23)**, the last level before 1-round weapons get a second
   round (owner, 2026-11-11): the jump in whole rounds distorts the fit too much. Levels above 24 are reported, not
   fitted. It is an average, not one level, because the shapes differ (v1's spend grows with the square of the level).
+  **Exception: metal spend is fitted over all levels, 2..64** (owner, 2026-11-21: with the top at step 63 the
+  upgrades there were too cheap). The tuner picks `CostPower` 1.6 (24 % over 2..64; 1.5 ties there and fits 2..24 slightly better, 22 % instead of 24 %).
 - **Per-weapon corrections go only through `build_cost_factor`.** Weapons that stay far from v1, and weapons v1
   never had, are listed in the balance report for the owner to judge.
 
-Result of the 2026-11-11 tuning (averages over levels 2..24, all 13 weapons both versions have): power 46 % (not
-tuned), metal spend 21 %, fire cost per damage 22 %. Cannon: level 10 v1 2.3× base DPS / v2 2.6×; level 24 v1 4.8×
-for about 30,000 metal / v2 6.2× for about 27,400; level 49 v1 11.3× for about 101,700 / v2 55× for about 69,900.
+Result of the 2026-11-21 tuning (averages over levels 2..24, all 13 weapons both versions have): power 46 % (not
+tuned), metal spend 24 %, fire cost per damage 24 %. Cannon (by step; v1 level N = step N − 1): level 10 v1 2.3× base
+DPS for 8,100 metal / v2 2.6× for 7,860; level 24 v1 4.8× for 30,000 / v2 6.2× for 32,100; level 49 v1 11.3× for
+101,700 / v2 55× for 102,000; level 64 (v2's top, level 33) v1 17.8× for 164,700 / v2 95× for 158,000.
 
 ## Costs
 

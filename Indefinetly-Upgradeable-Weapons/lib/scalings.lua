@@ -6,21 +6,26 @@ UpgradeCount = 32 -- number of upgrades per weapon (release value; deploy.ps1 -U
 -- Levels name things (SaveNames, files, sprites, "Level N"); scaling functions get the upgrade step.
 FirstLevel = 2
 LastLevel = UpgradeCount + 1
--- How much one level upgrade is worth in steps, for power and cost alike. The curves are tuned per step against v1
--- (llm/DESIGN.md). 1.5 (owner, 2026-11-21: 32 levels instead of 48, for loading time) makes the top level 33 equal
--- the old top level 49 (step 48).
-GlobalScale = 1.5
+-- How much each level upgrade is worth in steps, for power and cost alike. The curves are tuned per step against v1
+-- (llm/DESIGN.md). Owner, 2026-11-21: sub-quadratic, step = (level - 1) ^ StepPower, so the first upgrade is one step
+-- like v1 and the top level 33 reaches step 63, v1's top level 64. A fixed number, so a level's step doesn't depend
+-- on UpgradeCount.
+StepPower = math.log(63) / math.log(32)  -- about 1.195
 -- growth rate of every stat without its own rate (range, splash, hitpoints, ...)
 SecondaryGrowScale = 0.15 
--- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..24 on 2026-11-11
--- (llm/DESIGN.md, "Balance against v1"). Only these (and build_cost_factor per weapon) are tuned; the curve shapes stay.
+-- Balance parameters, tuned against v1 with lib/balance_report.lua (llm/DESIGN.md, "Balance against v1"): fire cost
+-- over levels 2..24, build cost over all levels up to 64 (2026-11-21). Only the cost parameters (and build_cost_factor
+-- per weapon) are tuned.
 DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
 RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam duration for beams (set by the owner: doubles by step 24)
-BuildCostGrowScale = 0.50                -- sub-quadratic: build cost
-FireCostGrowScale = 0.10                 -- sub-quadratic: fire cost
+BuildCostGrowScale = 0.23                -- sub-quadratic: build cost
+FireCostGrowScale = 0.045                -- sub-quadratic: fire cost
+CostPower = 1.6                          -- exponent of the sub-quadratic cost curve (build and fire cost)
 ReloadDecay = 0.98                       -- geometric: reload time and round period (set by the owner)
 
-function UpgradeStep(level) return (level - 1) * GlobalScale end
+function UpgradeStep(level)
+   return (level - 1) ^ StepPower
+end
 
 function DefaultScaleNone(value, level, grow_scale) return value end
 
@@ -36,7 +41,7 @@ end
 
 function DefaultScaleSubQuadratic(value, level, grow_scale)
    return value +
-      value * (level ^ 1.3) * (grow_scale and grow_scale or SecondaryGrowScale)
+      value * (level ^ CostPower) * (grow_scale and grow_scale or SecondaryGrowScale)
 end
 
 function BuildCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, BuildCostGrowScale)) end

@@ -41,7 +41,7 @@ Everything is driven by three globals:
 | Global | Purpose |
 |---|---|
 | `UpgradeCount` | number of upgrades per weapon; level 1 is the base weapon, upgrades are levels `FirstLevel`(2)..`LastLevel`(`UpgradeCount + 1`) |
-| `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` = `(level - 1) * GlobalScale` |
+| `Scaling.WeaponList` / `.WeaponFile` / `.ProjectileList` | maps field name → `fn(value, step)` used at each stage; `step = UpgradeStep(level)` (`lib/scalings.lua`) |
 | `WeaponUpgrades` | one entry per upgradeable weapon (see below) |
 
 `UpgradeNumber` on level weapons is set to the upgrade step. No readable game file reads it. v1 used it for Overdrive commander support (see PLAN.md, phase 3).
@@ -151,7 +151,7 @@ Runs when Forts loads a generated stub:
 
 Every stage depends on this `_<level>` suffix; keep it consistent.
 Level 1 is the unmodified base weapon, so suffixes start at `_2`. Names use the level; scaling functions get
-the upgrade step (`UpgradeStep(level)` = `(level - 1) * GlobalScale`), so at `GlobalScale = 1` `<name>_2` is scaled by step 1.
+the upgrade step (`UpgradeStep(level)` = `(level - 1) ^ StepPower`), so `<name>_2` is scaled by step 1.
 
 ## Tooling
 
