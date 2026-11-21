@@ -4,12 +4,13 @@ Agreed with the owner on 2026-11-11. Terms (level, step, tier, variant, v1, v2, 
 AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The rules the work must follow are in
 [DESIGN.md](DESIGN.md). v1's numbers and mechanisms are in [V1.md](V1.md).
 
-**Status (2026-11-21): steps 1 to 4 done. The High Seas round passed in-game 2026-11-21: every High Seas weapon built**
+**Status (2026-11-21): steps 1 to 4 done. Upgrade count lowered to 32 with `GlobalScale = 1.5` (loading time; DESIGN.md, "Levels"). The High Seas round passed in-game 2026-11-21: every High Seas weapon built**
 **and upgraded with a clean log, a level `turret2` switches to `turret2_focus_<level>`, level flak shoots down level**
 **shells, level cannons through level firebeams catch fire and keep their level, damaged level warheads keep theirs.**
 **`ai/ai.lua` is hand-written and loads the registry (it has `path`, `dofile` and `Log`).**
-**Step 5 (commanders): design agreed, 5.1 (in-game facts) done 2026-11-12; 5.2 (survey) recorded below except the**
-**packed Buster, Moonshine and Phantom (the `?` cells) and the open facts under the table.**
+**Step 5 (commanders): design agreed, 5.1 (in-game facts) done 2026-11-12; 5.2 (survey) recorded below; Buster, Moonshine**
+**and Phantom from probe rounds (2026-11-21); still open: their overlay cells (`?`) and the open facts under the table.**
+**5.3: generator done; Scattershot in code (2026-11-21), waiting for its in-game check.**
 
 ## Working rules
 
@@ -27,7 +28,7 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 Changes that affect every level weapon, so they come first.
 
 1. **Upgrade count 48.** Set `UpgradeCount = 48` in `lib/scalings.lua`, run `cd lib && lua55 pregen_files.lua`.
-   Done when every `weapons/<name>/` folder holds exactly the stubs `_2` .. `_49`.
+   Done when every `weapons/<name>/` folder holds exactly the stubs `_2` .. `_49`. (Since 2026-11-21: 32, stubs `_2` .. `_33`.)
 2. **Levels independent of the count.** Replace `RoundsEachBurst`'s `2 / UpgradeCount` with a fixed `grow_scale`
    on the linear curve (doubling by step 48, i.e. `1/48`; the value is tuned in step 2). The sprite tint may stay
    tied to the count. Done when no stat formula other than the tint reads `UpgradeCount`.
@@ -129,15 +130,15 @@ copied changes applied after level scaling, gameplay changes only, and the Overd
    `ai/ai.lua` files that name weapons. Work from the current commander files; v1 is old and only a hint. Buster and
    Moonshine are packed: start from v1's sub-mods and let a temporary `Log` decide where they differ. Phantom: from
    the log only. Record the table here.
-3. **Generator.** `lib/pregen_files.lua` scans each `mods/commander-<x>/` for its hand-written weapon adjustments and
-   writes the identical per-level files that load them (DESIGN.md).
+3. **Generator.** `lib/pregen_files.lua` writes the per-level files that replay the overlay paths listed by hand in
+   `CommanderOverlayFiles` (DESIGN.md; no commander code in the repo, no game files read). Done 2026-11-21.
 4. **Order.** Scattershot first, then the other nine v1 covered (Seep, Shockenaugh, Buster, Moonshine, Overdrive,
    Hurricane, Firebird, Warthog, Armourdillo), then Eagle Eye, Architect, Pinchfist, Spook, Phantom.
    Commander-only weapons (e.g. Armourdillo's armour-piercing minigun) get levels as part of their commander.
 
-Done per commander when, in a skirmish with that commander, a level-2 and a level-49 weapon show the same passive
+Done per commander when, in a skirmish with that commander, a level-2 and a level-33 weapon show the same passive
 and active effects as their base weapon (sprite swaps excepted), and the commander is ticked in the README.
-Overdrive instead: a level-2 upgrade takes about 68 % and a level-49 upgrade about 95 % of its normal time, and
+Overdrive instead: a level-2 upgrade takes about 68 % and a level-33 upgrade about 93 % of its normal time, and
 downgrades work at every level.
 
 ### Survey (2026-11-12, from the current files in `data\mods\commander-*`)
@@ -162,9 +163,13 @@ to weapons that aren't upgrades). Sprite swaps are left out (DESIGN.md).
 | Pinchfist (`iba-miser`) | – | – | – | fire cost `weapon.lua`, reclaim loop, icon on every weapon type |
 | Spook (`iba-spy`) | – | – | – | nothing weapon-specific |
 | Armourdillo (`iba-turtle`) | sniper2 active FireEffect (cosmetic) | tier upgrade `minigun` → `minigun2`; active `sniper2` and `minigun2` projectile penetration | `common`: commander-only weapon `minigun2` (AP minigun) with projectile and flaming version | repair cost loop |
-| Buster (`cf-buster`, packed; v1 hint) | ? | v1: `uranium<name>` projectiles of mortar2, cannon, rocket, cannon20mm, howitzer (`ProjectilesToUranium`, `ProjectileEffects`); active EMP on sniper2 projectile; sniper2 `SpotterFactor = 1` | v1: `WeaponsToMark` | ? |
-| Moonshine (`cf-moonshine`, packed; v1 hint) | ? | v1: material `shield` `ForcedReflection` lists sniper2 | – | ? |
-| Phantom (`cf-phantom`, packed) | ? | ? | ? | ? |
+| Buster (`cf-buster`, packed; probe 2026-11-21) | ? (the probe can't see weapon files) | list hook: weapon `sniper2` `SpotterFactor` 0 → 1; projectiles `minigun`, `shotgun` get `armour` and `door` DamageMultiplier 1.1; new projectiles `uranium<name>` for bomb, cannon, cannon20mm, damagedmissile2, flamingdamagedmissile2, fireball, howitzer, missile2, flamingmissile2, mortar2, paveway, rocket, rodsfromgod, turret, plus `shrapnel-buster` (no level versions). Callbacks: only impact effects and trails on those base projectiles (cosmetic) | v1: `WeaponsToMark` | no: all of it misses levels. In-game 2026-11-21: with the power active, level cannons fire their normal level shells, not uranium ones; 5.3 must give level weapons `uranium<name>_<level>` shells under the power |
+| Moonshine (`cf-moonshine`, packed; probe 2026-11-21) | ? (the probe can't see weapon files) | list hook: projectiles `rocketemp`, `flamingrocketemp` `EMPRadius` 150 → 180, `EMPMissileReturnToSource`. Active callback, named: `sniper`, `sniper2` (and flaming) `EMPRadius = 0`, `sniper` `ProjectileMass` → 1, impact effects. v1: material `shield` `ForcedReflection` lists sniper2 (materials not probed) | – | active callback: every projectile gets EMP (`EMPDuration = 10`, `EMPRadius` from its splash radius, so levels get the scaled radius), `PassesEnemyPortals = false`, EMP impact effects; levels included. The named parts miss levels |
+| Phantom (`cf-phantom`, packed; probe 2026-11-21) | ? (the probe can't see weapon files) | list hook: projectile `magnabeam` `ProjectileDamage` 0 → 60, incendiary (probably Phantom; could be another mod's hook) | – | callbacks: every weapon gets cloak fields (`Cloaked`, `CanMove`, `HasDummy`, `CloakRecoveryTime = 10`, `CloakLostOnFiring`, `CloakLostOnDamage = false`; active: `Silenced`), levels included. `magnabeam` misses levels |
+
+Probe notes (2026-11-21): a `weapons/weapon.lua` in this mod's sub-mod `mods/commander-<x>/` never ran (no log line in a
+Buster vs. Phantom round). The `transfer` DamageMultiplier entries (buzzsaw, howitzer, minigun, paveway, turret, ...) and
+`ScrapPeriod` → 2 show up under every commander, so they come from other mods, not from a commander.
 
 Open facts for the in-game check of each commander: whether `weapons/weapon.lua` hooks and `common/` lists reach level
 weapons (and whether `common/` runs before this mod's list hook, which decides where `minigun2` gets its levels).
@@ -175,7 +180,7 @@ weapons (and whether `common/` runs before this mod's list hook, which decides w
 2. Measure the match load time with everything active (`Loading took` in the game log). About one minute is
    acceptable; raise it with the owner if it is clearly more.
 3. Release: `ItemVersion` above v1's last (the old v1 copy says 51), release notes (v1 saves don't carry over;
-   third-party weapons are gone; levels now run 2..49), README complete, known issues in AGENTS.md cleaned up.
+   third-party weapons are gone; levels now run 2..33), README complete, known issues in AGENTS.md cleaned up.
    The owner publishes from Forts.
 
 Done when every part of "feature complete" in GLOSSARY.md holds and the owner has published.

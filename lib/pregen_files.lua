@@ -23,3 +23,38 @@ for _, weaponUpgrade in ipairs(WeaponUpgrades) do
       file:close()
    end
 end
+
+-- Commander sub-mods (DESIGN.md, "Commanders"): the game runs a commander's overlay of a weapon file only for the base
+-- file. For each overlay listed here, write one file per level, mods/commander-<x>/mods/1369514837/weapons/<w>/<w>_<level>.lua,
+-- that runs the level weapon file again with the overlay replayed (ReplayCommanderOverlays). The list is kept by hand
+-- (paths inside the game's data, from the survey in PLAN.md, step 5); the game's files aren't read here.
+CommanderOverlayFiles = {
+   ["commander-bpo-scattershot"] = {
+      "weapons/machinegun.lua",
+      "weapons/minigun.lua",
+      "weapons/snipertower.lua",
+      "weapons/sniper-ap.lua",
+      "mods/weapon_pack/weapons/flak.lua",
+      "mods/weapon_pack/weapons/shotgun.lua",
+      "mods/weapon_pack/weapons/rocket.lua",
+      "mods/weapon_pack/weapons/20mmcannon.lua",
+      "mods/dlc1_weapons/weapons/buzzsaw.lua",
+   },
+}
+
+for commander, files in pairs(CommanderOverlayFiles) do
+   local commander_mod = "mods/" .. commander
+   for _, file_name in ipairs(files) do
+      local weapon = file_name:match("([^/]+)%.lua$") -- the weapon file's name is the level weapon's folder
+      local out_path = "../" .. commander_mod .. "/mods/1369514837/weapons/" .. weapon .. "/"
+      os.execute('mkdir "' .. out_path:gsub("/", "\\") .. '" 2>nul')
+      for level = FirstLevel, LastLevel do
+         local file = io.open(out_path .. weapon .. "_" .. level .. ".lua", "w")
+         file:write('CommanderOverlays = { { mod = "' .. commander_mod .. '", file = "' .. commander_mod .. "/" .. file_name .. '" } }\n' ..
+            [[path = (string.gsub(path, "/mods/commander%-[%w%-]+$", "")) -- the mod root]] .. "\n" ..
+            [[dofile(path .. "/weapons/weapon_file_upgrade.lua")]] .. "\n")
+         file:close()
+      end
+      print(out_path)
+   end
+end

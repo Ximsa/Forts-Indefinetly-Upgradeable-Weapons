@@ -7,6 +7,8 @@
 -- data/mods/iuw2/dump. Power is direct damage x rounds per burst (x beam duration x beam damage multiplier for beams)
 -- / reload time, as a multiple of the base weapon. Deviation = v2 / v1 - 1; averages are over levels 2..49 of
 -- |ln(v2 / v1)| over levels 2..24 (see balance_to), shown as a percentage.
+-- Levels here are v1's levels; v2 is compared at the same step (level - 1), which it reaches at level
+-- step / GlobalScale + 1 (with GlobalScale 1.5: v1 level 49 = v2 level 33).
 
 local env = dofile("offline_env.lua")
 env.Init(arg and arg[2])
@@ -257,7 +259,7 @@ local function Compare(base)
    for level = levels_from, levels_to do
       local v1 = V1(base, level)
       if v1 then
-         local row = { level = level, v2 = Relative(V2(base, UpgradeStep(level)), v2_base), v1 = Relative(v1, v1_base) }
+         local row = { level = level, v2 = Relative(V2(base, level - 1), v2_base), v1 = Relative(v1, v1_base) }
          for _, metric in ipairs(Compared) do
             local a, b = row.v2[metric], row.v1[metric]
             if a and b and a > 0 and b > 0 and level <= balance_to then
@@ -416,7 +418,7 @@ for _, pair in ipairs(Comparisons) do
    local base, other = bases_by_name[pair[1]], bases_by_name[pair[2]]
    local function Cell(b, level)
       if not b or not b.weapon then return "n/a" end
-      local v = Relative(V2(b, UpgradeStep(level)), V2(b, 0))
+      local v = Relative(V2(b, level - 1), V2(b, 0))
       return string.format("%sx %s %d", F(v.power), F(v.metal), v.rounds)
    end
    if base then

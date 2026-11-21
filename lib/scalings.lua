@@ -1,14 +1,15 @@
 if not path then path = ".." end
 dofile(path .. "/lib/util.lua")
 
-UpgradeCount = 48 -- number of upgrades per weapon (release value; deploy.ps1 -UpgradeCount lowers it for testing)
+UpgradeCount = 32 -- number of upgrades per weapon (release value; deploy.ps1 -UpgradeCount lowers it for testing)
 -- Level 1 is the unmodified base weapon, so the upgrades are levels FirstLevel..LastLevel.
 -- Levels name things (SaveNames, files, sprites, "Level N"); scaling functions get the upgrade step.
 FirstLevel = 2
 LastLevel = UpgradeCount + 1
--- How much one level upgrade is worth, for power and cost alike: 1 is the tuned balance, 0.5 makes every level give
--- half as much for half the extra cost. Only 1 keeps "v2 level N roughly matches v1 level N" (llm/DESIGN.md).
-GlobalScale = 1
+-- How much one level upgrade is worth in steps, for power and cost alike. The curves are tuned per step against v1
+-- (llm/DESIGN.md). 1.5 (owner, 2026-11-21: 32 levels instead of 48, for loading time) makes the top level 33 equal
+-- the old top level 49 (step 48).
+GlobalScale = 1.5
 function UpgradeStep(level) return (level - 1) * GlobalScale end
 SecondaryGrowScale = 0.15 -- growth rate of every stat without its own rate (range, splash, hitpoints, ...)
 -- Balance parameters, tuned against v1 with lib/balance_report.lua over levels 2..24 on 2026-11-11

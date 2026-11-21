@@ -94,9 +94,9 @@ function UpdateSprite()
    MySprite.Name = MySprite.Name .. "_" .. UpgradeLevel
    MySprite.States.Normal.Frames[1].colour =
    {
-      1 - math.abs(math.sin(1.5 * math.pi * UpgradeStep(UpgradeLevel) / UpgradeCount)),
-      1 - math.abs(math.sin(0.5 * math.pi * UpgradeStep(UpgradeLevel) / UpgradeCount)),
-      1 - math.abs(math.sin(4.5 * math.pi * UpgradeStep(UpgradeLevel) / UpgradeCount)),
+      1 - math.abs(math.sin(1.5 * math.pi * (UpgradeLevel - 1) / UpgradeCount)),
+      1 - math.abs(math.sin(0.5 * math.pi * (UpgradeLevel - 1) / UpgradeCount)),
+      1 - math.abs(math.sin(4.5 * math.pi * (UpgradeLevel - 1) / UpgradeCount)),
       1,
    } -- rgba
    Sprites =
@@ -116,6 +116,7 @@ function AdjustRoundsEachBurst()
    if not RoundsEachBurst then
       RoundsEachBurst = 1
       RoundPeriod = 1
+      AddedRoundsEachBurst = true -- not from the original file; undone if this file runs again (commander sub-mods)
    end
 end
 
@@ -147,6 +148,29 @@ function ApplyOverlays()
       dofile(overlay.mod .. "/" .. overlay.file)
       path = tmp_path
    end
+end
+
+-- Forts runs a commander's overlay of a weapon file only when it loads the base file. A commander sub-mod runs this file
+-- a second time with CommanderOverlays set to the commander's own overlay files of this weapon (written by
+-- lib/pregen_files.lua; DESIGN.md, "Commanders"), so the level weapon is the commander's base weapon, scaled. Sprite
+-- swaps are left out: Root and Sprites are restored afterwards, so the level tint stays. While the overlays run, Sprites
+-- is a table that grows any path they touch: Scattershot's AP sniper sets a frame of a sprite state ("ReloadBPO") that
+-- only the game's faction files add.
+local function SpriteSink()
+   return setmetatable({}, { __index = function(t, k) local v = SpriteSink() rawset(t, k, v) return v end })
+end
+
+function ReplayCommanderOverlays()
+   if not CommanderOverlays then return end
+   local root, sprites = DeepCopy(Root), Sprites
+   Sprites = SpriteSink()
+   for _, overlay in ipairs(CommanderOverlays) do
+      local tmp_path = path
+      path = overlay.mod -- the commander's folder, as when the game runs the overlay
+      dofile(overlay.file)
+      path = tmp_path
+   end
+   Root, Sprites = root, sprites
 end
 
 -- High Seas ammunition entries carry their own stats (ReloadTime, fire speeds, fire costs, RoundsEachBurst, ...)
@@ -188,11 +212,16 @@ end
 -- import original file; it is <mod>/weapons/<file> unless the registry names another place (original_file)
 local current_upgrade = FindCurrentUpgrade()
 local original_file = current_upgrade and current_upgrade.original_file or (ModPath .. "/weapons/" .. OriginalFileName)
+-- on a second run (commander sub-mod), drop what the first run added that the original file doesn't set again
+if AddedRoundsEachBurst then
+   RoundsEachBurst, RoundPeriod, AddedRoundsEachBurst = nil, nil, nil
+end
 local tmp = path
 path = ModPath -- dofile with path set to the weapons' path
 dofile(original_file)
 path = tmp     -- restore path
 ApplyOverlays()
+ReplayCommanderOverlays()
 if not Sprites then
    Log("IUW: original weapon file " .. original_file .. " did not load (check mod and original_file in lib/scalings.lua)")
 end

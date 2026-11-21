@@ -26,8 +26,10 @@ that a few levels stop being affordable or a single weapon breaks the match.
 
 ## Levels
 
-- The base weapon is level 1. Level upgrades are levels 2 and up; the step is the level minus 1.
-- **The release upgrade count is 48** (levels 2..49). The repository always holds 48. Lower counts are only for
+- The base weapon is level 1. Level upgrades are levels 2 and up; the step is (level − 1) × `GlobalScale`.
+- **The release upgrade count is 32** (levels 2..33; owner, 2026-11-21: 48 made loading slow). With
+  `GlobalScale = 1.5`, a level is worth 1.5 steps, so level 33 is step 48, the old top level 49: power and total cost
+  at the top didn't change, and the curves tuned per step (below) still hold. The repository always holds 32. Lower counts are only for
   faster loading while testing (`.\deploy.ps1 -UpgradeCount <n>` deploys fewer).
 - **A level's stats don't depend on the upgrade count.** Raising the count only adds levels on top. The sprite
   tint is the one exception, because it is only cosmetic.
@@ -71,13 +73,13 @@ The reasoning:
   (×0.63 at level 24, ×0.38 at 49), both set by the owner on 2026-11-11. Together with rounds per burst, power
   therefore runs ahead of v1 (see below); only the costs are tuned.
 - **Rounds per burst** grows linearly at `1/24` (double by step 24), chosen by the owner so that 1-round weapons get
-  a second round (level 25) and a third (level 49) within a real battle. It moves in whole rounds, which makes power
-  jump at those levels; that is why balance is fitted only up to level 24.
+  a second round (step 24, level 17) and a third (step 48, level 33) within a real battle. It moves in whole rounds, which makes power
+  jump at those steps; that is why balance is fitted only up to step 23.
 - **Beam weapons** don't get more rounds; their `BeamDuration` grows at the same rate instead, and their
   `BeamDamageMultiplier` stays the base value, so a beam's damage grows through projectile damage and duration like
   any other weapon's. Their energy fire cost per shot is scaled like any other fire cost.
 - **Energy Dome** (owner, 2026-11-11) grows by firing longer: it keeps firing bolts every `RoundPeriod` (0.04 s) for
-  the whole burst, so its rounds per burst grows at twice the general rate (50 → 150 at level 25, 250 at 49) while its round period, size
+  the whole burst, so its rounds per burst grows at twice the general rate (50 → 150 at step 24, 250 at step 48) while its round period, size
   (fire speed) and shape (spread, `FireStdDev`/`FireStdDevAuto`) stay; the barrier's own lifetime (`MaxAge`) didn't make the dome last visibly longer. Reload and hitpoints
   follow the normal rules; its `build_cost_factor` is 0.5 (owner: it was underwhelming for its cost). Per-weapon rules like this live in the registry's `scaling` field (`DomeScaling`).
 - **Orbital Laser** (2026-11-11): a level laser's marker orders the same level of beam, whose damage (its `BeamDamage`
@@ -92,15 +94,16 @@ The reasoning:
 v1 is the reference for how much power a given spend buys. Its numbers are in [V1.md](V1.md). The comparison is
 `lib/balance_report.lua` (`lua55 balance_report.lua [tune]` from `lib/`; output in `dump/balance_<date>.txt`).
 
-- **Balance is per step: v2 level N should roughly match v1 level N.** This holds at `GlobalScale = 1`; `GlobalScale`
-  is the owner's knob for the step sizing (each step counts as `GlobalScale` steps, for power and cost alike).
+- **Balance is per step: v2 at step N − 1 should roughly match v1 level N.** v2 reaches that step at level
+  (N − 1) / `GlobalScale` + 1 (v1 level 49 = v2 level 33). `GlobalScale` is the owner's knob for how many steps one
+  level is worth, for power and cost alike; the report compares per step, so it doesn't change the tuning.
 - **What is compared.** Power is direct damage × rounds per burst (× beam duration for beams) ÷ reload time, as a
   multiple of the base weapon. Spend is the total metal to reach a level, with energy reported next to it. Fire cost
   per point of damage is a second check. Range, splash, hitpoints and accuracy are reported but not tuned to v1.
 - **The curve shapes don't change.** Tuning only adjusts `BuildCostGrowScale` and `FireCostGrowScale` (the owner
   set `DamageGrowScale`, `RoundsEachBurstGrowScale` and `ReloadDecay`).
 - **`SecondaryGrowScale` stays 0.15**, so the secondary stats don't move.
-- **"Roughly match" is measured on average over levels 2..24**, the last level before 1-round weapons get a second
+- **"Roughly match" is measured on average over v1 levels 2..24 (steps 1..23)**, the last level before 1-round weapons get a second
   round (owner, 2026-11-11): the jump in whole rounds distorts the fit too much. Levels above 24 are reported, not
   fitted. It is an average, not one level, because the shapes differ (v1's spend grows with the square of the level).
 - **Per-weapon corrections go only through `build_cost_factor`.** Weapons that stay far from v1, and weapons v1
@@ -143,35 +146,38 @@ This means the colour depends on `UpgradeCount`: changing the upgrade count chan
 
 ## Commanders
 
-Agreed with the owner on 2026-11-12.
+Agreed with the owner on 2026-11-12; revised 2026-11-21: no commander code is copied into this repo (copyright).
 
 - **Each commander's support lives in its own sub-mod** `mods/commander-<x>/`, active only while that commander is.
-  Commander adjustments are written by hand there, copied from the commander's current files; nothing about
-  commanders is in `lib/scalings.lua` and no adjustment code is generated.
-- **Weapon-file overlays:** the change is copied once per weapon into a hand-written file in the sub-mod. The game
-  matches overlays by path, so `pregen_files.lua` writes one identical one-line file per level,
-  `mods/commander-<x>/mods/1369514837/weapons/<w>/<w>_<level>.lua`, that loads it. Which weapons get these files
-  comes from scanning the sub-mod's hand-written files.
-- **Applied after level scaling**, as in v1: the copied change runs on the finished level weapon, so absolute changes
-  stay absolute (`ReloadTime - 2` cuts 2 s at every level).
-- **Set values become differences** (owner, 2026-11-12): where a commander sets a stat that levels scale to a fixed
-  value (Eagle Eye's minigun `RoundsEachBurst = 11`, Firebird's `BeamDuration = 3.2`, active fire costs), the copy
-  applies the same difference from the base value (`RoundsEachBurst + (11 - base)`), so the level keeps what it bought.
-  Stats that levels don't scale (`HeatPeriod`, `RoundPeriod`, ...) are set as written.
+  It holds only this mod's own code: generated files, and hand-written list hooks and scripts that extend a
+  commander's named changes to the level names. Nothing about commanders is in `lib/scalings.lua`.
+- **Weapon-file overlays are replayed, not copied:** the game runs a commander's overlay of a weapon file only for
+  the base file. The overlay paths are listed by hand in `CommanderOverlayFiles` in `lib/pregen_files.lua` (every
+  commander is treated as packed: the generator doesn't read the game's files). For each, it writes
+  `mods/commander-<x>/mods/1369514837/weapons/<w>/<w>_<level>.lua` (the game runs it after the level stub), which sets
+  `CommanderOverlays` to the overlay's path and runs the level weapon file again, replaying the overlay
+  (`ReplayCommanderOverlays`). Only paths go into the repo.
+- **Applied before level scaling** (2026-11-21, replaces "after"): the level weapon is the commander's base weapon,
+  scaled. Set values scale with the level (Scattershot's active rocket `RoundsEachBurst = 3` gives a level weapon 3 rounds
+  scaled to its level), and so do absolute changes (`ReloadTime - 2` cuts less at high levels, where reload is shorter).
+  "Set values become differences" (2026-11-12) no longer applies.
 - **Projectile swaps keep the level:** an effect that makes a weapon fire another projectile (Shockenaugh's 20mm
   cannon firing `cannon`, its firebeam firing `laser`, Seep's `armoured...`) fires that projectile at the same level, and
-  the costs and beam values copied with it go through the same scaling functions at that level.
+  the costs and beam values set with it go through the same scaling functions at that level (the level file adds the
+  level suffix to `Projectile` after the replay).
 - **Perks keyed to a threshold follow the base weapon:** a level weapon gets Eagle Eye's reload bank exactly when its
   base weapon does, even if its own reload is below the 9 s threshold.
 - **Build-speed perks don't touch upgrade times:** Eagle Eye's faster sniper build, like Architect's, leaves level
   upgrades alone (tier upgrades aren't sped up either). Overdrive is the only commander that changes upgrade time.
-- **Gameplay only:** sprite swaps (Scattershot's minigun head, Marksman's cannon barrel) are not copied, so the level
-  tint stays. Changes that affect play, including `HasLaserSight`, are.
+- **Gameplay only:** sprite swaps (Scattershot's minigun head, Marksman's cannon barrel) are undone after the replay,
+  so the level tint stays. Changes that affect play, including `HasLaserSight`, are kept.
 - **List hooks:** commander list hooks that loop over every weapon or projectile are left alone. For hooks that name
   SaveNames (e.g. Heavy Weapons' `ProjectilesToAffect`), a hand-written list hook in the sub-mod extends the
-  commander's names to the level names; it reads the commander's numbers and globals where it can instead of copying them.
+  commander's names to the level names; it reads the commander's numbers from the changed base entry or the
+  commander's globals, never copies them.
 - **Scripts and AI files** that name weapons (`commander.lua`, `ai/ai.lua`): hand-written files in the sub-mod, as in
-  v1. `commander.lua` wraps the original handlers. Level names are built in a loop over the levels, taking
+  v1, that extend the commander's lists or wrap its handlers. A sub-mod `commander.lua` is appended to the commander's
+  script; don't call the game's `MarkDevicesOnActive` again there (a second call made its handlers recurse, 2026-11-21). Level names are built in a loop over the levels, taking
   `UpgradeCount` from `dofile(path .. "/lib/scalings.lua")` (in a sub-mod `commander.lua`, `path` is the mod root).
 - **Commander-only weapons** (Armourdillo's armour-piercing minigun `minigun2`) are normal `WeaponUpgrades` entries
   with stubs in `weapons/`, as v1 did. Commander-only projectiles (Seep's `armoured<name>`, Buster's `uranium<name>`)
@@ -180,13 +186,13 @@ Agreed with the owner on 2026-11-12.
   the sub-mod, which runs after the commander's.
 - **Load order** (in-game, 2026-11-12): this mod's list hook → the commander's list hook → the sub-mod's list hook →
   `RegisterApplyMod` callbacks. A commander's change to a named base weapon or projectile therefore misses the level
-  ones and is copied in the sub-mod; its loops over everything reach them on their own.
+  ones and is extended in the sub-mod; its loops over everything reach them on their own.
 - **Overdrive exception to commander parity.** Overdrive (`commander-da-overclocker`) is the upgrade commander, so it
   benefits most from levels. Its own hook gives level upgrades downgrades and halves their upgrade time; on top,
   a hook in its sub-mod (`mods/commander-da-overclocker/weapons/weapon_list.lua`, constants included) multiplies the
   level weapon's upgrade time by `m(level) / 0.5`, with v1's curve `m(n) = 1 − (n + 2^(1/0.75))^−0.75`
   (`0.5` = Overdrive's multiplier, `0.75` = order). Applied once, Overdrive's upgrade time becomes `m(level)` of
-  normal: about 68 % at level 2, 85 % at level 10, 95 % at level 49. v1 applied it twice (to each weapon and again
+  normal: about 68 % at level 2, 85 % at level 10, 93 % at level 33 (by level, not step). v1 applied it twice (to each weapon and again
   through every upgrade pointing to it), which could make Overdrive slower than no commander; v2 does not.
   `UpgradeNumber` stays the step; nothing else reads it.
 

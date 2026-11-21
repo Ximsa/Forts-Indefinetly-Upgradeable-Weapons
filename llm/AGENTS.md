@@ -29,8 +29,9 @@ people too and live at the repo root.
 - Style: 3 spaces of indentation in most files (`weapon_list.lua` uses tabs; match the file you're editing), `snake_case` locals,
   `PascalCase` globals/functions.
 - Never edit an original weapon file's behaviour by copying it; always apply changes on top of it in `weapon_file_upgrade.lua`.
-- New tunable numbers go in `lib/scalings.lua`, not into the hook files. Exception: commander adjustments live in
-  the commander's sub-mod `mods/commander-<x>/`, numbers included (DESIGN.md, "Commanders").
+- New tunable numbers go in `lib/scalings.lua`, not into the hook files. Exception: commander support lives in
+  the commander's sub-mod `mods/commander-<x>/`, numbers included (DESIGN.md, "Commanders"); it never copies the
+  commander's own code.
 - Keep the `<name>_<level>` suffix convention for SaveNames, projectiles, sprites and stub files.
 
 ## Commits
@@ -52,9 +53,22 @@ suggested commit message for the uncommitted changes (`git status`) in a code bl
 
 ### Change `UpgradeCount`
 
-The release count is 48 (DESIGN.md, "Levels"). To test with fewer levels, don't change the repo: deploy with
+The release count is 32 (DESIGN.md, "Levels"). To test with fewer levels, don't change the repo: deploy with
 `.\deploy.ps1 -UpgradeCount <n>`. If the release count itself changes, regenerate all stubs afterwards. The generator doesn't delete stubs above the new count; remove them
 if the count gets smaller, or leave them on purpose and say so.
+
+### Support a commander
+
+Follow DESIGN.md, "Commanders", and the survey in PLAN.md, step 5. Never copy a commander's code into the repo
+(copyright): weapon-file changes are replayed from the commander's own files, list and script changes are extended
+by this mod's own code. In `mods/commander-<x>/`:
+- List the commander's overlay files of registered weapons (paths inside the game's data folder) in
+  `CommanderOverlayFiles` in `lib/pregen_files.lua` and run `lua55 pregen_files.lua`: it writes the per-level files
+  that replay them.
+- `weapons/projectile_list.lua` / `weapon_list.lua`: extend the commander's named list changes to the level names.
+- `commander.lua`: appended to the commander's script; `path` is this mod's root there.
+
+Offline, only the list hooks are checked; weapon-file changes need an in-game round.
 
 ### Add a scaled stat
 
