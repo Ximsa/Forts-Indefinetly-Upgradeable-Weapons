@@ -10,7 +10,8 @@ AI parity, overlay, replay) are defined in [GLOSSARY.md](../GLOSSARY.md). The ru
 **`ai/ai.lua` is hand-written and loads the registry (it has `path`, `dofile` and `Log`).**
 **Step 5 (commanders): design agreed, 5.1 (in-game facts) done 2026-11-12; 5.2 (survey) recorded below; Buster, Moonshine**
 **and Phantom from probe rounds (2026-11-21); still open: their overlay cells (`?`) and the open facts under the table.**
-**5.3: generator done; Scattershot in code (2026-11-21), waiting for its in-game check.**
+**5.3: generator done; Scattershot done (in-game 2026-11-21: clean log, level AP sniper fires 2 shots under the**
+**power, level weapons get the focus icon). Next: Seep.**
 
 ## Working rules
 

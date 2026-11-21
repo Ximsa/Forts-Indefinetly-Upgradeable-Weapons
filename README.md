@@ -42,7 +42,7 @@ Roadmap of which weapons upgrades are already implemented
 - [x] Orbital Laser (Mk I and Mk II)
 
 ## Commanders
-- [ ] Scattershot
+- [x] Scattershot
 - [ ] Seep
 - [ ] Shockenaugh
 - [ ] Buster
