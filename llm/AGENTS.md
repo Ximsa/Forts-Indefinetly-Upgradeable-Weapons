@@ -8,10 +8,10 @@ mod-specific rules; read them when working in that mod.
 
 One folder per mod; each folder is a complete Forts mod (`mod.lua`, `publishedfileid.lua`, ...).
 
-- `Indefinetly-Upgradeable-Weapons/` – v2 of the weapons mod, under active development. Has its own `CLAUDE.md`.
-- `Indefinetly-Upgradeable-Weapons-Legacy/` – v1 of the weapons mod (same Workshop item, `1369514837`). v2 replaces it
+- `Indefinitely-Upgradeable-Weapons/` – v2 of the weapons mod, under active development. Has its own `CLAUDE.md`.
+- `Indefinitely-Upgradeable-Weapons-Legacy/` – v1 of the weapons mod (same Workshop item, `1369514837`). v2 replaces it
   once feature complete.
-- `Indefinetly-Upgradeable-Devices-Legacy/` – the devices mod (Workshop item `1363924614`).
+- `Indefinitely-Upgradeable-Devices-Legacy/` – the devices mod (Workshop item `1363924614`).
 
 ## Environment
 

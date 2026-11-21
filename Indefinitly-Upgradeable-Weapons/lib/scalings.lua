@@ -12,14 +12,15 @@ LastLevel = UpgradeCount + 1
 -- on UpgradeCount.
 StepPower = math.log(63) / math.log(32)  -- about 1.195
 -- growth rate of every stat without its own rate (range, splash, hitpoints, ...)
-SecondaryGrowScale = 0.15 
+SecondaryGrowScale = 1/7 
 -- Balance parameters, tuned against v1 with lib/balance_report.lua (llm/DESIGN.md, "Balance against v1"): fire cost
 -- per damage and build cost per firepower, both over v1 levels 2..24 = v2 levels 2..15 (2026-11-21). Only the cost parameters (and build_cost_factor
 -- per weapon) are tuned.
-DamageGrowScale = 0.125                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
+DamageGrowScale = 1/8                  -- linear: direct damage (ProjectileDamage, PenetrationDamage, RayDamage, AntiAirDamage); v1's rate (set by the owner)
+PenetrationGrowScale = 1/16
 RoundsEachBurstGrowScale = 1 / 24        -- linear: rounds per burst, and beam duration for beams (set by the owner: doubles by step 24)
-BuildCostGrowScale = 0.63                -- v1's shape: build cost (v1's U per base cost)
-FireCostGrowScale = 0.13                 -- sub-quadratic: fire cost
+BuildCostGrowScale = 2/3                -- v1's shape: build cost (v1's U per base cost)
+FireCostGrowScale = 1/8                 -- sub-quadratic: fire cost
 CostPower = 1.2                          -- exponent of the sub-quadratic fire cost curve
 ReloadDecay = 0.98                       -- geometric: reload time and round period (set by the owner)
 
@@ -53,6 +54,8 @@ end
 function FireCostScale(value, level) return Significant3(DefaultScaleSubQuadratic(value, level, FireCostGrowScale)) end
 
 function DamageScale(value, level) return DefaultScaleLinear(value, level, DamageGrowScale) end
+
+function PenetrationScale(value, level) return DefaultScaleLinear(value, level, DamageGrowScale) end
 
 function IncendiaryRadiusScale(value, level) return DefaultScaleFractionalPower(value, level, 2 * SecondaryGrowScale) end
 

@@ -1,10 +1,11 @@
 # Indefinitely Upgradeable Weapons
 
-Keep upgrading your weapons long after the game would let you stop. Select a built weapon and press its upgrade button to reach the next level and keep going.
+This mod adds (semi-) indefinitely upgradeable weapons.
 
-Each level deals more damage, fires more rounds or for longer, and reloads faster. Each level also costs more than the one before, so a high level is a real investment.
+Each level deals more damage, fires more rounds or for longer, and reloads faster.
 
-All weapons of the base game, Tons of Guns, Moonshot and High Seas are supported; DLC weapons require the DLC. Commander abilities work on upgraded weapons as on the originals, except that Overdrive speeds up level upgrades less than normal upgrades. Loading a match takes a little longer.
+All weapons of the base game, Tons of Guns, Moonshot and High Seas are supported; DLC weapons require the DLC. Commander abilities work on upgraded weapons as on the originals.
+
 
 ## Development
 

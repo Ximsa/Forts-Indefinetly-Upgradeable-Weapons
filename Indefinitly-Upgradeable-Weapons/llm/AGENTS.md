@@ -19,7 +19,7 @@ people too and live at the mod root.
 
 - Outside the game, only `lib/check_lists.lua` runs the list hooks (against stubs and the readable base lists);
   weapon files only run in-game.
-- v1 is `../Indefinetly-Upgradeable-Weapons-Legacy/` in this repo (see also V1.md).
+- v1 is `../Indefinitely-Upgradeable-Weapons-Legacy/` in this repo (see also V1.md).
 
 ## Conventions
 
