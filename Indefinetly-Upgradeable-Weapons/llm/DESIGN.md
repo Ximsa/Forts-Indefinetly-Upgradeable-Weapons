@@ -63,7 +63,7 @@ rates, tuned against v1 (see below). With `L` = step:
 | Geometric decay | `v · d^L` | reload time (`ReloadDecay`), round period and spread (0.98 / 0.99) |
 
 The values: `DamageGrowScale = 0.125` (v1's rate), `RoundsEachBurstGrowScale = 1/24`,
-`ReloadDecay = 0.98`, all three set by the owner (2026-11-11); `CostPower = 1.6`, `BuildCostGrowScale = 0.23` and
+`ReloadDecay = 0.98`, all three set by the owner (2026-11-11); `CostPower = 1.6`, `BuildCostGrowScale = 0.32` and
 `FireCostGrowScale = 0.045`, tuned (2026-11-21).
 
 The reasoning:
@@ -110,15 +110,18 @@ v1 is the reference for how much power a given spend buys. Its numbers are in [V
 - **"Roughly match" is measured on average over v1 levels 2..24 (steps 1..23)**, the last level before 1-round weapons get a second
   round (owner, 2026-11-11): the jump in whole rounds distorts the fit too much. Levels above 24 are reported, not
   fitted. It is an average, not one level, because the shapes differ (v1's spend grows with the square of the level).
-  **Exception: metal spend is fitted over all levels, 2..64** (owner, 2026-11-21: with the top at step 63 the
-  upgrades there were too cheap). The tuner picks `CostPower` 1.6 (24 % over 2..64; 1.5 ties there and fits 2..24 slightly better, 22 % instead of 24 %).
-- **Per-weapon corrections go only through `build_cost_factor`.** Weapons that stay far from v1, and weapons v1
+  **Prices follow firepower** (owner, 2026-11-21): the build cost is fitted to v1's metal spent per multiple of base
+  power (spend ÷ power), not to the spend alone, so a weapon whose power grows faster than in v1 costs more.
+  The tuner fits `CostPower` and `BuildCostGrowScale` to the average over all weapons, then each weapon's
+  `build_cost_factor` (weapons without damage, smokebomb and magnabeam, by spend).
+- **Per-weapon corrections go only through `build_cost_factor`**, set from the tuner's suggestions (2026-11-21). Weapons that stay far from v1, and weapons v1
   never had, are listed in the balance report for the owner to judge.
 
 Result of the 2026-11-21 tuning (averages over levels 2..24, all 13 weapons both versions have): power 46 % (not
-tuned), metal spend 24 %, fire cost per damage 24 %. Cannon (by step; v1 level N = step N − 1): level 10 v1 2.3× base
-DPS for 8,100 metal / v2 2.6× for 7,860; level 24 v1 4.8× for 30,000 / v2 6.2× for 32,100; level 49 v1 11.3× for
-101,700 / v2 55× for 102,000; level 64 (v2's top, level 33) v1 17.8× for 164,700 / v2 95× for 158,000.
+tuned), metal per power 11 %, fire cost per damage 24 %. Cannon (by step; v1 level N = step N − 1): level 10 v1 2.3×
+base DPS for 8,100 metal / v2 2.6× for 9,135; level 24 v1 4.8× for 30,000 / v2 6.2× for 37,800; level 49 v1 11.3× for
+101,700 / v2 55× for 121,100; level 64 (v2's top, level 33) v1 17.8× for 164,700 / v2 95× for 186,100. Above the
+second round (step 24) power jumps but price doesn't, so the top is cheap for its power.
 
 ## Costs
 

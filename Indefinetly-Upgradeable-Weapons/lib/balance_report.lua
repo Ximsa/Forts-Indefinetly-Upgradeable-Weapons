@@ -6,7 +6,7 @@
 -- ../Indefinetly-Upgradeable-Weapons-Legacy/weapons and its formulas (llm/V1.md); base values = the readable game files, DLC weapons from
 -- data/mods/iuw2/dump. Power is direct damage x rounds per burst (x beam duration x beam damage multiplier for beams)
 -- / reload time, as a multiple of the base weapon. Deviation = v2 / v1 - 1; averages are over levels 2..49 of
--- |ln(v2 / v1)| over levels 2..24 (see balance_to), shown as a percentage. The tuner fits metal spend over all levels.
+-- |ln(v2 / v1)| over levels 2..24 (see balance_to), shown as a percentage. The tuner fits metal per power (spend / power multiple).
 -- Levels here are v1's levels; v2 is compared at the same step (level - 1), which it reaches at level
 -- whose UpgradeStep is that step (v1 level 2 = v2 level 2, v1 level 24 ~ v2 level 15, v1 level 64 = v2 level 33).
 
@@ -25,8 +25,7 @@ local tune = arg and arg[1] == "tune"
 local levels_from, levels_to = 2, 64
 -- levels the averages and the tuning use: up to level 24, the last level before 1-round weapons get a second round
 -- (level 25); the jump in whole rounds distorts the fit too much (owner, 2026-11-11)
-local balance_power_to = 24
-local balance_to = balance_power_to
+local balance_to = 24
 local v1_root = "../../Indefinetly-Upgradeable-Weapons-Legacy/weapons"
 
 -- v1's upgrade price constants U (metal, energy), from its weapons/weapon_list.lua (llm/V1.md)
@@ -243,8 +242,11 @@ local function Ratio(a, b) if a and b and b ~= 0 then return a / b end end
 
 -- relative (to base) metrics where that makes sense; absolute for spend
 local function Relative(values, base_values)
+   local power = Ratio(values.power, base_values.power)
    return {
-      power = Ratio(values.power, base_values.power),
+      power = power,
+      -- metal spent per multiple of base firepower: what a level's firepower costs
+      metal_per_power = values.metal and power and power > 0 and values.metal / power or nil,
       fire_cost_per_damage = Ratio(values.fire_cost_per_damage, base_values.fire_cost_per_damage),
       metal = values.metal, energy = values.energy,
       fire_speed = Ratio(values.fire_speed, base_values.fire_speed),
@@ -255,7 +257,7 @@ local function Relative(values, base_values)
    }
 end
 
-local Compared = { "power", "metal", "energy", "fire_cost_per_damage" }
+local Compared = { "power", "metal", "energy", "fire_cost_per_damage", "metal_per_power" }
 
 -- per weapon: rows per level and mean |ln(v2/v1)| per compared metric
 local function Compare(base)
@@ -336,22 +338,22 @@ if tune then
    local current = string.format("DamageGrowScale=%.4f RoundsEachBurstGrowScale=%.4f ReloadDecay=%.4f CostPower=%.1f BuildCostGrowScale=%.4f FireCostGrowScale=%.4f",
       DamageGrowScale, RoundsEachBurstGrowScale, ReloadDecay, CostPower, BuildCostGrowScale, FireCostGrowScale)
    TuneLog("before: " .. current)
-   TuneLog(string.format("  power %s, metal %s, fire cost per damage %s", Percent(Objective({ "power" })),
-      Percent(Objective({ "metal" })), Percent(Objective({ "fire_cost_per_damage" }))))
+   TuneLog(string.format("  power %s, metal %s, metal per power %s, fire cost per damage %s", Percent(Objective({ "power" })),
+      Percent(Objective({ "metal" })), Percent(Objective({ "metal_per_power" })), Percent(Objective({ "fire_cost_per_damage" }))))
    -- power isn't tuned: the owner set damage (v1's 0.125), rounds per burst (1/24) and reload decay (0.98)
    -- spend: build cost (metal is compared; energy is reported)
-   -- over all levels (owner, 2026-11-21: the top was too cheap), with the exponent shared with the fire cost
-   balance_to = levels_to
-   Search({ "metal" }, { CostPower = Range(1.3, 2, 0.1), BuildCostGrowScale = Range(0.01, 2, 0.01) })
-   balance_to = balance_power_to
+   -- priced by firepower (owner, 2026-11-21): metal per multiple of base power like v1's, over levels 2..24
+   -- (v2 levels 2..15, before 1-round weapons get a second round); the exponent is shared with the fire cost
+   Search({ "metal_per_power" }, { CostPower = Range(1.0, 2, 0.1), BuildCostGrowScale = Range(0.01, 2, 0.01) })
    -- fire cost per point of damage, given the power parameters
    Search({ "fire_cost_per_damage" }, { FireCostGrowScale = Range(0.0, 1, 0.005) })
    TuneLog(string.format("after:  DamageGrowScale=%.4f RoundsEachBurstGrowScale=1/%d ReloadDecay=%.4f CostPower=%.1f BuildCostGrowScale=%.2f FireCostGrowScale=%.3f",
       DamageGrowScale, math.floor(1 / RoundsEachBurstGrowScale + 0.5), ReloadDecay, CostPower, BuildCostGrowScale, FireCostGrowScale))
-   TuneLog(string.format("  power %s, metal %s, fire cost per damage %s", Percent(Objective({ "power" })),
-      Percent(Objective({ "metal" })), Percent(Objective({ "fire_cost_per_damage" }))))
+   TuneLog(string.format("  power %s, metal %s, metal per power %s, fire cost per damage %s", Percent(Objective({ "power" })),
+      Percent(Objective({ "metal" })), Percent(Objective({ "metal_per_power" })), Percent(Objective({ "fire_cost_per_damage" }))))
    -- per-weapon build_cost_factor that would make its metal spend match v1 best, for the owner to judge
-   TuneLog("build_cost_factor that fits v1's metal spend best, per weapon (current in brackets):")
+   -- by metal per power; weapons without power (no damage) by metal spend
+   TuneLog("build_cost_factor that fits v1's metal per power best (metal spend without power), per weapon (current in brackets):")
    for _, base in ipairs(shared) do
       if base.MetalCost then
          local original = base.upgrade.build_cost_factor
@@ -359,10 +361,11 @@ if tune then
          for _, factor in ipairs(Range(0.1, 5, 0.05)) do
             base.upgrade.build_cost_factor = factor
             local _, averages = Compare(base)
-            if averages.metal and averages.metal < best_value then best_factor, best_value = factor, averages.metal end
+            local value = averages.metal_per_power or averages.metal
+            if value and value < best_value then best_factor, best_value = factor, value end
          end
          base.upgrade.build_cost_factor = original
-         TuneLog(string.format("  %-11s %.2f (%.2f), metal deviation %s", base.name, best_factor, original or 1, Percent(best_value)))
+         TuneLog(string.format("  %-11s %.2f (%.2f), deviation %s", base.name, best_factor, original or 1, Percent(best_value)))
       end
    end
 end

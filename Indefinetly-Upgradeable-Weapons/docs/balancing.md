@@ -43,7 +43,7 @@ The growth rates are named constants at the top of the file:
 - `RoundsEachBurstGrowScale` (1/24) governs rounds per burst and, for beams, the beam duration.
   Rounds are whole numbers, so power rises in jumps: a weapon with one round gains its second at step 24.
 - `ReloadDecay` (0.98) governs reload time and round period; a smaller value shortens them faster.
-- `BuildCostGrowScale` (0.23), `FireCostGrowScale` (0.045) and their shared exponent `CostPower` (1.6) govern the costs.
+- `BuildCostGrowScale` (0.32), `FireCostGrowScale` (0.045) and their shared exponent `CostPower` (1.6) govern the costs.
   They grow faster than power, so that each level is less efficient than the one before.
 - `SecondaryGrowScale` (0.15) governs every stat without a rate of its own.
 
