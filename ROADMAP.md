@@ -48,7 +48,7 @@ Which weapons and commanders the mod supports so far. The mod itself is describe
 - [x] Phantom
 - [x] Architect
 - [x] Overdrive
-- [ ] Hurricane
+- [x] Hurricane
 - [ ] Firebird
 - [ ] Warthog
 - [ ] Eagle Eye

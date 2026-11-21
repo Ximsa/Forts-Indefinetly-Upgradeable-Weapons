@@ -21,7 +21,10 @@ Code from the commander is never copied into the repository, partly for reasons 
 4. **Scripts.**
    `mods/commander-<x>/commander.lua` is appended to the commander's script.
    For the focus icon, it consists of a single line: `dofile(path .. "/lib/mark_level_weapons.lua")`.
-5. **Test in a match.**
+5. **No changes needed.**
+   A commander whose changes already reach the levels, such as Architect, still receives its folder,
+   holding only a `.gitkeep`, in preparation of later changes.
+6. **Test in a match.**
    Compare a level-2 and a top-level weapon with the base weapon, with and without the active ability.
    Then tick the commander in `ROADMAP.md`.
 
