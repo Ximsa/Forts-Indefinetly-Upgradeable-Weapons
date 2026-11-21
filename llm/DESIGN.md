@@ -170,7 +170,8 @@ Agreed with the owner on 2026-11-12; revised 2026-11-21: no commander code is co
 - **Perks keyed to a threshold follow the base weapon:** a level weapon gets Eagle Eye's reload bank exactly when its
   base weapon does, even if its own reload is below the 9 s threshold.
 - **Build-speed perks don't touch upgrade times:** Eagle Eye's faster sniper build, like Architect's, leaves level
-  upgrades alone (tier upgrades aren't sped up either). Overdrive is the only commander that changes upgrade time.
+  upgrades alone (tier upgrades aren't sped up either). Hurricane's build time ×0.9 applies to every weapon, so it
+  shortens tier and level upgrades alike (parity, 2026-11-21). Overdrive's upgrade-time change is the one exception.
 - **Gameplay only:** sprite swaps (Scattershot's minigun head, Marksman's cannon barrel) are undone after the replay,
   so the level tint stays. Changes that affect play, including `HasLaserSight`, are kept.
 - **List hooks:** commander list hooks that loop over every weapon or projectile are left alone. For hooks that name

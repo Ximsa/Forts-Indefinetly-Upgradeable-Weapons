@@ -56,6 +56,16 @@ CommanderOverlayFiles = {
    ["commander-cf-phantom"] = {
       "mods/dlc1_weapons/weapons/magnabeam.lua", -- packed; path found by a probe (2026-11-21)
    },
+   ["commander-da-speed-demon"] = {
+      "weapons/machinegun.lua",
+      "weapons/minigun.lua",
+      "weapons/mortar-incendiary.lua",
+      "weapons/mortar.lua",
+      "mods/weapon_pack/weapons/20mmcannon.lua",
+      "mods/weapon_pack/weapons/flak.lua",
+      "mods/weapon_pack/weapons/rocket.lua",
+      "mods/dlc1_weapons/weapons/buzzsaw.lua",
+   },
 }
 
 for commander, files in pairs(CommanderOverlayFiles) do
